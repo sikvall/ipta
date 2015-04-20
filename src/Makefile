@@ -34,7 +34,7 @@ includes = /usr/include/mysql/
 libs = /usr/local/mysql/lib/
 link = mysqlclient
 
-width = -m64
+#width = -m64
 #width = -m32
 
 cflags = -O3 -Wall ${width}
