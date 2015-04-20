@@ -218,7 +218,7 @@ You can of course also email me and I will create an issue for the
 bug and
 see what we can do for a resolution. Please email to 
 $<$anders@sikvall.se$>$
-for reporting bugs and put ``ipta: [description]'' in the header.
+for reporting bugs and put ``ipta: [description]" in the header.
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -325,7 +325,7 @@ Go to the manual directory and type
 $ make
 \end{verbatim}
 
-This will start the make process, it will run ''pdflatex ipta.tex''
+This will start the make process, it will run "pdflatex ipta.tex"
 twice and build you a new pdf with the manual. Most users would
 however not need to build the manual but can just look in the provided
 pre-built PDF file instead.
@@ -360,8 +360,8 @@ Username: ipta\\
 Password: ipta\\
 
 This can be overruled on the command line. With no other arguments it
-will try to access an existing database called ''ipta'' and if no
-other name is given the default table is named ''logs''.
+will try to access an existing database called "ipta" and if no
+other name is given the default table is named "logs".
 
 \subsubsection{Create MySQL User}
 
@@ -418,7 +418,7 @@ By breaking out the iptables messages to a separate file we will not
 clutter the standard system log but can keep it separate and it also
 means the processing of the log file will be more efficient by ipta.
 
-The ipta tool always looks for the ''IPT: '' prefix on the log line
+The ipta tool always looks for the "IPT: " prefix on the log line
 and will ignore any line that do not start with this. In order to set
 up syslog properly for our purpose we need to make some changes to its
 configuration file.
@@ -489,7 +489,7 @@ yesterday, uncompressed.
 
 Of course if you want to rotate on a weekly basis or something else,
 you can change this accordingly. Insert it into the rsyslog or create
-a new one called ''ipta'' or something like that, then save it. Check
+a new one called "ipta" or something like that, then save it. Check
 it out a couple of days later that it is actually rotating your logs.
 
 \subsection{Logging loops caution}
@@ -554,7 +554,7 @@ iptables -A LOGACCEPT -j ACCEPT
 \normalsize
 
 Now we can see that the prefix we use tells ipta something on what is
-going on. First the marker ''IPT:'' is recognized as this is a line
+going on. First the marker "IPT:" is recognized as this is a line
 that should be processed, the next word is a signal word that tells
 ipta what has happend. This should be ACCEPT, DROP, INVALID or
 something similar. ACCEPT and DROP should be used mainly as they have
@@ -749,7 +749,7 @@ config file it will use default settings.
 
 
 \scriptsize
-\begin{longtable}{|p{.3\textwidth}|p{.6\textwidth}|}
+\begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
 \textbf{Mode switch}& \textbf{Description}\\\hline
 
@@ -789,10 +789,9 @@ In the future this will allow you to open a shell and put custom
 queries to the database in such a way that you can create your own
 analysis.\\\hline
 
-
 \end{longtable}
 
-\begin{longtable}{|p{.3\textwidth}|p{.6\textwidth}|}
+\begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
 \textbf{Database options} & \textbf{Description}\\ \hline
 
@@ -861,15 +860,13 @@ configuration file to the user's home directory named .ipta with the
 current settings. By providing configuration of database name, user,
 password and table to use as default these setting will be written to
 a file and used as default settings next time you run ipta.\\\hline
-
-\hline
 \end{longtable}
 \normalsize
 
 \scriptsize
-\begin{longtable}{|p{.3\textwidth}|p{.6\textwidth}|}
-\hline\hline
-\textbf{Format switches} & \textbf{Description}\\ \hline \hline
+\begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
+\hline
+\textbf{Format switches} & \textbf{Description}\\ \hline
 
 \texttt{-r, --rdns} & 
 
@@ -916,9 +913,9 @@ invalid packets.\\\hline
 \end{longtable}
 
 \scriptsize
-\begin{longtable}{|p{.3\textwidth}|p{.6\textwidth}|}
-\hline\hline
-\textbf{Miscellaneous} & \textbf{Description}\\ \hline \hline
+\begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
+\hline
+\textbf{Miscellaneous} & \textbf{Description}\\ \hline
 
 \texttt{--license} &
 Print the license and then exit.\\\hline
@@ -974,7 +971,7 @@ today.
 
 \subsection{Denied traffic grouped by IP, destport and action}
 
-This module shows everything that is NOT marked as ``ACCEPT'' and
+This module shows everything that is NOT marked as ``ACCEPT" and
 therefore is assumed denied. It then groups it by IP address,
 destination port number and which action was taken with the packet. It
 is useful for an overlook of what kind of traffic we get that gets
@@ -1058,7 +1055,7 @@ Most denied ports
 
 \subsection{Invalid packets source}
 
-This module sorts invalid packets (action = ``INVALID'') based on the
+This module sorts invalid packets (action = ``INVALID") based on the
 number of packets, their origin and also shows source and destination
 ports for the packets.
 

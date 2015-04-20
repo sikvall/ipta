@@ -29,7 +29,6 @@
 #include "ipta.h"
 
 
-
 /**********************************************************************
  * Create configuration file with default values
  *
@@ -58,9 +57,22 @@ int create_config(void) {
     
 }
 
-int read_config(struct ipta_config *config) {
-  fprintf(stderr, "! The read_config() function is a stub!\n");
+int read_config(struct ipta_config *config, char *filename) {
+  FILE *fp = NULL;
+  int num = 0;
+  
+
+  fopen(filename, "r");
+  if(!fp) {
+    fprintf(stderr, "! Unable to open file '%s'.\n", filename);
+    return RETVAL_ERROR;
+  }
+
+  fprintf(stderr, "! config file reading a stub so far.\n");
   return RETVAL_ERROR;
+
+  // File is open, process the keywords
+
 }
 
 int update_config(struct ipta_config *config) {
