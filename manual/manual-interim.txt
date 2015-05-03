@@ -1,0 +1,17 @@
+
+ipta -i <filename>
+     Import <filename> into ipta database
+
+ipta -c 
+     Clear database from all data
+
+ipta -a
+     Analyze data in database
+
+-r   Reverse DNS lookup on IP addresses
+
+--no-lo
+     Remove local access from tables
+
+--no-accept
+     Remove all accepted accesses from analysis
