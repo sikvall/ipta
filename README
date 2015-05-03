@@ -1,0 +1,48 @@
+This is the README file for ipta - ip tables analyzer
+
+1. COMPILING THE BINARIES FROM SOUCE
+====================================
+
+To compile this you need to first install the mysql libraries and
+header files. On Ubuntu this is simply done by:
+
+$ sudo apt-get install libmysqlclient-dev
+
+After that you should be able to make the source code into the binary
+you need by simply issuing the following:
+
+$ make all
+
+To install on the current system you should do
+
+$ sudo make install
+
+This will install the binary properly.
+
+2. CREATING DEFAULT DATABASE
+============================
+
+Create in your local mysql or other mysql server the following:
+
+username: ipta
+password: ipta
+database: ipta
+
+This is the default user unless you tell it something else using any
+of the directives to control this such as:
+
+--db-name <database name> 
+
+	  Use the databas named instead of "ipta" which is the default
+	  one. This is the recommended way
+
+--db-user <database user>
+
+	  Use a different user from the default "ipta" user
+
+--db-pass, --db-pass-i
+
+	   Use a different password. The last version is interactive
+	   and will read the password from the console rather than the
+	   command line where it may show up in a process table or
+	   something else nasty.
