@@ -85,7 +85,7 @@ checkin:
 
 install:
 	make strip
-	sudo install -m 755 ipta /usr/bin/
+	sudo install ipta -m 755 -o root -g root /usr/bin/
 
 distclean:
 	make clean
