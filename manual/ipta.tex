@@ -1,0 +1,44 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\author{Anders Sikvall}
+\title{ipta - IP Tables Log Analyzer}
+\begin{document}
+
+\maketitle
+
+\cleardoublepage
+
+\tableofcontents
+
+\chapter{Acknowledgements \& History}
+
+\chapter{License}
+\label{license}
+
+\chapter{Building the software}
+
+The ipta software is delivered as a software package and needs to be built for the platform you want to run it on. However the result is a single executable file which can easily be packaged and deployed in any software distribution you see fit. 
+
+The license in chapter \ref{license} grants you the right to deploy the software in any situation you seem fit, you are also free to modify the software and I only ask that if you make substantial improvements or bug fixes that you send them to me for consideration into the main software stream so others may benefit from this.
+
+\begin{verbatim}
+# apt-get install gcc
+# apt-get install libmysqlclient-dev
+# apt-get install git
+\end{verbatim}
+
+Get the latest software package from the github repository:
+
+\begin{verbatim}
+$ git clone https://github.com/sikvall/ipta
+\end{verbatim}
+
+
+\chapter{Installation}
+
+\end{document}
