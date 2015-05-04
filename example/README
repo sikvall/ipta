@@ -1,0 +1,40 @@
+Included here is an example log file. When you have mastered setting
+up your iptables logging through the syslogd of your choice, the
+result should be a daily or weekly rotated file which content should
+look like this file.
+
+Let's examine a single row from the logfile and look ad the data in
+the file:
+
+May  4 06:35:08 zathras kernel: [1749207.946614] IPT: CBLK IN=eth0 
+OUT= MAC=02:00:bc:7e:5d:a0:00:13:5f:21:29:40:08:00 
+SRC=46.45.161.187 DST=188.126.93.160 LEN=40 TOS=0x00 PREC=0x00 
+TTL=56 ID=10028 PROTO=TCP SPT=55844 DPT=445 WINDOW=512 
+RES=0x00 SYN URGP=0 
+
+(Line has been terminated for ease of display, in reality it is all
+written on the same line)
+
+The first part is a time stamp from the syslog daemon. The next is the
+host name and the logging level (kernel) and then we have the kernel
+time stamp. This can be regarded as an "id" for the line as the kernel
+guarantees there will never be two such lines with the same time
+stamp.
+
+Then we have the MARKER called "IPT:" this is what the parser looks
+for in order to recognize the line as being an iptables log line. The
+next field is a text field chosen in the iptables rules, generally you
+will see things like ACCEPT or DROP but in this case you can also
+define your own, I have here defined a "country block" rule that is in
+effekt. This part should say something about what has happened with
+the ip packet.
+
+IN=eth0 is the input interface, as this is an input chain rule there
+is no OUT= definition. Then comes the interface MAC= address and then
+SRC= ip address of the sender of the packet, the DST= is the
+destination IP (often this host but could potentially be some other
+host also) the LEN= is the length, we then have some other parameters
+that ipta is not currently looking at and then we get the protocol
+type in PROTO= we get the source port number in SPT= and destination
+port number in DST=, these ipta will look at.
+
