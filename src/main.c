@@ -284,11 +284,11 @@ int main(int argc, char *argv[])
     }
 
     if(!strcmp(argv[i], "-i") || !strcmp(argv[i], "--import")) {
-      printf("Import\n");
+      fprintf(stderr, "* Importing from syslog\n");
       action_flag = FLAG_SET;
       known_flag = FLAG_SET;
       if(argc < (i+2)) {
-	fprintf(stderr, "? To import syslog you should specify a filename after %s.\n", argv[i]);
+	fprintf(stderr, "? To import syslog you need to specify a filename after '%s'.\n", argv[i]);
 	retval = RETVAL_WARN;
 	goto clean_exit;
       }
