@@ -43,16 +43,16 @@ int analyze(struct ipta_db_info *db_info,
   MYSQL_ROW row = 0;
   int num_fields = 0;
   int i = 0;
-  char src_ip_hostname[256];
-  char dst_ip_hostname[256];
+  char src_ip_hostname[HOSTNAME_MAX_LEN];
+  char dst_ip_hostname[HOSTNAME_MAX_LEN];
   int rdns_flg[2];
-  int retval = 0;
+  int retval = RETVAL_OK;
 
   // Allocate memory for the query string
-  query_string = malloc(20000);
+  query_string = malloc(QUERY_STRING_SIZE);
   if(!query_string) {
     printf("! Memory allocation failed.\n");
-    retval = 20; 
+    retval = RETVAL_ERROR; 
     goto clean_exit;
   }
 
@@ -61,7 +61,7 @@ int analyze(struct ipta_db_info *db_info,
   if(con == NULL) {
     printf("! Unable to initialize MySQL connection.\n");
     printf("! Error message: %s\n", mysql_error(con));
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -72,7 +72,7 @@ int analyze(struct ipta_db_info *db_info,
 			NULL, 0, NULL, 0) == NULL) {
     printf("! %s\n", mysql_error(con));
     mysql_close(con);
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -81,7 +81,7 @@ int analyze(struct ipta_db_info *db_info,
   if(mysql_query(con, query_string)) {
     printf("! Database %s not found, or not possible to connect. \n", db_info->name);
     printf("! %s\n", mysql_error(con));
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
 
@@ -93,13 +93,15 @@ int analyze(struct ipta_db_info *db_info,
 
   // Create query to run
   sprintf(query_string, 
-	  "SELECT COUNT(*), INET_NTOA(src_ip), src_prt, INET_NTOA(dst_ip), dst_prt, proto, action FROM %s WHERE action<>'ACCEPT' AND if_in<>'lo' and if_out<>'lo' GROUP BY src_ip, dst_prt, action, proto ORDER BY COUNT(*) DESC LIMIT %d;", 
+	  "SELECT COUNT(*), INET_NTOA(src_ip), src_prt, INET_NTOA(dst_ip), dst_prt, proto, "\
+	  "action FROM %s WHERE action<>'ACCEPT' AND if_in<>'lo' and if_out<>'lo' GROUP BY "\
+	  "src_ip, dst_prt, action, proto ORDER BY COUNT(*) DESC LIMIT %d;", 
 	  db_info->table, analyze_limit);
  
   if(mysql_query(con, query_string)) {
     printf("! Query not accepted from database.\n");
     printf("! %s\n", mysql_error(con));
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   result = mysql_store_result(con);
@@ -110,14 +112,14 @@ int analyze(struct ipta_db_info *db_info,
   printf("\nShowing denied traffic grouped by IP, destination port, action taken and protocol.\n");
   printf(" Count Source IP                 SPort Dest IP                   DPort Proto  Action\n");
   printf("------ ------------------------- ----- ------------------------- ----- ------ ----------\n");
-  rdns_flg[0] = rdns_flg[1] = 0;
+  rdns_flg[0] = rdns_flg[1] = FLAG_CLEAR;
   while((row = mysql_fetch_row(result))) {
     if(flags->rdns) {
-      rdns_flg[0] = rdns_flg[1] = 1;
+      rdns_flg[0] = rdns_flg[1] = FLAG_SET;
       if(get_host_by_addr(row[1], src_ip_hostname, 25))
-	rdns_flg[0] = 0;
+	rdns_flg[0] = FLAG_CLEAR;
       if(get_host_by_addr(row[3], dst_ip_hostname, 25))
-	rdns_flg[1] = 0;
+	rdns_flg[1] = FLAG_CLEAR;
     }      
     printf("%6d %-25s %5d %-25s %5d %-6s %-10s\n", 
 	   atoi(row[0]), rdns_flg[0] ? src_ip_hostname : row[1], 
@@ -130,13 +132,15 @@ int analyze(struct ipta_db_info *db_info,
 
   // Create query to run
   sprintf(query_string, 
-	  "SELECT COUNT(*), INET_NTOA(src_ip), INET_NTOA(dst_ip), action FROM %s WHERE proto='ICMP' AND if_in<>'lo' AND if_out<>'lo' GROUP BY src_ip, dst_prt, action, proto ORDER BY COUNT(*) DESC LIMIT %d;", 
+	  "SELECT COUNT(*), INET_NTOA(src_ip), INET_NTOA(dst_ip), action FROM %s WHERE proto='ICMP' "\
+	  "AND if_in<>'lo' AND if_out<>'lo' GROUP BY src_ip, dst_prt, action, proto ORDER BY COUNT(*) "\
+	  "DESC LIMIT %d;", 
 	  db_info->table, analyze_limit);
  
   if(mysql_query(con, query_string)) {
     printf("! Query not accepted from database.\n");
     printf("! %s\n", mysql_error(con));
-    return 20;
+    return RETVAL_ERROR;
   }
   result = mysql_store_result(con);
   num_fields = mysql_num_fields(result);
@@ -146,14 +150,14 @@ int analyze(struct ipta_db_info *db_info,
   printf("\nShowing ICMP traffic statistics\n");
   printf(" Count Source IP                 Dest IP                   Action    \n");
   printf("------ ------------------------- ------------------------- ----------\n");
-  rdns_flg[0] = rdns_flg[1] = 0;
+  rdns_flg[0] = rdns_flg[1] = FLAG_CLEAR;
   while((row = mysql_fetch_row(result))) {
     if(flags->rdns) {
-      rdns_flg[0] = rdns_flg[1] = 1;
+      rdns_flg[0] = rdns_flg[1] = FLAG_SET;
       if(get_host_by_addr(row[1], src_ip_hostname, 25))
-	rdns_flg[0] = 0;
+	rdns_flg[0] = FLAG_CLEAR;
       if(get_host_by_addr(row[2], dst_ip_hostname, 25))
-	rdns_flg[1] = 0;
+	rdns_flg[1] = FLAG_CLEAR;
     }      
 
     printf("%6d %-25s %-25s %-10s\n", 
@@ -166,13 +170,14 @@ int analyze(struct ipta_db_info *db_info,
 
   // Create query to run
   sprintf(query_string, 
-	  "SELECT COUNT(*), dst_prt, proto, action FROM %s WHERE if_in<>'lo' AND if_out<>'lo' AND action<>'ACCEPT' GROUP BY dst_prt, action, proto ORDER BY COUNT(*) DESC LIMIT %d;", 
+	  "SELECT COUNT(*), dst_prt, proto, action FROM %s WHERE if_in<>'lo' AND if_out<>'lo' "\
+	  "AND action<>'ACCEPT' GROUP BY dst_prt, action, proto ORDER BY COUNT(*) DESC LIMIT %d;", 
 	  db_info->table, analyze_limit);
  
   if(mysql_query(con, query_string)) {
     printf("! Query not accepted from database.\n");
     printf("! %s\n", mysql_error(con));
-    return 20;
+    return RETVAL_ERROR;
   }
   result = mysql_store_result(con);
   num_fields = mysql_num_fields(result);
@@ -202,7 +207,7 @@ int analyze(struct ipta_db_info *db_info,
   if(mysql_query(con, query_string)) {
     printf("! Query not accepted from database.\n");
     printf("! %s\n", mysql_error(con));
-    return 20;
+    return RETVAL_ERROR;
   }
   result = mysql_store_result(con);
   num_fields = mysql_num_fields(result);
@@ -213,14 +218,14 @@ int analyze(struct ipta_db_info *db_info,
   printf(" Count   Source IP                   SPort   Dest IP                     DPort   Proto    \n");
   printf("------   -------------------------   -----   -------------------------   -----   ------   \n");
 
-  rdns_flg[0] = rdns_flg[1] = 0;
+  rdns_flg[0] = rdns_flg[1] = FLAG_CLEAR;
   while((row = mysql_fetch_row(result))) {
     if(flags->rdns) {
-      rdns_flg[0] = rdns_flg[1] = 1;
+      rdns_flg[0] = rdns_flg[1] = FLAG_SET;
       if(get_host_by_addr(row[1], src_ip_hostname, 25))
-	rdns_flg[0] = 0;
+	rdns_flg[0] = FLAG_CLEAR;
       if(get_host_by_addr(row[3], dst_ip_hostname, 25))
-	rdns_flg[1] = 0;
+	rdns_flg[1] = FLAG_CLEAR;
       
     }
     printf("%6d   %-25s   %5d   %-25s   %5d   %-6s   \n", 
@@ -229,17 +234,17 @@ int analyze(struct ipta_db_info *db_info,
   }
   mysql_free_result(result);
   result = NULL;
-  
-  
+    
   // Create query to run
   sprintf(query_string, 
-	  "SELECT COUNT(*),if_in,action,proto FROM %s WHERE action<>'ACCEPT' GROUP BY if_in,action,proto ORDER BY COUNT(*) DESC LIMIT %d;", 
+	  "SELECT COUNT(*),if_in,action,proto FROM %s WHERE action<>'ACCEPT' GROUP BY "\
+	  "if_in,action,proto ORDER BY COUNT(*) DESC LIMIT %d;", 
 	  db_info->table, analyze_limit);
  
   if(mysql_query(con, query_string)) {
     printf("! Query not accepted from database.\n");
     printf("! %s\n", mysql_error(con));
-    return 20;
+    return RETVAL_ERROR;
   }
   result = mysql_store_result(con);
   num_fields = mysql_num_fields(result);
@@ -255,7 +260,6 @@ int analyze(struct ipta_db_info *db_info,
   }
   mysql_free_result(result);
   result = NULL;
-
 
  clean_exit:
 

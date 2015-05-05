@@ -32,6 +32,7 @@
 /* Ipta defines */
 #define ACTION_IMPORT 1;
 #define IPTA_LINE_PREFIX "IPT: "
+#define QUERY_STRING_SIZE 2000
 
 /* Database defaults */
 #define DEFAULT_DB_HOSTNAME "localhost"
