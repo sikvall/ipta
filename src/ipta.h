@@ -23,11 +23,13 @@
  **********************************************************************/
 
 
-/* Defines */
-
+/* Overall generic defines */
 #define IPTA_VERSION "ipta version 1.0.0\n"
 
+/* Specific error defines */
 #define ERROR_FILE_OPEN -1
+
+/* Ipta defines */
 #define ACTION_IMPORT 1;
 #define IPTA_LINE_PREFIX "IPT: "
 
