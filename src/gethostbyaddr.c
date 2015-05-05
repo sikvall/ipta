@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-
+#include "ipta.h"
 
 /* 
  * Get host by address
@@ -64,8 +64,8 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
   inet_pton(AF_INET, ip_address, &ip4addr.sin_addr);
 
   /* Call the DNS subsystem */
-  int dns_reply = getnameinfo((struct sockaddr *) &ip4addr, sizeof(struct sockaddr_in), 
-			      host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
+  dns_reply = getnameinfo((struct sockaddr *) &ip4addr, sizeof(struct sockaddr_in), 
+			  host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
 
   /* If we got a name then we copy the name to maxlen characters into
      the hostname pointer provided by the call. */

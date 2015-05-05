@@ -29,6 +29,8 @@
 #include <mysql.h>
 #include "ipta.h"
 
+/* >>>>> Todo: Description here */
+
 int restore_db(struct ipta_db_info *db_info)
 {
   FILE *fp;
@@ -278,7 +280,6 @@ int delete_table(struct ipta_db_info *db_info)
 
 
 
-
 /**********************************************************************
  * list_tables
  *
@@ -373,7 +374,7 @@ int clear_database(struct ipta_db_info *db_info)
 
   query_string = calloc(QUERY_STRING_SIZE, 1);
   if(!query_string) {
-    fprintf("! Error, failed allocation of memory.\n");
+    fprintf(stderr, "! Error, failed allocation of memory.\n");
     retval = RETVAL_ERROR;
     goto clean_exit;
   }

@@ -214,8 +214,8 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
       // If row counter is 0 then we should prepare the insert string
       // with the headers needed.
       if(row_counter == 0) {
-	sprintf(query_string, "INSERT INTO %s ( if_in, if_out, src_ip, src_prt, dst_ip, dst_prt, proto, action, mac) "\
-		"VALUES ",
+	sprintf(query_string, "INSERT INTO %s ( if_in, if_out, src_ip, src_prt, dst_ip, "\
+		"dst_prt, proto, action, mac) VALUES ",
 		db_info->table);
       } else {
 	// Not the first line, then add the comma to previous line and
@@ -225,21 +225,24 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
       
       // This adds the values to the query string
       sprintf(query_string, 
-	      "%s\n ( '%s', '%s', INET_ATON('%s'), '%s', INET_ATON('%s'), '%s', '%s', '%s', '%s' )", 
+	      "%s\n ( '%s', '%s', INET_ATON('%s'), '%s', INET_ATON('%s'), "\
+	      "'%s', '%s', '%s', '%s' )", 
 	      query_string, log_ifin, log_ifout, log_src, log_src_port, log_dst, log_dst_port, 
 	      log_proto, log_action, log_mac);
       row_counter++;
       
-      // Every 100 lines we terminate the query string and then call the MySQL to insert the rows collected
-      // When done we must reset the row_counter to 0 again.
-      if(row_counter == 100) {
+      // Every 100 lines we terminate the query string and then call
+      // the MySQL to insert the rows collected. When done we must
+      // reset the row_counter to 0 again.
+
+      if(row_counter == QUERY_ROW_COUNT) {
 	sprintf(query_string, "%s;", query_string);
 	printf("- Processed %d lines in %d seconds, %d bytes in query  \r", 
 	       lines, (int)time(NULL)-(int)starttime, (int)strlen(query_string) );
 	
 	if(mysql_query(con, query_string)) {
-	  printf("%s\n", mysql_error(con));
-	  retval = 10;
+	  printf("\n%s\n", mysql_error(con));
+	  retval = RETVAL_ERROR;
 	  goto clean_exit;
 	}
 	
@@ -253,10 +256,9 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
   // insert any remaining rows not previously inserted
   if(row_counter != 0) {
     sprintf(query_string, "%s;", query_string);
-    //    printf("%s\n", query_string);
     if(mysql_query(con, query_string)) {
       fprintf(stderr, "%s\n", mysql_error(con));
-      retval = 10;
+      retval = RETVAL_ERROR;
       goto clean_exit;
     }
   }    
@@ -264,14 +266,13 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
   sprintf(query_string, "COMMIT;");
   if(mysql_query(con, query_string)) {
     fprintf(stderr, "%s\n", mysql_error(con));
-
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
 
   worktime = time(NULL) - starttime;
   
-  fprintf(stderr, "* Processed %d lines in %d seconds  \r", 
+  fprintf(stderr, "* Processed %d lines in %d seconds\n", 
 	  lines, (int)time(NULL)-(int)starttime);
   
   fprintf(stderr, "\n* Done processing file. %d records inserted in database.\n", lines);

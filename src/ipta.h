@@ -33,6 +33,7 @@
 #define ACTION_IMPORT 1;
 #define IPTA_LINE_PREFIX "IPT: "
 #define QUERY_STRING_SIZE 2000
+#define QUERY_ROW_COUNT 100
 
 /* Database defaults */
 #define DEFAULT_DB_HOSTNAME "localhost"
@@ -50,6 +51,7 @@
 #define RETVAL_OK 0
 #define RETVAL_WARN 10
 #define RETVAL_ERROR 20
+#define RETVAL_NONAME 1
 
 /* Specific defines */
 #define HOSTNAME_MAX_LEN 256
@@ -71,3 +73,6 @@ struct ipta_db_info {
   char table[IPTA_DB_INFO_STRLEN];
 };
 
+/* Function declarations */
+
+/* >>>>> Todo: Insert function declarations here! */
