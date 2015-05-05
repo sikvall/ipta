@@ -376,7 +376,7 @@ int main(int argc, char *argv[])
     retval = analyze(db_info, flags, analyze_limits);
     if(retval) {
       fprintf(stderr, "! Error in analyzer. Sorry.\n");
-      retval = 20;
+      retval = RETVAL_ERROR;
       goto clean_exit;
     }
   }
