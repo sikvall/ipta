@@ -25,8 +25,26 @@
 
 /* Defines */
 
+#define IPTA_VERSION "ipta version 1.0.0\n"
+
 #define ERROR_FILE_OPEN -1
 #define ACTION_IMPORT 1;
+
+#define DEFAULT_DB_HOSTNAME "localhost"
+#define DEFAULT_DB_USERNAME "ipta"
+#define DEFAULT_DB_PASSWORD "ipta"
+#define DEFAULT_DB_NAME "ipta"
+#define DEFAULT_DB_TABLENAME "logs"
+
+#define FLAG_SET 1
+#define FLAG_CLEAR 0
+
+#define RETVAL_OK 0
+#define RETVAL_WARN 10
+#define RETVAL_ERROR 20
+
+#define ANALYZE_LIMIT_MAX 1000
+
 
 struct ipta_flags {
   int no_lo;

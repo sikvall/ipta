@@ -30,7 +30,6 @@
 #include <mysql.h>
 #include "ipta.h"
 
-#define IPTA_VERSION "ipta version 1.0.0\n"
 
 int main(int argc, char *argv[]) 
 {
@@ -71,11 +70,11 @@ int main(int argc, char *argv[])
   }
   
   // Load default parameters
-  strcpy(db_info->host, "localhost");
-  strcpy(db_info->user, "ipta");
-  strcpy(db_info->pass, "ipta");
-  strcpy(db_info->name, "ipta");
-  strcpy(db_info->table, "logs");
+  strcpy(db_info->host, DEFAULT_DB_HOSTNAME);
+  strcpy(db_info->user, DEFAULT_DB_USERNAME);
+  strcpy(db_info->pass, DEFAULT_DB_PASSWORD);
+  strcpy(db_info->name, DEFAULT_DB_NAME);
+  strcpy(db_info->table, DEFAULT_DB_TABLENAME);
 
   // Check if there is a config file, if so we should parse that for our
   // data before we override that with something on the command line
@@ -89,9 +88,9 @@ int main(int argc, char *argv[])
     // TO BE DONE
   }
 
-  action_flag = 0;
+  action_flag = FLAG_CLEAR;
   for(i=1; i < argc; i++) {
-    known_flag = 0;
+    known_flag = FLAG_CLEAR;
 
     //    printf("* Checking argument %s\n", argv[i]);
 
@@ -101,46 +100,46 @@ int main(int argc, char *argv[])
     }
 
     if(!strcmp(argv[i], "--rdns") || !strcmp(argv[i], "-r")) {
-      flags->rdns = 1;
-      known_flag = 1;
+      flags->rdns = FLAG_SET;
+      known_flag = FLAG_SET;
     }
 
     if(!strcmp(argv[i], "--no-lo")) {
-      flags->no_lo = 1;
-      known_flag = 1;
+      flags->no_lo = FLAG_SET;
+      known_flag = FLAG_SET;
     }
 
     if(!strcmp(argv[i], "--no-accept")) {
-      flags->no_accept = 1;
-      known_flag = 1;
+      flags->no_accept = FLAG_SET;
+      known_flag = FLAG_SET;
     }
 
     if(!strcmp(argv[i], "--license")) {
-      known_flag = 1;
-      print_license_flag = 1;
-      action_flag = 1;
+      known_flag = FLAG_SET;
+      print_license_flag = FLAG_SET;
+      action_flag = FLAG_SET;
     }
 
     if(!strcmp(argv[i], "--usage")) {
-      known_flag = 1;
-      print_usage_flag = 1;
-      action_flag = 1;
+      known_flag = FLAG_SET;
+      print_usage_flag = FLAG_SET;
+      action_flag = FLAG_SET;
     }
 
     if(!strcmp(argv[i], "--setup-db") || !strcmp(argv[i], "-s")) {
-      known_flag = 1;
-      action_flag = 1;
-      save_db_flag = 1;
+      known_flag = FLAG_SET;
+      action_flag = FLAG_SET;
+      save_db_flag = FLAG_SET;
     }
 
     if(!strcmp(argv[i], "--follow") || !strcmp(argv[i], "-f")) {
-      known_flag = 1;
-      action_flag = 1;
-      follow_flag = 1;
+      known_flag = FLAG_SET;
+      action_flag = FLAG_SET;
+      follow_flag = FLAG_SET;
 
       if ( argc < (i+2) ) {
 	fprintf(stderr, "! Error: Follow needs a file name!\n");
-	retval = 20;
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
 
@@ -150,30 +149,30 @@ int main(int argc, char *argv[])
     }
 
     if(!strcmp(argv[i], "-l") || !strcmp(argv[i], "--limit")) {
-      known_flag = 1;
+      known_flag = FLAG_SET;
       if(argc < (i+2)) {
 	fprintf(stderr, "? You need to supply an argument for the limit.\n");
-	retval = 20;
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
       analyze_limit = atoi(argv[i+1]); i++;
       if(analyze_limit < 1) {
 	fprintf(stderr, "! Invalid analyze limit %d must be at least 1.\n", analyze_limit);
-	retval = 20;
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
-      if(analyze_limit > 1000) {
-	printf("! To high limit %d, should be < 1000.\n", analyze_limit);
-	return 20;
+      if(analyze_limit > ANALYZE_LIMIT_MAX) {
+	printf("! To high limit %d, should be <= %d.\n", analyze_limit, ANALYZE_LIMIT_MAX);
+	return RETVAL_ERROR;
       }
       continue;
     }
 
     if(!strcmp(argv[i], "--db-name") || !strcmp(argv[i], "-d")) {
-      known_flag = 1;
+      known_flag = FLAG_SET;
       if(argc < (i+2)) {
 	fprintf(stderr, "! You must supply a name with argument %s\n", argv[i]);
-	retval = 20;
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
       i++;
@@ -182,10 +181,10 @@ int main(int argc, char *argv[])
     }
 
     if(!strcmp(argv[i], "--db-user") || !strcmp(argv[i], "-u")) {
-      known_flag = 1;
+      known_flag = FLAG_SET;
       if(argc < (i+2)) {
 	fprintf(stderr, "! You must supply a name with argument %s\n", argv[i]);
-	retval = 20;
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
       i++;
@@ -194,10 +193,10 @@ int main(int argc, char *argv[])
     }
 	 
     if(!strcmp(argv[i], "--db-table") || !strcmp(argv[i], "-t")) {
-      known_flag = 1;
+      known_flag = FLAG_SET;
       if(argc < (i+2)) {
 	fprintf(stderr, "! You must supply a name with argument %s\n", argv[i]);
-	retval = 20;
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
       i++;
@@ -206,7 +205,7 @@ int main(int argc, char *argv[])
     }
 
     if(!strcmp(argv[i], "--db-pass-i") || !strcmp(argv[i], "-pi")) {
-      known_flag = 1;
+      known_flag = FLAG_SET;
       printf("? Enter your password: ");
       scanf("%s", password_input);
       strncpy(db_info->pass, password_input, IPTA_DB_INFO_STRLEN);
@@ -217,7 +216,7 @@ int main(int argc, char *argv[])
       known_flag = 1;
       if(argc < (i+2)) {
 	fprintf(stderr, "? If you want to use use %s to select database, I need a name.\n", argv[i]);
-	retval = 20;
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
       strncpy(db_info->name, argv[i+1], IPTA_DB_INFO_STRLEN); 
@@ -226,10 +225,11 @@ int main(int argc, char *argv[])
     }
 
     if(!strcmp(argv[i], "--db-host") || !strcmp(argv[i], "-h")) {
-      known_flag = 1;
+      known_flag = FLAG_SET;
       if(argc < (i+2)) {
-	fprintf(stderr, "? If you want to use use %s to select database host, I need a name.\n", argv[i]);
-	retval = 20;
+	fprintf(stderr, "? If you want to use use %s to select database host, I need a name.\n", 
+		argv[i]);
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
       strncpy(db_info->host, argv[i+1], IPTA_DB_INFO_STRLEN); 
@@ -241,11 +241,11 @@ int main(int argc, char *argv[])
       fprintf(stderr, 
 	      "! Warning for security reasons option is discouraged and instead\n" \
 	      "  --db-pass-i or -pi is recommended.\n");
-      known_flag = 1;
+      known_flag = FLAG_SET;
       if(argc < (i+2)) {
 	fprintf(stderr, 
 		"? If you want to use use %s to set password, I need a password.\n", argv[i]);
-	retval = 20;
+	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
       strncpy(db_info->pass, argv[i+1], IPTA_DB_INFO_STRLEN); i++;
@@ -256,57 +256,57 @@ int main(int argc, char *argv[])
     /* Table operations defined here as flags are processed */
 
     if(!strcmp(argv[i], "-lt") || !strcmp(argv[i], "--list-tables")) {
-      known_flag = 1;
-      action_flag = 1;
-      list_tables_flg = 1;
+      known_flag = FLAG_SET;
+      action_flag = FLAG_SET;
+      list_tables_flg = FLAG_SET;
       continue;
     }
 
     if(!strcmp(argv[i], "-dt") || !strcmp(argv[i], "--delete-table")) {
-      known_flag = 1;
-      action_flag = 1;
-      delete_table_flag = 1;
+      known_flag = FLAG_SET;
+      action_flag = FLAG_SET;
+      delete_table_flag = FLAG_SET;
       continue;
     }
 
     if(!strcmp(argv[i], "--create-table") || !strcmp(argv[i], "-ct")) {
-      known_flag = 1;
-      action_flag = 1;
-      create_table_flag = 1;
+      known_flag = FLAG_SET;
+      action_flag = FLAG_SET;
+      create_table_flag = FLAG_SET;
       continue;
     }
 
     if(!strcmp(argv[i], "-c") || !strcmp(argv[i], "--clear-db")) {
-      known_flag = 1;
-      action_flag = 1;
-      clear_db = 1;
+      known_flag = FLAG_SET;
+      action_flag = FLAG_SET;
+      clear_db = FLAG_SET;
       continue;
     }
 
     if(!strcmp(argv[i], "-i") || !strcmp(argv[i], "--import")) {
       printf("Import\n");
-      action_flag = 1;
-      known_flag = 1;
+      action_flag = FLAG_SET;
+      known_flag = FLAG_SET;
       if(argc < (i+2)) {
 	fprintf(stderr, "? To import syslog you should specify a filename after %s.\n", argv[i]);
-	retval = 10;
+	retval = RETVAL_WARN;
 	goto clean_exit;
       }
       import_fname = argv[i+1]; i++;
-      import_flag = 1;
+      import_flag = FLAG_SET;
       continue;
     }
     
     if(!strcmp(argv[i], "-a") || !strcmp(argv[i], "--analyze")) {
-      analyze_flag = 1;
-      action_flag = 1;
-      known_flag = 1;
+      analyze_flag = FLAG_SET;
+      action_flag = FLAG_SET;
+      known_flag = FLAG_SET;
     }
     
     // Sanity check for arguments we don't handle
     if(!known_flag) {
       fprintf(stderr, "Unknown option or argument %s found.\n", argv[i]);
-      retval = 10; 
+      retval = RETVAL_WARN; 
       goto clean_exit;
     }
   }
@@ -314,7 +314,7 @@ int main(int argc, char *argv[])
   // Process the actual modes to do something here
   if(!action_flag) {
     fprintf(stderr, "No action. Exit.\n");
-    retval = 10;
+    retval = RETVAL_WARN;
     goto clean_exit;
   }
 
