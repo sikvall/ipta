@@ -31,21 +31,25 @@
 #define ACTION_IMPORT 1;
 #define IPTA_LINE_PREFIX "IPT: "
 
+/* Database defaults */
 #define DEFAULT_DB_HOSTNAME "localhost"
 #define DEFAULT_DB_USERNAME "ipta"
 #define DEFAULT_DB_PASSWORD "ipta"
 #define DEFAULT_DB_NAME "ipta"
 #define DEFAULT_DB_TABLENAME "logs"
 
+/* Flags */
 #define FLAG_SET 1
 #define FLAG_CLEAR 0
 
+/* Defined return values from functions and from the application
+   itself */
 #define RETVAL_OK 0
 #define RETVAL_WARN 10
 #define RETVAL_ERROR 20
 
+/* Specific defines */
 #define HOSTNAME_MAX_LEN 256
-
 #define ANALYZE_LIMIT_MAX 1000
 
 
