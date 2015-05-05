@@ -1,0 +1,1 @@
+* Change from using own define of max host size to system NI_MAXHOST
