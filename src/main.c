@@ -276,7 +276,7 @@ int main(int argc, char *argv[])
       continue;
     }
 
-    if(!strcmp(argv[i], "-c") || !strcmp(argv[i], "--clear-db")) {
+    if(!strcmp(argv[i], "-c") || !strcmp(argv[i], "--clear")) {
       known_flag = FLAG_SET;
       action_flag = FLAG_SET;
       clear_db = FLAG_SET;
