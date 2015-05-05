@@ -43,7 +43,7 @@ int restore_db(struct ipta_db_info *db_info)
   fp = fopen("~/.ipta", "r");
   if(NULL == fp) {
     fprintf(stderr, "! Error, unable to open .ipta file. Check permission and that it exists.\n");
-    return 20;
+    return RETVAL_ERROR;
   }
 
   /* File is open, read each line and find the keywords, then insert
@@ -51,11 +51,11 @@ int restore_db(struct ipta_db_info *db_info)
   while((read = getline(&line, &len, fp)) != -1) {
     if(!strncmp("host=", line, strlen("host="))) {
       /* Do stuff here */
-      return 0;
+      return RETVAL_OK;
     }
   }
   
-  return 0;
+  return RETVAL_OK;
 }
 
 
@@ -73,20 +73,20 @@ int restore_db(struct ipta_db_info *db_info)
 int save_db(struct ipta_db_info *db_info)
 {
   FILE *fp;
-  int retval = 0;
+  int retval = RETVAL_OK;
   
   /* Open the file, or attempt to */
   fp = fopen("~/.ipta", "w");
   if(NULL == fp) {
     fprintf(stderr, "! Error, unable to open .ipta file! Check ownership and attributes.\n");
-    return 20;
+    return RETVAL_ERROR;
   }
 
   /* Enforce file persmissions and ownership as it contains passwords */
   retval = chmod("~/.ipta", 600);
   if(retval) {
     fprintf(stderr, "! Error, unable to set mode permissions, error code %d\n", retval);
-    return 20;
+    return RETVAL_ERROR;
   }
 
   /* File is open so output the data in a human readable fashion */
@@ -104,7 +104,7 @@ int save_db(struct ipta_db_info *db_info)
   
   /* Close file and return no error */
   fclose(fp);
-  return 0;
+  return RETVAL_OK;
   
 }
 
@@ -121,14 +121,14 @@ int create_table(struct ipta_db_info *db_info)
 {
   char *query_string;
   MYSQL *con;
-  int retval = 0;
+  int retval = RETVAL_OK;
 
   /* Just grab some heap */
   query_string = malloc(10000);
   if(query_string == NULL) {
     fprintf(stderr, "! ERROR: Unable to allocate memory, exiting!\n");
     /* Immediate exit */
-    exit(20);
+    exit(RETVAL_ERROR);
   }
 
   /* Memory ok, initiate the con for MySQL */
@@ -138,7 +138,7 @@ int create_table(struct ipta_db_info *db_info)
     fprintf(stderr, "! Error: %s\n", mysql_error(con));
   
     /* Set error condition and clean exit */
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto finish;
   }
   
@@ -150,7 +150,7 @@ int create_table(struct ipta_db_info *db_info)
 			NULL, 0, NULL, 0) == NULL) {
     fprintf(stderr, "! %s\n", mysql_error(con));
     /* Set error condition and clean exit */
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto finish;
   }
   
@@ -161,7 +161,7 @@ int create_table(struct ipta_db_info *db_info)
     fprintf(stderr, "! Database %s not found, or not possible to connect. \n", db_info->name);
     fprintf(stderr, "! %s\n", mysql_error(con));
     /* Set error condition and clean exit */
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto finish;
   }
 
@@ -189,7 +189,7 @@ int create_table(struct ipta_db_info *db_info)
     fprintf(stderr, "! %s\n", mysql_error(con));
 
     /* Set error condition and then clean_exit */
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto finish;
   }
 
@@ -236,7 +236,7 @@ int delete_table(struct ipta_db_info *db_info)
   if(con == NULL) {
     printf("ERROR: Unable to initialize MySQL connection.\n");
     printf("Error message: %s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -246,7 +246,7 @@ int delete_table(struct ipta_db_info *db_info)
 			db_info->pass, 
 			NULL, 0, NULL, 0) == NULL) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_WARN;
     goto clean_exit;
   }
   
@@ -257,7 +257,7 @@ int delete_table(struct ipta_db_info *db_info)
   sprintf(query_string, "USE %s;", db_info->name);
   if(mysql_query(con, query_string)) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -266,7 +266,7 @@ int delete_table(struct ipta_db_info *db_info)
   sprintf(query_string, "DROP TABLE %s", db_info->table);
   if(mysql_query(con, query_string)) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -291,7 +291,7 @@ int list_tables(struct ipta_db_info *db_info)
 {
   MYSQL *con;
   char *query_string = NULL;
-  int retval = 0;
+  int retval = RETVAL_OK;
   MYSQL_ROW row;
   MYSQL_RES *result = NULL;
   int i = 0;
@@ -304,7 +304,7 @@ int list_tables(struct ipta_db_info *db_info)
   if(con == NULL) {
     fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");
     fprintf(stderr, "Error message: %s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -314,18 +314,18 @@ int list_tables(struct ipta_db_info *db_info)
 			db_info->pass, 
 			NULL, 0, NULL, 0) == NULL) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
-  query_string = calloc(10000,1);
+  query_string = calloc(QUERY_STRING_SIZE, 1);
 
   // Select the database to use
   fprintf(stderr, "* Selecting database %s.\n", db_info->name);
   sprintf(query_string, "USE %s;", db_info->name);
   if(mysql_query(con, query_string)) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -334,7 +334,7 @@ int list_tables(struct ipta_db_info *db_info)
   sprintf(query_string, "SHOW TABLES");
   if(mysql_query(con, query_string)) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -368,8 +368,15 @@ int list_tables(struct ipta_db_info *db_info)
 int clear_database(struct ipta_db_info *db_info)
 {
   MYSQL *con;
-  char query_string[10000];
+  char *query_string = NULL;
   int retval = 0;
+
+  query_string = calloc(QUERY_STRING_SIZE, 1);
+  if(!query_string) {
+    fprintf("! Error, failed allocation of memory.\n");
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
 
   /* Connect to mysql database */
   fprintf(stderr, "* Opening database.\n");
@@ -377,7 +384,7 @@ int clear_database(struct ipta_db_info *db_info)
   if(con == NULL) {
     fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");
     fprintf(stderr, "Error message: %s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -387,7 +394,7 @@ int clear_database(struct ipta_db_info *db_info)
 			db_info->pass, 
 			NULL, 0, NULL, 0) == NULL) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -396,7 +403,7 @@ int clear_database(struct ipta_db_info *db_info)
   sprintf(query_string, "USE %s;", db_info->name);
   if(mysql_query(con, query_string)) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -405,10 +412,10 @@ int clear_database(struct ipta_db_info *db_info)
   sprintf(query_string, "DELETE FROM %s;", db_info->table);
   if(mysql_query(con, query_string)) {
     fprintf(stderr, "%s\n", mysql_error(con));
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
-  
+
  clean_exit:
   mysql_close(con);
   return retval;
