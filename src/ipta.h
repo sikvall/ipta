@@ -29,6 +29,7 @@
 
 #define ERROR_FILE_OPEN -1
 #define ACTION_IMPORT 1;
+#define IPTA_LINE_PREFIX "IPT: "
 
 #define DEFAULT_DB_HOSTNAME "localhost"
 #define DEFAULT_DB_USERNAME "ipta"
@@ -42,6 +43,8 @@
 #define RETVAL_OK 0
 #define RETVAL_WARN 10
 #define RETVAL_ERROR 20
+
+#define HOSTNAME_MAX_LEN 256
 
 #define ANALYZE_LIMIT_MAX 1000
 
