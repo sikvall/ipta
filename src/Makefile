@@ -34,7 +34,7 @@ includes = /usr/include/mysql/
 libs = /usr/local/mysql/lib/
 link = mysqlclient
 
-cflags = -O3
+cflags = -O3 -Wall
 
 # Actual targets here, main first, then all supporting objects please.
 

@@ -19,17 +19,20 @@
  * however allowed to add below your own changes and redistribute, as
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
-
+#define _GNU_SOURCE
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <errno.h>
+#include <unistd.h>
 #include "ipta.h"
 
-/* The follow function will follow the file given as argument and
-   interprete it and print each logged packet line by line without
-   storing anything in the database. It's just a realtime look at what
-   is logged in a nicely formatted way. */
+/***********************************************************************
+ * The follow function will follow the file given as argument and
+ * interprete it and print each logged packet line by line without
+ * storing anything in the database. It's just a realtime look at what
+ * is logged in a nicely formatted way.
+ **********************************************************************/
 
 int follow(char *filename, struct ipta_flags *flags) {
   FILE *logfile;
@@ -118,7 +121,7 @@ int follow(char *filename, struct ipta_flags *flags) {
 	   just ignored silently. Anything that is changed or added here
 	   needs to reflect the database */
 	
-	while (token = strtok(NULL, " ")) {
+	while ((token = strtok(NULL, " "))) {
 	  if(!strncmp("ACTION=", token, 7)) {
 	    log_action = token + strlen("ACTION=");
 	    continue;

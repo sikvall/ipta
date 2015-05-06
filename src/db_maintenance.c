@@ -37,7 +37,6 @@ int restore_db(struct ipta_db_info *db_info)
   char *line;
   size_t len = 0;
   ssize_t read;
-  char *token;
 
   fprintf(stderr, "* Warning, restore_db() is a stub function\n");
 
@@ -225,12 +224,7 @@ int delete_table(struct ipta_db_info *db_info)
 {
   MYSQL *con;
   char *query_string = NULL;
-  int retval = 0;
-  MYSQL_ROW row;
-  MYSQL_RES *result = NULL;
-  int i = 0;
-  int num_fields = 0;
-  int row_counter = 0;
+  int retval = RETVAL_OK;
 
   /* Connect to mysql database */
   fprintf(stderr, "* Opening database.\n");
@@ -288,7 +282,7 @@ int delete_table(struct ipta_db_info *db_info)
  * also show the number of records in each database so it is possible
  * to detect any databases that are currently not in use.
  *********************************************************************/
-int list_tables(struct ipta_db_info *db_info) 
+int list_tables(struct ipta_db_info *db_info)
 {
   MYSQL *con;
   char *query_string = NULL;
@@ -353,7 +347,9 @@ int list_tables(struct ipta_db_info *db_info)
  clean_exit:
   mysql_free_result(result);
   free(query_string);
-  mysql_close(con);
+  if(NULL != con)
+    mysql_close(con);
+
   return retval;
 }
 
@@ -418,6 +414,8 @@ int clear_database(struct ipta_db_info *db_info)
   }
 
  clean_exit:
-  mysql_close(con);
+  if(NULL != con)
+    mysql_close(con);
+
   return retval;
 }

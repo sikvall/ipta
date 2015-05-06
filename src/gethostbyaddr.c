@@ -24,6 +24,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +32,7 @@
 #include <string.h>
 #include "ipta.h"
 
-/* 
+/***********************************************************************
  * Get host by address
  * 
  * ip_address      char *      The string containing the IP adrress in dotted format
@@ -42,7 +43,7 @@
  * maxlen          int         Maximum length of hostname, it is truncated from the
  *                             beginning so that important hostnames, networks and
  *                             tld is preserved.
- */
+ ***********************************************************************/
 
 int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
   struct sockaddr_in ip4addr;
@@ -77,7 +78,7 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
 			insert * to indicate that */
     }
     sprintf(hostname, "%s", host);
-    return RETVAL_OK;
+    return retval;
   }  
   else {
       

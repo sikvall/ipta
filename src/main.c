@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
   int clear_db = 0;
   int analyze_limit = 10;
   int known_flag, action_flag = 0;
-  char input_db_pass[512];
-  char hostname[256];
+  //char input_db_pass[512];
+  //  char hostname[256];
   char password_input[1024];
   FILE *config_file = NULL;
   int print_usage_flag = 0;
@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
   int analyze_flag = 0;
   int list_tables_flg = 0;
   int print_license_flag = 0;
-  
+  //  int slask = 0;
+
   flags = calloc(sizeof(struct ipta_flags), 1);
   if(NULL == flags) {
     fprintf(stderr, "! Error, memory allocation failed.\n");
@@ -207,7 +208,10 @@ int main(int argc, char *argv[])
     if(!strcmp(argv[i], "--db-pass-i") || !strcmp(argv[i], "-pi")) {
       known_flag = FLAG_SET;
       printf("? Enter your password: ");
-      (void)scanf("%s", password_input);
+      if(1 != scanf("%s", password_input)) {
+	fprintf(stderr, "! Error, password not properly given.\n");
+	return RETVAL_ERROR;
+      }
       strncpy(db_info->pass, password_input, IPTA_DB_INFO_STRLEN);
       continue;
     }
@@ -343,6 +347,10 @@ int main(int argc, char *argv[])
       goto clean_exit;
     // If retval is FALSE then there is no problem and we can
     // continue to process other things.
+  }
+
+  if(delete_table_flag) {
+    fprintf(stderr, "! Delete table is a stub and not yet implemented.\n");
   }
 
   if(create_table_flag) {

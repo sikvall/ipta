@@ -22,12 +22,13 @@
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
 #include <my_global.h>
 #include <mysql.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 #include "ipta.h"
 
 int import_syslog(struct ipta_db_info *db_info, char *filename)
@@ -41,35 +42,36 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
   char *hour_string = NULL;
   char *minute_string = NULL;
   char *second_string= NULL;
-  int year, month, day, hour, minute, second;
+  int month, day, hour, minute,second = 0;
   char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", 
 		     "Aug", "Sep", "Oct", "Nov", "Dec" };
-  char **saveptr = NULL;
+  //  char **saveptr = NULL;
   int i;
   char *dummyptr = NULL;
   int lines = 0;
   int row_counter = 0;
   time_t starttime = 0;
-  int worktime = 0;
-  char *host, *module = NULL;
-  char *host_time = NULL;
+  //  int worktime = 0;
+  //  char *host = NULL;
+  char *module = NULL;
+  //  char *host_time = NULL;
   char prefix[]="IPT: ";
   char *token = NULL;
   char *log_action = NULL;
-  char *log_prefix = NULL;
+  //  char *log_prefix = NULL;
   char *log_ifin = NULL;
   char *log_ifout = NULL;
   char *log_mac = NULL;
   char *log_src = NULL;
   char *log_dst = NULL;
-  char *log_len = NULL;
+  //  char *log_len = NULL;
   char *log_proto = NULL;
   char *log_src_port = NULL;
   char *log_dst_port = NULL;
   char nullstring[] = "";
   MYSQL *con = NULL;
   char *query_string = NULL;
-  int ptime = 0;
+  //  int ptime = 0;
   int retval = 0;
 
   starttime = time(NULL);
@@ -172,7 +174,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 	 just ignored silently. Anything that is changed or added here
 	 needs to reflect the database */
 
-      while (token = strtok(NULL, " ")) {
+      while ((token = strtok(NULL, " "))) {
 	if(!strncmp("ACTION=", token, 7)) {
 	  log_action = token + strlen("ACTION=");
 	  continue;
@@ -270,7 +272,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
     goto clean_exit;
   }
 
-  worktime = time(NULL) - starttime;
+  //  worktime = time(NULL) - starttime;
   
   fprintf(stderr, "* Processed %d lines in %d seconds\n", 
 	  lines, (int)time(NULL)-(int)starttime);

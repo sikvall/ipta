@@ -47,13 +47,18 @@ int create_config(void) {
   strncpy(config->db_name,  DEFAULT_DB_NAME,      IPTA_DB_INFO_STRLEN);
   strncpy(config->db_table, DEFAULT_DB_TABLENAME, IPTA_DB_INFO_STRLEN);
 
-
+  fprintf(stderr, "! This is a stub function create_config().\n");
+  return RETVAL_ERROR;
     
 }
 
 int read_config(struct ipta_config *config) {
+  fprintf(stderr, "! The read_config() function is a stub!\n");
+  return RETVAL_ERROR;
 }
 
 int update_config(struct ipta_config *config) {
+  fprintf(stderr, "! The update_confi() function is a stub.\n");
+  return RETVAL_ERROR;
 }
 
