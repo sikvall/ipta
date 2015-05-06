@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
     if(!strcmp(argv[i], "--db-pass-i") || !strcmp(argv[i], "-pi")) {
       known_flag = FLAG_SET;
       printf("? Enter your password: ");
-      scanf("%s", password_input);
+      (void)scanf("%s", password_input);
       strncpy(db_info->pass, password_input, IPTA_DB_INFO_STRLEN);
       continue;
     }
