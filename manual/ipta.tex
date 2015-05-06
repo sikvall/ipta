@@ -1,14 +1,8 @@
 % !TeX encoding = UTF-8
-
-
-\documentclass[english,twoside,openright,a4paper,12pt]{report}
+\documentclass[english,twoside,openright,a4paper,12pt]{article}
 \usepackage{a4}
 \usepackage[ansinew]{inputenc}
 \usepackage[english]{babel}
-%\usepackage{draftwatermark} 
-%	\SetWatermarkScale{4} 
-%	\SetWatermarkLightness{0.85}
-%	\SetWatermarkText{REVIEW COPY}
 \usepackage{graphics}
 \usepackage{dcolumn}
 \usepackage{fancyhdr}
@@ -16,18 +10,16 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage[hidelinks]{hyperref}
-%\usepackage[]{glossaries}
-%\makeglossaries
 \usepackage{float} 
-	\restylefloat{table}
-	\restylefloat{figure}
+\restylefloat{table}
+\restylefloat{figure}
 \usepackage{color}
 \usepackage{textcomp}
 \usepackage{emptypage}
 \usepackage[table]{xcolor}
 \usepackage{index}
-\makeindex
-\makeglossary
+%\makeindex
+%\makeglossary
 \newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
 \nonfrenchspacing
 \renewcommand{\baselinestretch}{1.0}
@@ -50,7 +42,7 @@
 \begin{titlepage}
 	\thispagestyle{empty}
 	\begin{center}
-%		\includegraphics[width= 8cm]{Deltanode-Logotype}
+          % Logotype goes here
 	\end{center}
 	\vspace*{\stretch{1}}
 	\begin{center}
@@ -81,127 +73,222 @@
 \end{center}
 
 \cleardoublepage
+
 \tableofcontents
 
+% Turn on more technical formatting, this aint some kind of novella
+% you know
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1em}
 
-
 \lhead{\nouppercase{\leftmark}}
 \rhead{\nouppercase{\rightmark}}
-%\rhead{\includegraphics[width=3cm]{Deltanode-Logotype}}
 
 \pagestyle{fancy}
 
-\chapter*{License}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section*{License}
 \label{license}
 
 Copyright (c) 2014, Anders "Ichimusai" Sikvall\\
 Latest revision 2014-10-05
  
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
 
 \begin{itemize}
-\item[1.] The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. It is not allowed to modify this license in any way. 
-
-\item[2a.] The original header must accompany all software files and are not 
-   removed in redistribution. It is allowed to add to the headers to 
-   describe modifications of the software and who has made these 
-   modifications. I claim no right to your modifications, they stand 
-   on their own merits. 
+\item[1.] The above copyright notice and this permission notice shall
+  be included in all copies or substantial portions of the Software.
+  It is not allowed to modify this license in any way.
+  
+\item[2a.] The original header must accompany all software files and
+  are not removed in redistribution. It is allowed to add to the
+  headers to describe modifications of the software and who has made
+  these modifications. I claim no right to your modifications, they
+  stand on their own merits.
  
-\item[2b.] The license shown when the software is invoked with the "--license" 
-   option is not removed or modified but must remain the same. You may 
-   add your name to the bottom of the credit part if you have 
-   contributed or modified the software. 
+\item[2b.] The license shown when the software is invoked with the
+  "--license" option is not removed or modified but must remain the
+  same. You may add your name to the bottom of the credit part if you
+  have contributed or modified the software.
  
-\item[3.] You are allowed to add to the header files and the license 
-   information described in (2b) with changes and your own name, but 
-   only as an addition at the bottom of the file. 
+\item[3.] You are allowed to add to the header files and the license
+  information described in (2b) with changes and your own name, but
+  only as an addition at the bottom of the file.
  
-\item[4.] Distributing the software must be done in a way so that the 
-   software archive is intact and no necessary files (except external 
-   libraries such as MySQL) is always included. The software should be 
-   compilable after a reasonable set-up of the tool chain and 
-   compiler. 
+\item[4.] Distributing the software must be done in a way so that the
+  software archive is intact and no necessary files (except external
+  libraries such as MySQL) is always included. The software should be
+  compilable after a reasonable set-up of the tool chain and compiler.
  
-\item[5.] If you are making modifications to this software i humbly suggest 
-   you send a copy of your modifications to me on ichi@ichimusai.org 
-   and I may include your modifications (if you allow it) as well as 
-   give credit to you (if you want) in the next release of the 
-   software. This is only a suggestion to keep the code base in a 
-   single location but it is in no way a restriction to your right to 
-   modify and redistribute this software. 
+\item[5.] If you are making modifications to this software i humbly
+  suggest you send a copy of your modifications to me on
+  ichi@ichimusai.org and I may include your modifications (if you
+  allow it) as well as give credit to you (if you want) in the next
+  release of the software. This is only a suggestion to keep the code
+  base in a single location but it is in no way a restriction to your
+  right to modify and redistribute this software.
 \end{itemize}
 
 
-\chapter{Acknowledgements \& History}
-...
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Introduction}
 
-\chapter{Introduction}
-
-I have searched the Internets for a while to find a good logging and reporting tool for IP tables but most tools were either too complex or not good enough. I am a firm believer in that security comes from being clear, simple and transparent and complexity is a very dangerous path. Therefore I decided to write my own version of a logging tool that can be used for anyone deploying a Linux server with IP Tables to get some kind of statistics for what is going on with their machine. 
+I have searched the Internets for a while to find a good logging and
+reporting tool for IP tables but most tools were either too complex or
+not good enough. I am a firm believer in that security comes from
+being clear, simple and transparent and complexity is a very dangerous
+path. Therefore I decided to write my own version of a logging tool
+that can be used for anyone deploying a Linux server with IP Tables to
+get some kind of statistics for what is going on with their machine.
  
-Now, this project is still in its initial phase, call it Alpha software if you like, so there may be lots of bugs and problems, missing functionality and other things. Some parts of this manual describes aims and goals rather than actually implemented features. I hope I will have marked those sections clearly enough. 
+Now, this project is still in its initial phase, call it Alpha
+software if you like, so there may be lots of bugs and problems,
+missing functionality and other things. Some parts of this manual
+describes aims and goals rather than actually implemented features. I
+hope I will have marked those sections clearly enough.
 
-If you would like to contribute to the software by debugging, writing code or otherwise maintain, improve upon or develop new features and so on, please let me know. You can always reach me by email to 
+If you would like to contribute to the software by debugging, writing
+code or otherwise maintain, improve upon or develop new features and
+so on, please let me know. You can always reach me by email to
 $<$anders@sikvall.se$>$.
 
-The project is hosted on GitHub.com for the moment so it is rather easy to get started and contribute to it.
+The project is hosted on GitHub.com for the moment so it is rather
+easy to get started and contribute to it.
 
+\subsection{Project aims}
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+The aims of the project is to create a tool to be able to analyze logs
+from the Linux kernel iptables logger and create reports on various
+issues, which types of packets are most commonly rejected, suspicious
+IP addresses in the world and many other things. It is a rather
+ambitious goal and my time is limited but I hope to spend some time on
+this and perhaps get a couple of other people involved in this.
+ 
+We should rely as little as possible on external software. Not use
+obscure libraries that we are not able to distribute together with the
+source or the software and so on. Some things are unavoidable such as
+dependence on mySQL in this project wherefore those libraries needs to
+be installed but that should be easy to do.
+ 
+Minimal configuration should be required to get up and running. A
+quick read through the manual and anyone really that knows their way
+around a terminal in Linux should be able to use this.
 
+We do rely on a few outside components, mainly iptables itself and we
+will use MySQL as the database to collect the data into for easier
+processing. This requires the user to install MySQL if it is not
+already installed in the system, and set up usernames and a database
+for ipta to be using.
 
+\subsection{Bug reports}
 
+This is just an early pre-release really and there is a lot of things
+that are not included yet. You may find a few that are just stubs or
+that are not working properly.
 
+Please report any other bugs you find on the issue tracker
+at\\ https://github.com/sikvall/ipta it is much appreciated if you
+would take the time and describe how to re-create the bug.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Installation}
+\section{Installation}
 
-\section{Installing mysql server and client}
+This chapter describes the installation of the source package, the
+tools necessary to build it, compiling and installation of the
+software on the target machine.
 
-The system relies on mysql server and client software installed on the local machine or another machine. Consult your system documentation on how to install the necessary tools.
+\subsection{Installing mysql server and client}
+
+The system relies on mysql server and client software installed on the
+local machine or another machine. Consult your system documentation on
+how to install the necessary tools.
 
 \begin{verbatim}
 # apt-get install mysql-server
 \end{verbatim}
 
-\section{Installing the necessary tools}
+\subsection{Installing the necessary tools}
 
-The ipta software is delivered as a software package and needs to be built for the platform you want to run it on. However the result is a single executable file which can easily be packaged and deployed in any software distribution you see fit. 
+The ipta software is delivered as a software package and needs to be
+built for the platform you want to run it on. However the result is a
+single executable file which can easily be packaged and deployed in
+any software distribution you see fit.
 
-The license in chapter \ref{license} grants you the right to deploy the software in any situation you seem fit, you are also free to modify the software and I only ask that if you make substantial improvements or bug fixes that you send them to me for consideration into the main software stream so others may benefit from this.
+The license in chapter \ref{license} grants you the right to deploy
+the software in any situation you seem fit, you are also free to
+modify the software and I only ask that if you make substantial
+improvements or bug fixes that you send them to me for consideration
+into the main software stream so others may benefit from this.
 
-We need to install the GNU Compiler suite (GCC) and the C development libs for mysql as well as the version control system git. This is done like this in Ubuntu:
+We need to install the GNU Compiler suite (GCC) and the C development
+libs for mysql as well as the version control system git. This is done
+like this in Ubuntu:
 
 \begin{verbatim}
-# apt-get install gcc
-# apt-get install libmysqlclient-dev
-# apt-get install git
+$ sudo apt-get install gcc libmysqlclient-dev git
 \end{verbatim}
 
-\section{Download the source}
+\subsection{Download the source}
 
-Get the latest software package from the github repository, currently hosted at GitHub.com by issuing the following command.
+Get the latest software package from the github repository, currently
+hosted at GitHub.com by issuing the following command.
 
 \begin{verbatim}
 $ git clone https://github.com/sikvall/ipta
 \end{verbatim}
 
-\section{Building the source and installing}
+This will give you a directory called "ipta" in the current working 
+directory which will bet git initialized and ready for you to work 
+with or just compile.
 
-You can now compile the software on you local machine by doing the following:
+\subsection{Building the source and installing}
+
+You can now compile the software on you local machine by doing the
+following:
 
 \begin{verbatim}
-$ cd src
-$ make all
+$ cd src 
+$ make all 
 $ make install
 \end{verbatim}
 
-You should by now if no errors have been shown have a local binary of "ipta" that you can start testing with. The last command will install the ipta binary under /usr/bin in your system with owner root and proper permissions.
+You should by now if no errors have been shown have a local binary of
+"ipta" that you can start testing with. The last command will install
+the ipta binary under /usr/bin in your system with owner root and
+proper permissions.
 
+The make install command will ask for your sudo password in order to 
+install the binary to /usr/bin. If you do not want that you can run 
+ipta straight from the src directory by just typing the following:
 
+\begin{verbatim}
+$ ./ipta <options> [arguments]
+\end{verbatim}
 
+\subsection{Updating to the latest version}
+
+You can always update to the latest version by pulling the changes 
+from the github repository at any time. This is done from the command 
+line by changing to the ipta directory and issuing the following 
+command:
+
+\begin{verbatim}
+$ git pull
+\end{verbatim}
+
+This will pull the latest changes. When done you can always compile 
+and install an updated version of the binary as described earlier. 
+You will also receive the updated manual and any other accompanying 
+file.
 
 \end{document}
