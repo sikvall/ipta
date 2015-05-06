@@ -56,7 +56,7 @@
 /* Specific defines */
 #define HOSTNAME_MAX_LEN 256
 #define ANALYZE_LIMIT_MAX 1000
-
+#define CONFIG_FILE_PATH "~/.ipta/config"
 
 struct ipta_flags {
   int no_lo;
@@ -72,6 +72,16 @@ struct ipta_db_info {
   char name[IPTA_DB_INFO_STRLEN];
   char table[IPTA_DB_INFO_STRLEN];
 };
+
+struct ipta_config {
+  char db_host[IPTA_DB_INFO_STRLEN];
+  char db_user[IPTA_DB_INFO_STRLEN];
+  char db_pass[IPTA_DB_INFO_STRLEN];
+  char db_name[IPTA_DB_INFO_STRLEN];
+  char db_table[IPTA_DB_INFO_STRLEN];
+  struct ipta_flags *flags;
+};
+
 
 /* Function declarations */
 

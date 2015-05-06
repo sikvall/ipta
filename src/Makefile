@@ -26,7 +26,8 @@
 # Variables here
 
 objects = main.o import-syslog.o analyze.o gethostbyaddr.o	\
-	  print_licence.o db_maintenance.o follow.o
+	  print_licence.o db_maintenance.o follow.o config.o 
+#dns_cache.o
 target = ipta
 headers = ipta.h
 includes = /usr/include/mysql/
@@ -38,9 +39,6 @@ cflags = -O3
 # Actual targets here, main first, then all supporting objects please.
 
 all: ipta
-
-dns_cache: dns_cache.o
-	gcc ${cflags} dns_cache.o -o dns_cache -l ${link}
 
 ipta: ${objects}
 	gcc ${cflags} ${objects} -o ${target} -l ${link}
@@ -69,6 +67,8 @@ db_maintenance.o: db_maintenance.c ipta.h
 follow.o: follow.c ipta.h
 	gcc ${cflags} -c follow.c -L ${libs} -I ${includes}
 
+config.o: config.c ipta.h
+	gcc ${cflags} -c config.c -L ${libs} -I ${includes}
 
 
 # Special targets here
