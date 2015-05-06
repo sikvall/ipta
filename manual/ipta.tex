@@ -1,4 +1,7 @@
-\documentclass[10pt,a4paper]{report}
+% !TeX encoding = UTF-8
+
+
+\documentclass[12pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -60,28 +63,37 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 \chapter*{Acknowledgements \& History}
 
+
+
 \chapter{Introduction}
 
 I have searched the Internets for a while to find a good logging and reporting tool for IP tables but most tools were either too complex or not good enough. I am a firm believer in that security comes from being clear, simple and transparent and complexity is a very dangerous path. Therefore I decided to write my own version of a logging tool that can be used for anyone deploying a Linux server with IP Tables to get some kind of statistics for what is going on with their machine. 
  
 Now, this project is still in its initial phase, call it Alpha software if you like, so there may be lots of bugs and problems, missing functionality and other things. Some parts of this manual describes aims and goals rather than actually implemented features. I hope I will have marked those sections clearly enough. 
 
-If you would like to contribute to the software by debugging, writing code or otherwise maintain, improve upon or develop new features and so on, please let me know. You can always reach me by email to $<$anders@sikvall.se$>$.
+If you would like to contribute to the software by debugging, writing code or otherwise maintain, improve upon or develop new features and so on, please let me know. You can always reach me by email to 
+$<$anders@sikvall.se$>$.
 
 The project is hosted on GitHub.com for the moment so it is rather easy to get started and contribute to it.
-
-
-
-
-
-
-
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
-\chapter{Building the software}
+
+
+
+\chapter{Installation}
+
+\section{Installing mysql server and client}
+
+The system relies on mysql server and client software installed on the local machine or another machine. Consult your system documentation on how to install the necessary tools.
+
+\begin{verbatim}
+# apt-get install mysql-server
+\end{verbatim}
+
+\section{Installing the necessary tools}
 
 The ipta software is delivered as a software package and needs to be built for the platform you want to run it on. However the result is a single executable file which can easily be packaged and deployed in any software distribution you see fit. 
 
@@ -89,24 +101,33 @@ The license in chapter \ref{license} grants you the right to deploy the software
 
 We need to install the GNU Compiler suite (GCC) and the C development libs for mysql as well as the version control system git. This is done like this in Ubuntu:
 
-\small
 \begin{verbatim}
 # apt-get install gcc
 # apt-get install libmysqlclient-dev
 # apt-get install git
 \end{verbatim}
-\normalsize
 
-Get the latest software package from the github repository:
+\section{Download the source}
 
-\small
+Get the latest software package from the github repository, currently hosted at GitHub.com by issuing the following command.
+
 \begin{verbatim}
 $ git clone https://github.com/sikvall/ipta
 \end{verbatim}
-\normalsize
 
-When you have got a local repository you need to 
+\section{Building the source and installing}
 
-\chapter{Installation}
+You can now compile the software on you local machine by doing the following:
+
+\begin{verbatim}
+$ cd src
+$ make all
+$ make install
+\end{verbatim}
+
+You should by now if no errors have been shown have a local binary of "ipta" that you can start testing with. The last command will install the ipta binary under /usr/bin in your system with owner root and proper permissions.
+
+
+
 
 \end{document}
