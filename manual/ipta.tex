@@ -1,29 +1,103 @@
 % !TeX encoding = UTF-8
 
 
-\documentclass[12pt,a4paper]{report}
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{makeidx}
+\documentclass[english,twoside,openright,a4paper,12pt]{report}
+\usepackage{a4}
+\usepackage[ansinew]{inputenc}
+\usepackage[english]{babel}
+%\usepackage{draftwatermark} 
+%	\SetWatermarkScale{4} 
+%	\SetWatermarkLightness{0.85}
+%	\SetWatermarkText{REVIEW COPY}
+\usepackage{graphics}
+\usepackage{dcolumn}
+\usepackage{fancyhdr}
+\usepackage{amsmath}	
 \usepackage{graphicx}
+\usepackage{color}
+\usepackage[hidelinks]{hyperref}
+%\usepackage[]{glossaries}
+%\makeglossaries
+\usepackage{float} 
+	\restylefloat{table}
+	\restylefloat{figure}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{emptypage}
+\usepackage[table]{xcolor}
+\usepackage{index}
+\makeindex
+\makeglossary
+\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+\nonfrenchspacing
+\renewcommand{\baselinestretch}{1.0}
+\clubpenalty=9999    % Not higher!
+\widowpenalty=9999   % Not higher!
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\newcommand{\titlerule}{\rule{\linewidth}{1pt}}
+\renewcommand{\headrulewidth}{1.2pt}
+\renewcommand{\footrulewidth}{1.2pt}
+\newcommand{\ai}[1]{#1\index{#1}}
+
 \author{Anders Sikvall}
-\title{ipta - IP Tables Log Analyzer}
+\title{
+	\Huge ipta\\[2em]
+	IP Tables Log Analyzer}
+
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+	\thispagestyle{empty}
+	\begin{center}
+%		\includegraphics[width= 8cm]{Deltanode-Logotype}
+	\end{center}
+	\vspace*{\stretch{1}}
+	\begin{center}
+		\titlerule\\[3mm]
+		\Huge \textsc{ipta\\\Large iptables Log Analyzer}\\[5mm]
+		\large \emph{Anders Sikvall}\\
+		\begin{center}
+			\normalsize ichimusai.org\\
+
+		\end{center}
+		\titlerule\\
+	\end{center}
+	%    \scriptsize \today
+	\vspace*{\stretch{2}}
+	%    \begin{center}
+	%         \normalsize\textcopyright Copyright DeltaNode 2015
+	%    \end{center}
+\end{titlepage}
+
+\null\vfill\thispagestyle{empty}
+\noindent
+
+\begin{center}
+	Version 0.1\\[5mm] \textcopyright\ Copyright 2015 Anders Sikvall, 
+	ichimusai.org\\
+	Printed in Sweden
+	\newpage
+\end{center}
 
 \cleardoublepage
-
 \tableofcontents
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+
+\lhead{\nouppercase{\leftmark}}
+\rhead{\nouppercase{\rightmark}}
+%\rhead{\includegraphics[width=3cm]{Deltanode-Logotype}}
+
+\pagestyle{fancy}
 
 \chapter*{License}
 \label{license}
 
-Copyright (c) 2014, Anders "Ichimusai" Sikvall 
-
-Latest revision 2014-10-05 
+Copyright (c) 2014, Anders "Ichimusai" Sikvall\\
+Latest revision 2014-10-05
  
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  
 
@@ -61,8 +135,8 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 \end{itemize}
 
 
-\chapter*{Acknowledgements \& History}
-
+\chapter{Acknowledgements \& History}
+...
 
 
 \chapter{Introduction}
