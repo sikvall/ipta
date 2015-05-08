@@ -30,7 +30,13 @@
 
 
 
-
+/**********************************************************************
+ * Create configuration file with default values
+ *
+ * Parameters: none
+ *
+ * Returns: RETVAL_OK on success and RETVAL_ERROR on error
+ **********************************************************************/
 int create_config(void) {
   struct ipta_config *config;
 
