@@ -38,3 +38,45 @@ that ipta is not currently looking at and then we get the protocol
 type in PROTO= we get the source port number in SPT= and destination
 port number in DST=, these ipta will look at.
 
+===================
+USING THE TEST FILE
+===================
+
+After setting the system up and having created the default table to
+use you should be able to import this file. Issue the following
+command:
+
+$ ipta -c -i iptables-syslog-example.log
+* Importing from syslog
+* Opening database.
+* Selecting database ipta.
+* Deleting old data from database table logs.
+* Database cleared.
+* Opening log file 'iptables-syslog-example.log'.
+* Reading log file and inserting in database.
+* Processed 200 lines in 0 seconds
+
+* Done processing file. 200 records inserted in database.
+* Done importing.ines in 0 seconds, 12046 bytes in query  
+
+This means all is well. You can now run the ipta in analyzer mode:
+
+$ ipta -a
+
+This should give you some interesting statistics.
+
+Showing denied traffic grouped by IP, destination port, action taken and protocol.
+ Count Source IP                 SPort Dest IP                   DPort Proto  Action
+------ ------------------------- ----- ------------------------- ----- ------ ----------
+     7 142.255.211.121           61630 188.126.93.160               80 TCP    INVALID   
+     6 213.136.38.8              57049 188.126.93.160               80 TCP    INVALID   
+     4 46.45.161.187             55844 188.126.93.160              445 TCP    CBLK      
+     4 194.63.142.101            55078 188.126.93.160              110 TCP    CBLK      
+     3 60.223.238.19              7175 188.126.93.160               25 TCP    DROP      
+     3 14.18.243.156             27280 188.126.93.160               25 TCP    DROP      
+     3 60.223.231.147            12060 188.126.93.160               25 TCP    DROP      
+     2 221.222.109.50            41628 188.126.93.160               23 TCP    DROP      
+     2 92.253.83.177              4056 188.126.93.160               23 TCP    DROP      
+     1 173.242.117.161            5090 188.126.93.160             5087 UDP    DROP      
+     1 183.206.179.11            28998 188.126.93.160              137 UDP    DROP      
+     1 173.242.117.161            5090 188.126.93.160             5088 UDP    DROP      
