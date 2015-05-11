@@ -1,0 +1,46 @@
+
+Showing denied traffic grouped by IP, destination port, action taken and protocol.
+ Count Source IP                 SPort Dest IP                   DPort Proto  Action
+------ ------------------------- ----- ------------------------- ----- ------ ----------
+     7 142.255.211.121           61630 188.126.93.160               80 TCP    INVALID   
+     6 213.136.38.8              57049 188.126.93.160               80 TCP    INVALID   
+     4 46.45.161.187             55844 188.126.93.160              445 TCP    CBLK      
+     4 194.63.142.101            55078 188.126.93.160              110 TCP    CBLK      
+     3 60.223.238.19              7175 188.126.93.160               25 TCP    DROP      
+     3 14.18.243.156             27280 188.126.93.160               25 TCP    DROP      
+     3 60.223.231.147            12060 188.126.93.160               25 TCP    DROP      
+     2 221.222.109.50            41628 188.126.93.160               23 TCP    DROP      
+     2 92.253.83.177              4056 188.126.93.160               23 TCP    DROP      
+     1 173.242.117.161            5090 188.126.93.160             5087 UDP    DROP      
+     1 183.206.179.11            28998 188.126.93.160              137 UDP    DROP      
+     1 173.242.117.161            5090 188.126.93.160             5088 UDP    DROP      
+
+Showing ICMP traffic statistics
+ Count Source IP                 Dest IP                   Action    
+------ ------------------------- ------------------------- ----------
+
+Most denied ports
+ Count   DPort   Proto    Action       
+------   -----   ------   ----------   
+    13       80   TCP      INVALID   
+     9       25   TCP      DROP      
+     4      445   TCP      CBLK      
+     4      110   TCP      CBLK      
+     4       23   TCP      DROP      
+     1     5087   UDP      DROP      
+     1     5088   UDP      DROP      
+     1      137   UDP      DROP      
+
+Most invalid packets comes from
+ Count   Source IP                   SPort   Dest IP                     DPort   Proto    
+------   -------------------------   -----   -------------------------   -----   ------   
+     7   142.255.211.121             61630   188.126.93.160                 80   TCP      
+     6   213.136.38.8                57049   188.126.93.160                 80   TCP      
+
+Interface statistics
+ Count   IF In        Action       Proto
+------   ----------   ----------   -----
+    13   eth0         DROP         TCP      
+    13   eth0         INVALID      TCP      
+     8   eth0         CBLK         TCP      
+     3   eth0         DROP         UDP      

@@ -26,48 +26,49 @@
 # Variables here
 
 objects = main.o import-syslog.o analyze.o gethostbyaddr.o	\
-print_licence.o db_maintenance.o follow.o
+	  print_licence.o db_maintenance.o follow.o config.o 
+#dns_cache.o
 target = ipta
 headers = ipta.h
 includes = /usr/include/mysql/
 libs = /usr/local/mysql/lib/
 link = mysqlclient
 
+cflags = -O3 -Wall
 
 # Actual targets here, main first, then all supporting objects please.
 
 all: ipta
 
-dns_cache: dns_cache.o
-	gcc dns_cache.o -o dns_cache -l ${link}
-
 ipta: ${objects}
-	gcc ${objects} -o ${target} -l ${link}
+	gcc ${cflags} ${objects} -o ${target} -l ${link}
 
 main.o: main.c ipta.h
-	gcc -c main.c -I ${includes}
+	gcc ${cflags} -c main.c -I ${includes}
 
 dns_cache.o: dns_cache.c ipta.h
-	gcc -c dns_cache.c -I ${includes}
+	gcc ${cflags} -c dns_cache.c -I ${includes}
 
 import-syslog.o: import-syslog.c ipta.h
-	gcc -c import-syslog.c -L ${libs} -I ${includes}	
+	gcc ${cflags} -c import-syslog.c -L ${libs} -I ${includes}	
 
 analyze.o: analyze.c ipta.h
-	gcc -c analyze.c -L ${libs} -I ${includes}
+	gcc ${cflags} -c analyze.c -L ${libs} -I ${includes}
 
 gethostbyaddr.o: ipta.h gethostbyaddr.c
-	gcc -c gethostbyaddr.c -L ${libs} -I ${includes}
+	gcc ${cflags} -c gethostbyaddr.c -L ${libs} -I ${includes}
 
 print_licence.o: print_licence.c
-	gcc -c print_licence.c  -L ${libs} -I ${includes}
+	gcc ${cflags} -c print_licence.c  -L ${libs} -I ${includes}
 
 db_maintenance.o: db_maintenance.c ipta.h
-	gcc -c db_maintenance.c -L ${libs} -I ${includes}
+	gcc ${cflags} -c db_maintenance.c -L ${libs} -I ${includes}
 
 follow.o: follow.c ipta.h
-	gcc -c follow.c -L ${libs} -I ${includes}
+	gcc ${cflags} -c follow.c -L ${libs} -I ${includes}
 
+config.o: config.c ipta.h
+	gcc ${cflags} -c config.c -L ${libs} -I ${includes}
 
 
 # Special targets here
@@ -85,7 +86,7 @@ checkin:
 
 install:
 	make strip
-	sudo install -m 755 ipta /usr/bin/
+	sudo install ipta -m 755 -o root -g root /usr/bin/
 
 distclean:
 	make clean

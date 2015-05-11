@@ -22,12 +22,13 @@
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
 #include <my_global.h>
 #include <mysql.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
 #include "ipta.h"
 
 int import_syslog(struct ipta_db_info *db_info, char *filename)
@@ -41,35 +42,36 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
   char *hour_string = NULL;
   char *minute_string = NULL;
   char *second_string= NULL;
-  int year, month, day, hour, minute, second;
+  int month, day, hour, minute,second = 0;
   char *months[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", 
 		     "Aug", "Sep", "Oct", "Nov", "Dec" };
-  char **saveptr = NULL;
+  //  char **saveptr = NULL;
   int i;
   char *dummyptr = NULL;
   int lines = 0;
   int row_counter = 0;
   time_t starttime = 0;
-  int worktime = 0;
-  char *host, *module = NULL;
-  char *host_time = NULL;
+  //  int worktime = 0;
+  //  char *host = NULL;
+  char *module = NULL;
+  //  char *host_time = NULL;
   char prefix[]="IPT: ";
   char *token = NULL;
   char *log_action = NULL;
-  char *log_prefix = NULL;
+  //  char *log_prefix = NULL;
   char *log_ifin = NULL;
   char *log_ifout = NULL;
   char *log_mac = NULL;
   char *log_src = NULL;
   char *log_dst = NULL;
-  char *log_len = NULL;
+  //  char *log_len = NULL;
   char *log_proto = NULL;
   char *log_src_port = NULL;
   char *log_dst_port = NULL;
   char nullstring[] = "";
   MYSQL *con = NULL;
   char *query_string = NULL;
-  int ptime = 0;
+  //  int ptime = 0;
   int retval = 0;
 
   starttime = time(NULL);
@@ -172,7 +174,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 	 just ignored silently. Anything that is changed or added here
 	 needs to reflect the database */
 
-      while (token = strtok(NULL, " ")) {
+      while ((token = strtok(NULL, " "))) {
 	if(!strncmp("ACTION=", token, 7)) {
 	  log_action = token + strlen("ACTION=");
 	  continue;
@@ -214,8 +216,8 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
       // If row counter is 0 then we should prepare the insert string
       // with the headers needed.
       if(row_counter == 0) {
-	sprintf(query_string, "INSERT INTO %s ( if_in, if_out, src_ip, src_prt, dst_ip, dst_prt, proto, action, mac) "\
-		"VALUES ",
+	sprintf(query_string, "INSERT INTO %s ( if_in, if_out, src_ip, src_prt, dst_ip, "\
+		"dst_prt, proto, action, mac) VALUES ",
 		db_info->table);
       } else {
 	// Not the first line, then add the comma to previous line and
@@ -225,21 +227,24 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
       
       // This adds the values to the query string
       sprintf(query_string, 
-	      "%s\n ( '%s', '%s', INET_ATON('%s'), '%s', INET_ATON('%s'), '%s', '%s', '%s', '%s' )", 
+	      "%s\n ( '%s', '%s', INET_ATON('%s'), '%s', INET_ATON('%s'), "\
+	      "'%s', '%s', '%s', '%s' )", 
 	      query_string, log_ifin, log_ifout, log_src, log_src_port, log_dst, log_dst_port, 
 	      log_proto, log_action, log_mac);
       row_counter++;
       
-      // Every 100 lines we terminate the query string and then call the MySQL to insert the rows collected
-      // When done we must reset the row_counter to 0 again.
-      if(row_counter == 100) {
+      // Every 100 lines we terminate the query string and then call
+      // the MySQL to insert the rows collected. When done we must
+      // reset the row_counter to 0 again.
+
+      if(row_counter == QUERY_ROW_COUNT) {
 	sprintf(query_string, "%s;", query_string);
 	printf("- Processed %d lines in %d seconds, %d bytes in query  \r", 
 	       lines, (int)time(NULL)-(int)starttime, (int)strlen(query_string) );
 	
 	if(mysql_query(con, query_string)) {
-	  printf("%s\n", mysql_error(con));
-	  retval = 10;
+	  printf("\n%s\n", mysql_error(con));
+	  retval = RETVAL_ERROR;
 	  goto clean_exit;
 	}
 	
@@ -253,10 +258,9 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
   // insert any remaining rows not previously inserted
   if(row_counter != 0) {
     sprintf(query_string, "%s;", query_string);
-    //    printf("%s\n", query_string);
     if(mysql_query(con, query_string)) {
       fprintf(stderr, "%s\n", mysql_error(con));
-      retval = 10;
+      retval = RETVAL_ERROR;
       goto clean_exit;
     }
   }    
@@ -264,14 +268,13 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
   sprintf(query_string, "COMMIT;");
   if(mysql_query(con, query_string)) {
     fprintf(stderr, "%s\n", mysql_error(con));
-
-    retval = 10;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
 
-  worktime = time(NULL) - starttime;
+  //  worktime = time(NULL) - starttime;
   
-  fprintf(stderr, "* Processed %d lines in %d seconds  \r", 
+  fprintf(stderr, "* Processed %d lines in %d seconds\n", 
 	  lines, (int)time(NULL)-(int)starttime);
   
   fprintf(stderr, "\n* Done processing file. %d records inserted in database.\n", lines);

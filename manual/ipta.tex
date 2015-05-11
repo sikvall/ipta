@@ -1,20 +1,82 @@
-\documentclass[10pt,a4paper]{report}
-\usepackage[utf8]{inputenc}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{makeidx}
+% !TeX encoding = UTF-8
+\documentclass[english,twoside,openright,a4paper,12pt]{article}
+\usepackage{a4}
+\usepackage[ansinew]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphics}
+\usepackage{dcolumn}
+\usepackage{fancyhdr}
+\usepackage{amsmath}	
 \usepackage{graphicx}
+\usepackage{color}
+\usepackage[hidelinks]{hyperref}
+\usepackage{float} 
+\restylefloat{table}
+\restylefloat{figure}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{emptypage}
+\usepackage[table]{xcolor}
+\usepackage{index}
+%\makeindex
+%\makeglossary
+\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+\nonfrenchspacing
+\renewcommand{\baselinestretch}{1.0}
+\clubpenalty=9999    % Not higher!
+\widowpenalty=9999   % Not higher!
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\newcommand{\titlerule}{\rule{\linewidth}{1pt}}
+\renewcommand{\headrulewidth}{1.2pt}
+\renewcommand{\footrulewidth}{1.2pt}
+\newcommand{\ai}[1]{#1\index{#1}}
+
 \author{Anders Sikvall}
-\title{ipta - IP Tables Log Analyzer}
+\title{
+	\Huge ipta\\[2em]
+	IP Tables Log Analyzer}
+
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+	\thispagestyle{empty}
+	\begin{center}
+          % Logotype goes here
+	\end{center}
+	\vspace*{\stretch{1}}
+	\begin{center}
+		\titlerule\\[3mm]
+		\Huge \textsc{ipta\\\Large iptables Log Analyzer}\\[5mm]
+		\large \emph{Anders Sikvall}\\
+		\begin{center}
+			\normalsize ichimusai.org\\
+
+		\end{center}
+		\titlerule\\
+	\end{center}
+	%    \scriptsize \today
+	\vspace*{\stretch{2}}
+	%    \begin{center}
+	%         \normalsize\textcopyright Copyright DeltaNode 2015
+	%    \end{center}
+\end{titlepage}
+
+\null\vfill\thispagestyle{empty}
+\noindent
+
+\begin{center}
+	Version 0.1\\[5mm] \textcopyright\ Copyright 2015 Anders Sikvall, 
+	ichimusai.org\\
+	Printed in Sweden
+	\newpage
+\end{center}
 
 \cleardoublepage
 
 \tableofcontents
 
+<<<<<<< HEAD
 \chapter*{License}
 \label{license}
 
@@ -65,11 +127,58 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 I have searched the Internets for a while to find a good logging and reporting tool for IP tables but most tools were either too complex or not good enough. I am a firm believer in that security comes from being clear, simple and transparent and complexity is a very dangerous path. Therefore I decided to write my own version of a logging tool that can be used for anyone deploying a Linux server with IP Tables to get some kind of statistics for what is going on with their machine. 
  
 Now, this project is still in its initial phase, call it Alpha software if you like, so there may be lots of bugs and problems, missing functionality and other things. Some parts of this manual describes aims and goals rather than actually implemented features. I hope I will have marked those sections clearly enough. 
+=======
+% Turn on more technical formatting, this aint some kind of novella
+% you know
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+\lhead{\nouppercase{\leftmark}}
+\rhead{\nouppercase{\rightmark}}
+
+\pagestyle{fancy}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section*{License}
+\label{license}
+
+Copyright (c) 2014, Anders "Ichimusai" Sikvall\\
+Latest revision 2014-10-05
+ 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+\begin{itemize}
+\item[1.] The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. It is not allowed to modify this license in any way.
+  
+\item[2a.] The original header must accompany all software files and are not removed in redistribution. It is allowed to add to the headers to describe modifications of the software and who has made these modifications. I claim no right to your modifications, they stand on their own merits.
+ 
+\item[2b.] The license shown when the software is invoked with the "--license" option is not removed or modified but must remain the same. You may add your name to the bottom of the credit part if you have contributed or modified the software.
+ 
+\item[3.] You are allowed to add to the header files and the license information described in (2b) with changes and your own name, but only as an addition at the bottom of the file.
+ 
+\item[4.] Distributing the software must be done in a way so that the software archive is intact and no necessary files (except external libraries such as MySQL) is always included. The software should be compilable after a reasonable set-up of the tool chain and compiler.
+ 
+\item[5.] If you are making modifications to this software i humbly suggest you send a copy of your modifications to me on ichi@ichimusai.org and I may include your modifications (if you allow it) as well as give credit to you (if you want) in the next release of the software. This is only a suggestion to keep the code base in a single location but it is in no way a restriction to your right to modify and redistribute this software.
+
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+
+I have searched the Internets for a while to find a good logging and reporting tool for IP tables but most tools were either too complex or not good enough. I am a firm believer in that security comes from being clear, simple and transparent and complexity is a very dangerous path. Therefore I decided to write my own version of a logging tool that can be used for anyone deploying a Linux server with IP Tables to get some kind of statistics for what is going on with their machine.
+
+Now, this project is still in its initial phase, call it Alpha software if you like, so there may be lots of bugs and problems, missing functionality and other things. Some parts of this manual describes aims and goals rather than actually implemented features. I hope I will have marked those sections clearly enough.
+>>>>>>> 103a7ae328391ba06b8a4554484af66afb29472f
 
 If you would like to contribute to the software by debugging, writing code or otherwise maintain, improve upon or develop new features and so on, please let me know. You can always reach me by email to $<$anders@sikvall.se$>$.
 
 The project is hosted on GitHub.com for the moment so it is rather easy to get started and contribute to it.
 
+<<<<<<< HEAD
 
 
 
@@ -82,22 +191,62 @@ The project is hosted on GitHub.com for the moment so it is rather easy to get s
 
 
 \chapter{Building the software}
+=======
+\subsection{Project aims}
 
-The ipta software is delivered as a software package and needs to be built for the platform you want to run it on. However the result is a single executable file which can easily be packaged and deployed in any software distribution you see fit. 
+The aims of the project is to create a tool to be able to analyze logs from the Linux kernel iptables logger and create reports on various issues, which types of packets are most commonly rejected, suspicious IP addresses in the world and many other things. It is a rather ambitious goal and my time is limited but I hope to spend some time on this and perhaps get a couple of other people involved in this.
+
+We should rely as little as possible on external software. Not use obscure libraries that we are not able to distribute together with the source or the software and so on. Some things are unavoidable such as dependence on mySQL in this project wherefore those libraries needs to be installed but that should be easy to do.
+
+Minimal configuration should be required to get up and running. A quick read through the manual and anyone really that knows their way around a terminal in Linux should be able to use this.
+>>>>>>> 103a7ae328391ba06b8a4554484af66afb29472f
+
+We do rely on a few outside components, mainly iptables itself and we will use MySQL as the database to collect the data into for easier processing. This requires the user to install MySQL if it is not already installed in the system, and set up usernames and a database for ipta to be using.
+
+Regarding syslog it is also best to set it up so that it will process the log for iptables in a separate log file, but we will explain how to configure the most common syslogd in this manual also. Most syslog daemons have similar configuration files.
+
+\subsection{Bug reports}
+
+This is just an early pre-release really and there is a lot of things that are not included yet. You may find a few that are just stubs or that are not working properly.
+
+Please report any other bugs you find on the issue tracker at \hyperref[https://github.com/sikvall/ipta]{the GitHub issue tracker at  (https://github.com/sikvall/ipta)}. It is much appreciated if you would take the time and describe how to re-create the bug.
+
+You can of course also email me and I will create an issue for the bug and see what we can do for a resolution. Please email to \hyperref[mailto:anders@sikvall.se]{anders@sikvall.se} for reporting bugs and put ``ipta: [description]'' in the header.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Installation}
+
+This chapter describes the installation of the source package, the tools necessary to build it, compiling and installation of the software on the target machine.
+
+\subsection{Installing mysql server and client}
+
+The system relies on mysql server and client software installed on the local machine or another machine. Consult your system documentation on how to install the necessary tools.
+
+\begin{verbatim}
+# apt-get install mysql-server
+\end{verbatim}
+
+\subsection{Installing the necessary tools}
+
+The ipta software is delivered as a software package and needs to be built for the platform you want to run it on. However the result is a single executable file which can easily be packaged and deployed in any software distribution you see fit.
 
 The license in chapter \ref{license} grants you the right to deploy the software in any situation you seem fit, you are also free to modify the software and I only ask that if you make substantial improvements or bug fixes that you send them to me for consideration into the main software stream so others may benefit from this.
 
 We need to install the GNU Compiler suite (GCC) and the C development libs for mysql as well as the version control system git. This is done like this in Ubuntu:
 
+<<<<<<< HEAD
 \small
+=======
+>>>>>>> 103a7ae328391ba06b8a4554484af66afb29472f
 \begin{verbatim}
-# apt-get install gcc
-# apt-get install libmysqlclient-dev
-# apt-get install git
+$ sudo apt-get install gcc libmysqlclient-dev git make
 \end{verbatim}
 \normalsize
 
-Get the latest software package from the github repository:
+\subsection{Download the source}
+
+Get the latest software package from the github repository, currently hosted at GitHub.com by issuing the following command.
 
 \small
 \begin{verbatim}
@@ -105,8 +254,327 @@ $ git clone https://github.com/sikvall/ipta
 \end{verbatim}
 \normalsize
 
+<<<<<<< HEAD
 When you have got a local repository you need to 
+=======
+This will give you a directory called "ipta" in the current working directory which will bet git initialized and ready for you to work with or just compile.
 
-\chapter{Installation}
+\subsection{Building the source and installing}
+
+You can now compile the software on you local machine by doing the following:
+
+\begin{verbatim}
+$ cd src 
+$ make all 
+$ make install
+\end{verbatim}
+
+You should by now if no errors have been shown have a local binary of "ipta" that you can start testing with. The last command will install the ipta binary under /usr/bin in your system with owner root and proper permissions.
+
+The make install command will ask for your sudo password in order to install the binary to /usr/bin. If you do not want that you can run ipta straight from the src directory by just typing the following:
+
+\begin{verbatim}
+$ ./ipta <options> [arguments]
+\end{verbatim}
+
+\subsection{Making the manual}
+
+The manual is delivered as a PDF and as a \LaTeX\ source this means you can compile it just like you do with the source code for the binary.
+
+You need a different set of tools to make the manual from scratch but for most modern Linux systems you should probably have most of these tools already installed.
+
+\begin{verbatim}
+$ sudo apt-get install texlive
+\end{verbatim}
+
+The TeX-Live distribution is the one recommended by TeX User Group and is the default one in Ubuntu and others. But other \LaTeX\ can of course be used.
+
+Go to the manual directory and type
+
+\begin{verbatim}
+$ make
+\end{verbatim}
+
+This will start the make process, it will run ''pdflatex ipta.tex'' twice and build you a new pdf with the manual. Most users would however not need to build the manual but can just look in the provided pre-built PDF file instead.
+
+You may also make postscript versions, or device independetn versions for printing and such with \LaTeX\ but it is outside the scope of this manual to describe how this works.
+
+\subsubsection{Updating to the latest version}
+
+You can always update to the latest version by pulling the changes from the github repository at any time. This is done from the command line by changing to the ipta directory and issuing the following command:
+
+\begin{verbatim} 
+$ git pull 
+\end{verbatim}
+
+This will pull the latest changes. When done you can always compile and install an updated version of the binary as described earlier. You will also receive the updated manual and any other accompanying file.
+
+\subsection{Setting up MySQL}
+
+Setting up MySQL for ipta is rather simple. You need to create a user, a database and grant all privileges on that database for the ipta user. If you do not configure ipta differently it will attempt to connect using the following credentials:
+
+Username: ipta\\
+Password: ipta\\
+
+This can be overruled on the command line. With no other arguments it will try to access an existing database called ''ipta'' and if no other name is given the default table is named ''logs''.
+
+\subsubsection{Create MySQL User}
+
+This assumes you already have MySQL installed and have access to the root account. During most installs you would have set up the root account when the MySQL database server was installed.
+
+First you need to log in to MySQL:
+
+\begin{verbatim}
+$ mysql -u root -p
+\end{verbatim}
+
+This will connect a shell to the local MySQL database with user root asking you to provide a password. Once logged in you would be presented with the MySQL prompt. It is then time to create a new user, a database for ipta and set the permissions to use it.
+
+\small
+\begin{verbatim}
+mysql> CREATE USER 'ipta'@'localhost' IDENTIFIED BY 'ipta';
+mysql> CREATE DATABASE ipta;
+mysql> GRANT ALL ON ipta.* TO 'ipta'@'localhost' IDENTIFIED BY 'ipta';
+mysql> commit;
+mysql> quit
+Bye.
+\end{verbatim}
+\normalsize
+
+You can now verify that it works by invoking ipta to create the table 
+needed for analysis. This is done by the following command:
+
+\begin{verbatim}
+$ ipta --create-table
+* Table 'logs' created in database which you may now use.
+\end{verbatim}
+
+If you get the mssage that the table was successfully created we are fine. If you get a message it already exists you are probably fine. If you get an error, check your MySQL statements again and see that you did create the ipta user and password is correct and so on.
+
+Now we have everything set up in MySQL and can move on the next part, setting up iptables and syslog.
+
+\subsection{Setting up syslog}
+
+In many systems the iptables messages will be logged to the same system log as every other kernel message. This means we will have logs cluttered with all sorts of messages making it hard to see what is what.
+
+By breaking out the iptables messages to a separate file we will not clutter the standard system log but can keep it separate and it also means the processing of the log file will be more efficient by ipta.
+
+The ipta tool always looks for the ''IPT: '' prefix on the log line and will ignore any line that do not start with this. In order to set up syslog properly for our purpose we need to make some changes to its configuration file.
+
+In this case we are working with \textit{rsyslogd} which is the standard syslogger in Ubuntu. If you have a different syslog daemon you may want to consult the manual to do the same thing. Most have fairly similar syntax in their configuration files.
+
+\subsubsection{Make syslog use a separate log file for iptables}
+
+In Ubuntu 14.04 you find the configuration in /etc/rsyslog.d where 
+you can create a new file called 20-iptables.conf and the content of 
+this file should be:
+
+\begin{verbatim}
+# Syslog iptables to separate file
+:msg, contains, “IPT: “ -/var/log/iptables.log 
+# Remove from the other logs
+&~
+\end{verbatim}
+
+Save this to the disk, then issue a service restart for the syslog 
+daemon.
+
+\begin{verbatim}
+$ sudo service rsyslog restart
+\end{verbatim}
+
+It should now restart with the new configuration and hopefully log all iptables messages to a new file.
+
+\subsubsection{Set up log-rotate for daily or weekly rotate}
+
+Since the logfile has a potential of becoming big, I suggest rotating it on a daily basis and just keeping what you need. It is probably a good idea to zip the files older than today and yesterday also to save space on the disk.
+
+To set this up you need to find your logrotate.d directory, it usually resides in /etc/logrotate.d/ and if you go there you will find the configuration files for logrotate. One of them is probably already made for syslog, in Ubuntu 14.04 it will be called rsyslog. Open and edit this file carefully with an editor of your choice.
+
+\begin{verbatim}
+/var/log/iptables.log
+{
+    rotate 30
+    daily 
+    missingok 
+    notifempty 
+    compress 
+    delaycompress 
+    sharedscripts 
+    postrotate 
+        reload rsyslog >/dev/null 2>&1 || true 
+    endscript
+}
+\end{verbatim}
+
+This will rotate your iptables.log every day and keep them 30 days back. It will perform some housekeeping as well as restarting the rsyslog (you may need to change that to the syslog in your system) in order to keep sytems nice. It will also compress all files from day before yesterday and back while keeping the two latest days, today and yesterday, uncompressed.
+
+Of course if you want to rotate on a weekly basis or something else, you can change this accordingly. Insert it into the rsyslog or create a new one called ''ipta'' or something like that, then save it. Check it out a couple of days later that it is actually rotating your logs.
+
+
+\subsection{Setting up iptables}
+
+Now it is time to setup the iptables to log what we want. You should be familiar a little bit with iptables already, you do not have to be an expert but some familiarity with the basic functions is required here. If you feel you don't have that please take some time to read through a few of the various good HOWTO documents that are out there and familiarize yourself with iptables.
+
+\subsubsection{Creating the logchains}
+
+Basically what we will do is create two new chains in iptables that can be used for targets from other rules. One is to log packets that we want to DROP and the other is to log packets we accept but still wants to log.
+
+We can also elaborate on this by creating a log chain for packets that are invalid and packets from certain ranges of IP addresses we wish to block and so on, the possibilities are really endless.
+
+Let's start with creating a log chain for packets that are dropped. We will at the beginning somewhere, before any rules but after the policy setting in the iptables script insert something like this:
+
+\begin{verbatim}
+iptables -N LOGDROP
+iptables -A LOGDROP -j LOG --log-prefix ``IPT: DROP `` --log-level 7
+iptables -A LOGDROP -j DROP
+\end{verbatim}
+
+Now every time in your firewall that you will drop a packet, instead of using the usual target DROP you will replace it with LOGDROP instead. If you still want to drop some packets without logging you can of course still use the DROP target.
+
+We will also create a chain to handle packets that are accepted but logged and it can look like this
+
+\small
+\begin{verbatim}
+iptables -N LOGACCEPT
+iptables -A LOGACCEPT -j LOG --log-prefix ``IPT: ACCEPT `` --log-level 7
+iptables -A LOGACCEPT -j ACCEPT
+\end{verbatim}
+\normalsize
+
+Now we can see that the prefix we use tells ipta something on what is going on. First the marker ''IPT:'' is recognized as this is a line that should be processed, the next word is a signal word that tells ipta what has happend. This should be ACCEPT, DROP, INVALID or something similar. ACCEPT and DROP should be used mainly as they have special meaning in the processor.
+
+The signal word will be put into the database as the action field and used in statistics so create as many as you like, keep them short and to the point and prefer to use the ACCEPT and DROP unless you really want to distinguish between drops for different reasons.
+
+Some action words used in the past that may give you some idea here:
+
+\begin{table}[H]
+\begin{tabular}{ll}
+	\textbf{Action} & \textbf{Description  }                        \\ \hline
+	DROP            & Used generally for dropped packets            \\
+	ACCEPT          & Used generally for accepted packets           \\
+	INVALID         & Packets specifically dropped as invalid       \\
+	CBLK            & Packets that are CIDR blocked (country block)
+\end{tabular}
+\end{table}
+
+\subsubsection{A full iptables script}
+
+Normally a firewall configuration is not input manually but rather there is a script that is executed just after boot or sometimes by a cron job or similar. This script can take many forms but they generally do something like this:
+
+\begin{enumerate}
+\item Clear all previous rules
+\item Set default policies
+\item Set rules for accepting traffic to specific services
+\item Deny all traffic not accepted
+\end{enumerate}
+
+
+Below is an example iptables script, adapted to the ipta tool as well that you can use and expand upon yourself for your system. This should give you a general idea on how to set it up.
+
+To fully explain all things with iptables is outside the scope of this manual but there are many tutorials and howto-docs on the net that will help you get started. The one below is rather well documented. It will also assume anything related to the loop-back interface (lo) is considered safe, if not, you can take that part out.
+
+\small
+
+\begin{verbatim}
+#!/bin/bash
+
+# This is the IP Tables script used for ipta (IP Tables Analyzer) 
+# version x.x.x If your binary for iptables is located in a different 
+# directory change this definition
+
+IPTABLES="/sbin/iptables"
+
+# Setting default policies
+# if you want to log dropped packets the default policy should 
+# be ACCEPT so that you can send them to the log facility, 
+# otherwise they will be dropped silently 
+
+$IPTABLES -P INPUT   ACCEPT
+$IPTABLES -P OUTPUT  ACCEPT
+$IPTABLES -P FORWARD DENY #Change to ACCEPT ifyou use forwarding
+
+# Flushing existing rules to make sure our iptables are empty 
+$IPTABLES -F
+
+# Create the logging chains for our iptables
+
+# What happens here is that we add two rules to each chain. One that sends
+# the packet to be logged via syslog using a recognizable prefix as well as a 
+# single word telling what happened to the packet (DROP or ACCEPT) and then the 
+# packet is either dropped or accepted.
+
+$IPTABLES -N LOGDROP
+$IPTABLES -A LOGDROP -j LOG --log-prefic "IPT: DROP " --log-level 7
+$IPTABLES -A LOGDROP -j DROP
+
+$IPTABLES -N LOGACCEPT
+$IPTABLES -A LOGACCEPT -j LOG --log-prefix "IPT: ACCEPT " --log-level 7 
+$IPTABLES -A LOGACCEPT -j ACCEPT
+
+$IPTABLES -N LOGINVALID
+$IPTABLES -A LOGINVALID -j LOG --log-prefix "IPT: INVALID " --log-level 7 
+$IPTABLES -A LOGINVALID -j DROP
+
+# Drop early all malformed packets
+$IPTABLES -A INPUT -m state --state INVALID -j LOGINVALID
+
+# Allow all traffic on local interfalce "lo" without logging 
+$IPTABLES -A INPUT  -i lo -j ACCEPT
+$IPTABLES -A OUTPUT -i lo -j ACCEPT
+
+# Enable ICMP but log them
+$IPTABLES -A INPUT -p icmp -j LOGACCEPT $IPTABLES -A OUTPUT -p icmp -j LOGACCEPT
+
+# Enable DNS server connections from local host, no logging here
+# DNS is specified for both tcp and udp connections but almost always only 
+# udp is used so you may disable the tcp parts if you like
+$IPTABLES -A INPUT  -p tcp --sport domain -j ACCEPT
+$IPTABLES -A INPUT  -p udp --sport domain -j ACCEPT
+$IPTABLES -A OUTPUT -p tcp --dport domain -j ACCEPT
+$IPTABLES -A OUTPUT -p udp --dport domain -j ACCEPT
+
+# If you are using NTP for time synchronization you should have these
+# enables, otherwise comment them out. I like to log them also.
+$IPTABLES -A INPUT  -p udp --sport 123 -m state --state ESTABLISHED -j LOGACCEPT 
+$IPTABLES -A OUTPUT -p udp --sport 123 -m state --state NEW,ESTABLISHED -j LOGACCEPT
+
+# This enables incoming SSH connections to the local host
+# we will log this activity. Logging the ESTABLISHED state usually renders a lot 
+# of packets in the log since that would be file transfers and so on, therefore we 
+# just log the new packets.
+$IPTABLES -A INPUT  -p tcp --dport 22 -m state --state NEW -j LOGACCEPT
+$IPTABLES -A INPUT  -p tcp --dport 22 -m state --state ESTABLISHED -j ACCEPT 
+$IPTABLES -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -J ACCEPT
+
+# Enable traffic to your web server on port 80, no logging
+$IPTABLES -A INPUT  -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT 
+$IPTABLES -A OUTPUT -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT
+
+# Everything else that falls through here will be considered non-wanted traffic and 
+# will therefore be logged also, then dropped.
+$IPTABLES -A INPUT  -j LOGDROP
+$IPTABLES -A OUTPUT -j LOGDROP
+
+\end{verbatim}
+
+The above should give you a good starting point that you can modify into your own needed rules for the firewall you are deploying. You may of course simplify it or make it as complex as needed but this should show the geist of how you can use the different log chains to log packets that you want to analyze later.
+
+Now, this script above creates an iptables firewall, make sure you have a way to connect to your computer before you run it in case you loose the connection with it. Don't update firewalls remotely unless you are certain of what you are doing.
+
+This version makes use of the following actions:
+
+\begin{itemize}
+	\item INVALID - packets that are invalid
+	\item DROP - when a packet is dropped
+	\item ACCEPT - when a packet is accepted in or out of the system
+\end{itemize}
+
+You can add others if you like so that you can distinguish between packets from known hosts etc, the limits are endless. We do recommend you have these three log chains however since the statistict module in ipta looks for these three actions.
+
+\subsubsection{Interesting tips \& tricks}
+>>>>>>> 103a7ae328391ba06b8a4554484af66afb29472f
+
+\hilight{Coming later}
 
 \end{document}

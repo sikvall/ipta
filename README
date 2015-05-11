@@ -1,7 +1,38 @@
 This is the README file for ipta - ip tables analyzer
 
+======================================================================
+The Uberquick summary
+======================================================================
+
+First of all what do we find in the different directories in this
+package?
+
+src/	 This contains the source code. 
+
+manual/	 This contains the manual as LaTeX to be built
+
+example/ This contains example file of logger output and explanation
+
+To make the source enter the src and type "make all"
+To make the manual enter the manual dir and type "make"
+
+You need to have libmysql-dev and a latex system installed, see later
+in this make file how to install them or consult the full manual for
+more useful hints and tips.
+
+-+ Dependencies +-
+
+ipta relies on iptables and syslog to perform the logging. It then
+relies on mysql as the database engine to to the analysis and reports
+you want.
+
+======================================================================
+Onto the actual stuff
+======================================================================
+
+
 1. COMPILING THE BINARIES FROM SOUCE
-====================================
+------------------------------------
 
 To compile this you need to first install the mysql libraries and
 header files. On Ubuntu this is simply done by:
@@ -20,7 +51,7 @@ $ sudo make install
 This will install the binary properly.
 
 2. CREATING DEFAULT DATABASE
-============================
+----------------------------
 
 Create in your local mysql or other mysql server the following:
 

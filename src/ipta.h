@@ -23,10 +23,40 @@
  **********************************************************************/
 
 
-/* Defines */
+/* Overall generic defines */
+#define IPTA_VERSION "ipta version 1.0.0\n"
 
+/* Specific error defines */
 #define ERROR_FILE_OPEN -1
+
+/* Ipta defines */
 #define ACTION_IMPORT 1;
+#define IPTA_LINE_PREFIX "IPT: "
+#define QUERY_STRING_SIZE 2000
+#define QUERY_ROW_COUNT 100
+
+/* Database defaults */
+#define DEFAULT_DB_HOSTNAME "localhost"
+#define DEFAULT_DB_USERNAME "ipta"
+#define DEFAULT_DB_PASSWORD "ipta"
+#define DEFAULT_DB_NAME "ipta"
+#define DEFAULT_DB_TABLENAME "logs"
+
+/* Flags */
+#define FLAG_SET 1
+#define FLAG_CLEAR 0
+
+/* Defined return values from functions and from the application
+   itself */
+#define RETVAL_OK 0
+#define RETVAL_WARN 10
+#define RETVAL_ERROR 20
+#define RETVAL_NONAME 1
+
+/* Specific defines */
+#define HOSTNAME_MAX_LEN 256
+#define ANALYZE_LIMIT_MAX 1000
+#define CONFIG_FILE_PATH "~/.ipta/config"
 
 struct ipta_flags {
   int no_lo;
@@ -43,3 +73,36 @@ struct ipta_db_info {
   char table[IPTA_DB_INFO_STRLEN];
 };
 
+struct ipta_config {
+  char db_host[IPTA_DB_INFO_STRLEN];
+  char db_user[IPTA_DB_INFO_STRLEN];
+  char db_pass[IPTA_DB_INFO_STRLEN];
+  char db_name[IPTA_DB_INFO_STRLEN];
+  char db_table[IPTA_DB_INFO_STRLEN];
+  struct ipta_flags *flags;
+};
+
+
+/* Function declarations */
+
+/* >>>>> Todo: Insert function declarations here! */
+
+/**
+ ** Function prototypes
+ **/
+
+int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_limit);
+int create_config(void);
+int restore_db(struct ipta_db_info *db_info);
+int save_db(struct ipta_db_info *db_info);
+int create_table(struct ipta_db_info *db_info);
+int delete_table(struct ipta_db_info *db_info);
+int list_tables(struct ipta_db_info *db_info);
+int clear_database(struct ipta_db_info *db_info);
+int dns_cache_add(char *ip_address, char *hostname, struct ipta_db_info *db);
+int dns_cache_retrieve(char *ip_address, char *hostname, struct ipta_db_info *db_info);
+int follow(char *filename, struct ipta_flags *flags);
+int get_host_by_addr(char *ip_address, char *hostname, int maxlen);
+int import_syslog(struct ipta_db_info *db_info, char *filename);
+void print_license(void);
+void print_usage(void);

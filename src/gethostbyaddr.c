@@ -24,14 +24,15 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "ipta.h"
 
-
-/* 
+/***********************************************************************
  * Get host by address
  * 
  * ip_address      char *      The string containing the IP adrress in dotted format
@@ -42,13 +43,15 @@
  * maxlen          int         Maximum length of hostname, it is truncated from the
  *                             beginning so that important hostnames, networks and
  *                             tld is preserved.
- */
+ ***********************************************************************/
+
 int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
   struct sockaddr_in ip4addr;
   int len = 0;
   char host[NI_MAXHOST];        // Holding hostname
   char service[NI_MAXSERV];     // Holding service
-  int retval = 0;
+  int retval = RETVAL_OK;
+  int dns_reply = 0;
 
   /* Clear all stuff */
   memset(&ip4addr, 0, sizeof(struct sockaddr_in));
@@ -62,29 +65,30 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
   inet_pton(AF_INET, ip_address, &ip4addr.sin_addr);
 
   /* Call the DNS subsystem */
-  int s = getnameinfo((struct sockaddr *) &ip4addr, sizeof(struct sockaddr_in), 
-		      host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
+  dns_reply = getnameinfo((struct sockaddr *) &ip4addr, sizeof(struct sockaddr_in), 
+			  host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
 
   /* If we got a name then we copy the name to maxlen characters into
      the hostname pointer provided by the call. */
-  if (s == 0) {
+  if (dns_reply == 0) {
     len = strlen(host);
     if(len > maxlen) {
       strcpy(host, host+(len-maxlen));
-      host[0] = '*';
+      host[0] = '*'; /* If the name is too long for the display field,
+			insert * to indicate that */
     }
     sprintf(hostname, "%s", host);
-    return 0;
-  }
+    return retval;
+  }  
   else {
-
+      
     /* If not, then we return the actual IP address. We also signal
        that we could not look it up with a "1" as RETVAL Return the
        address cut so that it fits the field length */
-
+    
     strncpy(hostname, ip_address, maxlen);
-
-    return 1; /* Nor regarded as a fatal error, just a signal in
-                 RETVAL that we did not look up a name */
+    
+    return RETVAL_NONAME; /* Nor regarded as a fatal error, just a signal in
+			     RETVAL that we did not look up a name */
   }
 }

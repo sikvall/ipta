@@ -19,25 +19,28 @@
  * however allowed to add below your own changes and redistribute, as
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
-
+#define _GNU_SOURCE
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <errno.h>
+#include <unistd.h>
 #include "ipta.h"
 
-/* The follow function will follow the file given as argument and
-   interprete it and print each logged packet line by line without
-   storing anything in the database. It's just a realtime look at what
-   is logged in a nicely formatted way. */
+/***********************************************************************
+ * The follow function will follow the file given as argument and
+ * interprete it and print each logged packet line by line without
+ * storing anything in the database. It's just a realtime look at what
+ * is logged in a nicely formatted way.
+ **********************************************************************/
 
 int follow(char *filename, struct ipta_flags *flags) {
   FILE *logfile;
-  int flag_rdns = 0;
+  int flag_rdns = FLAG_CLEAR;
   char *line;
-  size_t len = 256;
+  size_t len = HOSTNAME_MAX_LEN;
   ssize_t read;
-  char prefix[]="IPT: ";
+  char prefix[]=IPTA_LINE_PREFIX;
   char *log_action;
   char *log_ifin;
   char *log_ifout;
@@ -52,17 +55,17 @@ int follow(char *filename, struct ipta_flags *flags) {
   char nullstring[] = "";
   int line_count = 0;
   int packet_count = 0;
-  char src_hostname[256];
-  char dst_hostname[256];
+  char src_hostname[HOSTNAME_MAX_LEN];
+  char dst_hostname[HOSTNAME_MAX_LEN];
   int hostname_len = 30;
-  int retval = 0;
+  int retval = RETVAL_OK;
 
   line = calloc(256, 1);
 
   logfile = fopen(filename, "r");
   if(!logfile) {
     fprintf(stderr, "! ERROR: Unable to open the file %s.\n", filename);
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
 
@@ -71,7 +74,7 @@ int follow(char *filename, struct ipta_flags *flags) {
   retval = fseek(logfile, 0L, SEEK_END);
   if(0 != retval) {
     fprintf(stderr, "! Error seeking to end of log file. Exiting.\n");
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -90,7 +93,7 @@ int follow(char *filename, struct ipta_flags *flags) {
 	 file to read through. */
 
       if(flags->rdns)
-	flag_rdns = 1;
+	flag_rdns = FLAG_SET;
       sleep(1);
       continue;
     } else {
@@ -118,7 +121,7 @@ int follow(char *filename, struct ipta_flags *flags) {
 	   just ignored silently. Anything that is changed or added here
 	   needs to reflect the database */
 	
-	while (token = strtok(NULL, " ")) {
+	while ((token = strtok(NULL, " "))) {
 	  if(!strncmp("ACTION=", token, 7)) {
 	    log_action = token + strlen("ACTION=");
 	    continue;
