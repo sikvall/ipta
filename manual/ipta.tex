@@ -15,10 +15,71 @@
 
 \tableofcontents
 
-\chapter{Acknowledgements \& History}
-
-\chapter{License}
+\chapter*{License}
 \label{license}
+
+Copyright (c) 2014, Anders "Ichimusai" Sikvall 
+
+Latest revision 2014-10-05 
+ 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:  
+
+\begin{itemize}
+\item[1.] The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. It is not allowed to modify this license in any way. 
+
+\item[2a.] The original header must accompany all software files and are not 
+   removed in redistribution. It is allowed to add to the headers to 
+   describe modifications of the software and who has made these 
+   modifications. I claim no right to your modifications, they stand 
+   on their own merits. 
+ 
+\item[2b.] The license shown when the software is invoked with the "--license" 
+   option is not removed or modified but must remain the same. You may 
+   add your name to the bottom of the credit part if you have 
+   contributed or modified the software. 
+ 
+\item[3.] You are allowed to add to the header files and the license 
+   information described in (2b) with changes and your own name, but 
+   only as an addition at the bottom of the file. 
+ 
+\item[4.] Distributing the software must be done in a way so that the 
+   software archive is intact and no necessary files (except external 
+   libraries such as MySQL) is always included. The software should be 
+   compilable after a reasonable set-up of the tool chain and 
+   compiler. 
+ 
+\item[5.] If you are making modifications to this software i humbly suggest 
+   you send a copy of your modifications to me on ichi@ichimusai.org 
+   and I may include your modifications (if you allow it) as well as 
+   give credit to you (if you want) in the next release of the 
+   software. This is only a suggestion to keep the code base in a 
+   single location but it is in no way a restriction to your right to 
+   modify and redistribute this software. 
+\end{itemize}
+
+
+\chapter*{Acknowledgements \& History}
+
+\chapter{Introduction}
+
+I have searched the Internets for a while to find a good logging and reporting tool for IP tables but most tools were either too complex or not good enough. I am a firm believer in that security comes from being clear, simple and transparent and complexity is a very dangerous path. Therefore I decided to write my own version of a logging tool that can be used for anyone deploying a Linux server with IP Tables to get some kind of statistics for what is going on with their machine. 
+ 
+Now, this project is still in its initial phase, call it Alpha software if you like, so there may be lots of bugs and problems, missing functionality and other things. Some parts of this manual describes aims and goals rather than actually implemented features. I hope I will have marked those sections clearly enough. 
+
+If you would like to contribute to the software by debugging, writing code or otherwise maintain, improve upon or develop new features and so on, please let me know. You can always reach me by email to $<$anders@sikvall.se$>$.
+
+The project is hosted on GitHub.com for the moment so it is rather easy to get started and contribute to it.
+
+
+
+
+
+
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 
 \chapter{Building the software}
 
@@ -26,18 +87,25 @@ The ipta software is delivered as a software package and needs to be built for t
 
 The license in chapter \ref{license} grants you the right to deploy the software in any situation you seem fit, you are also free to modify the software and I only ask that if you make substantial improvements or bug fixes that you send them to me for consideration into the main software stream so others may benefit from this.
 
+We need to install the GNU Compiler suite (GCC) and the C development libs for mysql as well as the version control system git. This is done like this in Ubuntu:
+
+\small
 \begin{verbatim}
 # apt-get install gcc
 # apt-get install libmysqlclient-dev
 # apt-get install git
 \end{verbatim}
+\normalsize
 
 Get the latest software package from the github repository:
 
+\small
 \begin{verbatim}
 $ git clone https://github.com/sikvall/ipta
 \end{verbatim}
+\normalsize
 
+When you have got a local repository you need to 
 
 \chapter{Installation}
 
