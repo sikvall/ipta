@@ -364,7 +364,7 @@ int list_tables(struct ipta_db_info *db_info)
  *********************************************************************/
 int clear_database(struct ipta_db_info *db_info)
 {
-  MYSQL *con;
+  MYSQL *con = NULL;
   char *query_string = NULL;
   int retval = 0;
 

@@ -61,13 +61,13 @@ int main(int argc, char *argv[])
   flags = calloc(sizeof(struct ipta_flags), 1);
   if(NULL == flags) {
     fprintf(stderr, "! Error, memory allocation failed.\n");
-    exit(20);
+    exit(RETVAL_ERROR);
   }
   
   db_info = calloc(sizeof(struct ipta_db_info), 1);
   if(NULL == db_info) {
     fprintf(stderr, "! Error, memory allocation failed.\n");
-    exit(20);
+    exit(RETVAL_ERROR);
   }
   
   // Load default parameters
@@ -87,6 +87,8 @@ int main(int argc, char *argv[])
     // parameters but any missing keyword will be default
     
     // TO BE DONE
+  } else {
+    fprintf(stderr, "o No config file detected.");
   }
 
   action_flag = FLAG_CLEAR;

@@ -126,6 +126,10 @@ If you would like to contribute to the software by debugging, writing code or ot
 
 The project is hosted on GitHub.com for the moment so it is rather easy to get started and contribute to it.
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+
 \subsection{Project aims}
 
 The aims of the project is to create a tool to be able to analyze logs from the Linux kernel iptables logger and create reports on various issues, which types of packets are most commonly rejected, suspicious IP addresses in the world and many other things. It is a rather ambitious goal and my time is limited but I hope to spend some time on this and perhaps get a couple of other people involved in this.
@@ -176,9 +180,11 @@ $ sudo apt-get install gcc libmysqlclient-dev git make
 
 Get the latest software package from the github repository, currently hosted at GitHub.com by issuing the following command.
 
+\small
 \begin{verbatim}
 $ git clone https://github.com/sikvall/ipta
 \end{verbatim}
+\normalsize
 
 This will give you a directory called "ipta" in the current working directory which will bet git initialized and ready for you to work with or just compile.
 
@@ -499,6 +505,7 @@ This version makes use of the following actions:
 
 You can add others if you like so that you can distinguish between packets from known hosts etc, the limits are endless. We do recommend you have these three log chains however since the statistict module in ipta looks for these three actions.
 
+<<<<<<< HEAD
 \subsubsection{Interesting tips \& tricks}
 
 \hilight{Coming later}
@@ -580,4 +587,6 @@ This is useful for real-time monitoring of any logged packets. It will not affec
 
 
 
+=======
+>>>>>>> 88d83edfbfbecea545f3d5d310a88bd35d7921a5
 \end{document}
