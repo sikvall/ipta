@@ -13,6 +13,7 @@
 \usepackage{float} 
 \restylefloat{table}
 \restylefloat{figure}
+\usepackage{longtable}
 \usepackage{color}
 \usepackage{textcomp}
 \usepackage{emptypage}
@@ -257,7 +258,7 @@ This will connect a shell to the local MySQL database with user root asking you 
 mysql> CREATE USER 'ipta'@'localhost' IDENTIFIED BY 'ipta';
 mysql> CREATE DATABASE ipta;
 mysql> GRANT ALL ON ipta.* TO 'ipta'@'localhost' IDENTIFIED BY 'ipta';
-mysql> commit;
+mysql> FLUSH PRIVILEGES;
 mysql> quit
 Bye.
 \end{verbatim}
@@ -293,13 +294,13 @@ this file should be:
 
 \begin{verbatim}
 # Syslog iptables to separate file
-:msg, contains, “IPT: “ -/var/log/iptables.log 
+:msg, contains, "IPT: " -/var/log/iptables.log 
 # Remove from the other logs
 &~
 \end{verbatim}
 
-Save this to the disk, then issue a service restart for the syslog 
-daemon.
+Save this to the disk as the file /etc/rsyslog.d/20-iptables.conf and then issue a service restart for the syslog 
+daemon by the command:
 
 \begin{verbatim}
 $ sudo service rsyslog restart
@@ -333,6 +334,10 @@ This will rotate your iptables.log every day and keep them 30 days back. It will
 
 Of course if you want to rotate on a weekly basis or something else, you can change this accordingly. Insert it into the rsyslog or create a new one called ''ipta'' or something like that, then save it. Check it out a couple of days later that it is actually rotating your logs.
 
+\subsection{Logging loops caution}
+\hilight{Move this section later}
+
+As with any complex system there is the potential to have unintended consequences depending on how you set it up. During development I found out that it is easy to get into a "logging loop" with the \texttt{--follow} mode engaged. The problem here is that if you log certain types of packets, such as DNS requests (port 53) or ssh (port 22) and you use the \texttt{--rdns} option or view the traffic over SSH the ipta may generate it's own traffic that in its turn creates even more traffic as it attempts to display the already generated traffic. I will show you two examples of what not to do.
 
 \subsection{Setting up iptables}
 
@@ -497,5 +502,82 @@ You can add others if you like so that you can distinguish between packets from 
 \subsubsection{Interesting tips \& tricks}
 
 \hilight{Coming later}
+
+
+\section{Usage and Syntax}
+
+This tool is used to parse log files from syslogd regarding IP-tables data. Depending on how 
+you set your iptables up to log you may log only denied, accepted or both types of packets. This 
+is entirely up to you and you must configure the iptables on your machine to do some logging 
+first in order to get some data for the ipta import module to work with. 
+ 
+You need to have your MySQL setup for this tool to work. Also, remember that you may want 
+to clear your existing tables when starting a new import, otherwise it will just be appended to the earlier data that you already have in your logs. If you import the same file over you would skew the results as you would have twice the entrys for the same packets being logged.
+ 
+You can change the settings for the database in the ipta-system configuration file in your 
+home folder. It should be called .ipta-conf and will be read upon start to find your database 
+names, passwords etc. \hilight{Config file is not yet implemented.}
+
+\subsection{Options}
+
+Any settings in the configuration file can be overridden with command line parameters. They way ipta decides on the configuration is that first it will use the ones given on the command line. If no options are given it will check the configuration file and if there is no config file it will use default settings.
+
+
+\begin{longtable}{|p{.4\textwidth}|p{.6\textwidth}|}
+\hline
+\textbf{Option}& \textbf{Description}\\\hline
+
+\texttt{--license} & Print the license information to standard output. The license is a modified version of the MIT license giving you the right to do anything with the software as long as you keep the attribution.\\ \hline
+
+\texttt{-i, --import $<$file$>$} & Import a file into the database. If the database already contains data the new data will be appended to the existing. If you do not wish to add to the data use the -c or --clear directive in front of the import directive in order to clear first, then import.\\\hline
+
+\texttt{-c, --clear} & Clears all entries in the database. Can be used in front of the import directive to clear the database before importing new data.\\\hline
+
+\texttt{-d, --db-name $<$name$>$} & Use a different database called name instead of the one in the configuration file or defaul one (ipta). Useful when you are running multiple analysis in the same MySQL database or for some other reason can not use the default name.\\\hline
+
+\texttt{-h, --db-host $<$host$>$} & Use a different host name for the MySQL database. If not, ipta assumes localhost as the host for the MySQL database.\\\hline
+
+\texttt{-u, --db-user $<$name$>$} & Username that ipta uses to connecto to the MySQL database.. This overrides the name in specification file and the default name "ipta". \\\hline
+
+\texttt{-p, --db-pass $<$pass$>$} & Password to use for connecting to the MySQL database. If this is not given, the configuration file password will be used or if that is not designed the default password "ipta" will be tried.\\\hline
+
+\texttt{-pi, --db-pass-i} & Asks for the pasword interactively, otherwise the same thing as \texttt{-p, --db-pass} will do. The reason to use this one rather than the other one is that passwords entered on a command line may show up in the process table and rea not considered secure at all.\\\hline
+
+\texttt{-t, --db-table $<$table$>$} & Use the table named "table" instead of the default one or the one in the configuration file. The default table name that ipta works with would be "logs".\\\hline
+
+\texttt{-lt, --list-tables} & List all the tables in the database ipta is using. This is useful if you work through different tables and want to list their names.\\\hline
+
+\texttt{-dt, --delete-table $<$table$>$} & Remove any unwanted "table" from the database. The table and all information is erased. This can not be undone.\\\hline
+
+\texttt{-da, --delelte-all-tables} & Remove all tables from the database. This will unceremoniously delete all the data in the ipta database.\\\hline
+
+\texttt{-ct, --create-table [name]} & Create a new ipta table. This could be the default table or you can supply an argument to give the new table a different name. \\\hline
+
+\texttt{-r, --rdns} & Do a reverse DNS lookup on the IP addresses that are being analyzed. This will in the reports replace the IP numbers usually seen with the DNS names for those addresses (if they exist). If no reverse DNS record exist, the IP address will be shown instead. The --rdns flag will sometimes give you good information about the host sending the packets.\\\hline
+
+\texttt{-a, --analyze} &  This is a mode switch and tells ipta to do the automatic analysis that's built in to the software. The output is sent to standard output. \\\hline
+
+\texttt{-ai, --analyze-interactive} & \hilight{Not yet implemented.} In the future this will allow you to open a shell and put custom queries to the database in such a way that you can create your own analysis.\\\hline
+
+\texttt{-s, --save-db} & \hilight{Not yet implemented.} This option will write out a configuration file to the user's home directory named .ipta with the current settings. By providing configuration of database name, user, password and table to use as default these setting will be written to a file and used as default settings next time you run ipta.\\\hline
+
+\texttt{-l, --limit $<$num$>$} & The standard number of lines presented in the analyzer module of ipta is 10 lines per analyzer submodule. With this parameter you can change that to $<$num$>$ lines instead of the default.\\\hline
+
+\texttt{-f, --folow $<$file$>$} & This changes the behaviour of ipta into a real-time analyzer. It will follow the log file and any new packets that are logged will be presented as a line on the screen to stdandard output. Every 20 lines a new header is written detailing the fields to aid the operator idetinfyin what he sees on the screen. 
+
+This is useful for real-time monitoring of any logged packets. It will not affect the database in any way or store any data so all the switches and parameters dealing with that has no effect when this mode is employed.\\\hline
+
+\texttt{--no-header} & This switch removes the headers from the output when the \texttt{--follow} mode is being employed.\\\hline
+
+\texttt{--no-counter} & Removes the line counter in front of the lines in \texttt{--follow} mode.\\\hline
+
+\texttt{--no-local} & This switch removes the local inteface "lo" from the statistics when interpreting the data in the analyzer mode.\\\hline
+
+\texttt{--no-accept} & This switch removes all packets marked "ACCEPT" from the analyzer output and focuses the analysis on the dropped and invalid packets.\\\hline
+\end{longtable}
+
+\section{Using the ipta tool}
+
+
 
 \end{document}
