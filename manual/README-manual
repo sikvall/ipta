@@ -2,3 +2,8 @@ The manual is seriously lagging behind and I apologise for that. I
 will try to add a proper manual shortly that will both be possible to
 build using a proper make file and a full PDF that can be used by
 anyone who do not have the full fledged LaTeX system installed.
+
+Added 2015-05-14: New manual i starting to take shape and will likely
+be released within a few weeks time. It will be re-written in LaTeX
+and it can also be compiled and therefore distributed as source
+through the git repository.
