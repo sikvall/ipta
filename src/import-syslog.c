@@ -239,7 +239,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 
       if(row_counter == QUERY_ROW_COUNT) {
 	sprintf(query_string, "%s;", query_string);
-	printf("- Processed %d lines in %d seconds, %d bytes in query  \r", 
+	fprintf(stderr, "- Processed %d lines in %d seconds, %d bytes in query  \r", 
 	       lines, (int)time(NULL)-(int)starttime, (int)strlen(query_string) );
 	
 	if(mysql_query(con, query_string)) {
