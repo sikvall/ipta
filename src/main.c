@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     
     // TO BE DONE
   } else {
-    fprintf(stderr, "o No config file detected.");
+    fprintf(stderr, "o No config file detected.\n");
   }
 
   action_flag = FLAG_CLEAR;
