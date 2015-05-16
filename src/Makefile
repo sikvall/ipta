@@ -34,7 +34,10 @@ includes = /usr/include/mysql/
 libs = /usr/local/mysql/lib/
 link = mysqlclient
 
-cflags = -O3 -Wall
+width = -m64
+#width = -m32
+
+cflags = -O3 -Wall ${width}
 
 # Actual targets here, main first, then all supporting objects please.
 
@@ -69,7 +72,6 @@ follow.o: follow.c ipta.h
 
 config.o: config.c ipta.h
 	gcc ${cflags} -c config.c -L ${libs} -I ${includes}
-
 
 # Special targets here
 

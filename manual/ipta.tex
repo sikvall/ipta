@@ -67,9 +67,9 @@
 \noindent
 
 \begin{center}
-	Version 0.1\\[5mm] \textcopyright\ Copyright 2015 Anders Sikvall, 
-	ichimusai.org\\
-	Printed in Sweden
+	Version 0.1\\[5mm] \textcopyright\ Copyright 2015 Anders Sikvall\\
+	http://ichimusai.org/projects/ipta\\
+	ichi@ichimusai.org
 	\newpage
 \end{center}
 
@@ -84,6 +84,8 @@
 
 \lhead{\nouppercase{\leftmark}}
 \rhead{\nouppercase{\rightmark}}
+
+\setlength{\headheight}{15pt}
 
 \pagestyle{fancy}
 
@@ -103,6 +105,7 @@ without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
 the following conditions:
+
 
 \begin{itemize}
 \item[1.] The above copyright notice and this permission notice shall
@@ -207,14 +210,15 @@ that are not included yet. You may find a few that are just stubs or
 that are not working properly.
 
 Please report any other bugs you find on the issue tracker at
-\hyperref[https://github.com/sikvall/ipta]{the GitHub issue tracker at
-  (https://github.com/sikvall/ipta)}. It is much appreciated if you
+Github\footnote{https://github.com/sikvall/ipta}. It is much 
+appreciated if you
 would take the time and describe how to re-create the bug.
 
-You can of course also email me and I will create an issue for the bug
-and see what we can do for a resolution. Please email to
-\hyperref[mailto:anders@sikvall.se]{anders@sikvall.se} for reporting
-bugs and put ``ipta: [description]'' in the header.
+You can of course also email me and I will create an issue for the 
+bug and
+see what we can do for a resolution. Please email to 
+$<$anders@sikvall.se$>$
+for reporting bugs and put ``ipta: [description]'' in the header.
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -230,9 +234,13 @@ The system relies on mysql server and client software installed on the
 local machine or another machine. Consult your system documentation on
 how to install the necessary tools.
 
+For Ubuntu you would likely install something like this:
+
+\small
 \begin{verbatim}
-# apt-get install mysql-server
+$ sudo apt-get install mysql-server mysql-client mysql-common
 \end{verbatim}
+\normalsize
 
 \subsection{Installing the necessary tools}
 
@@ -521,11 +529,13 @@ Let's start with creating a log chain for packets that are dropped. We
 will at the beginning somewhere, before any rules but after the policy
 setting in the iptables script insert something like this:
 
+\small
 \begin{verbatim}
 iptables -N LOGDROP
-iptables -A LOGDROP -j LOG --log-prefix ``IPT: DROP `` --log-level 7
+iptables -A LOGDROP -j LOG --log-prefix "IPT: DROP " --log-level 7
 iptables -A LOGDROP -j DROP
 \end{verbatim}
+\normalsize
 
 Now every time in your firewall that you will drop a packet, instead
 of using the usual target DROP you will replace it with LOGDROP
@@ -538,7 +548,7 @@ logged and it can look like this
 \small
 \begin{verbatim}
 iptables -N LOGACCEPT
-iptables -A LOGACCEPT -j LOG --log-prefix ``IPT: ACCEPT `` --log-level 7
+iptables -A LOGACCEPT -j LOG --log-prefix "IPT: ACCEPT " --log-level 7
 iptables -A LOGACCEPT -j ACCEPT
 \end{verbatim}
 \normalsize
@@ -770,8 +780,8 @@ a new header is written detailing the fields to aid the operator
 idetinfyin what he sees on the screen.
 
 This is useful for real-time monitoring of any logged packets. It will
-not affect the database in any way or store any data so all the
-switches and parameters dealing with that has no effect when this mode
+not affect the database in any way or store any data so all the switches and 
+parameters dealing with that has no effect when this mode
 is employed.\\\hline
 
 \texttt{-ai, --analyze-interactive} & \hilight{Not yet implemented.}
@@ -1067,7 +1077,7 @@ This module shows the packets count per action and interface. It is
 useful as a marker and keep an eye on things in Interface statistics
 general.
 
-\scriptsize \begin{verbatim}
+\footnotesize \begin{verbatim}
  Count   IF In        Action       Proto
 ------   ----------   ----------   -----
    241   eth0         INVALID      TCP      
@@ -1107,7 +1117,7 @@ such as source IP and port as well as destination IP and port and the
 action taken on the packet. With the \texttt{--no-accept} flag the
 system will skip any line with the action set to ACCEPT of course.
 
-\scriptsize \begin{verbatim}
+\tiny \begin{verbatim}
 Count    IF       Source                          Port Destination                     Port Proto      Action    
 -------- -------- ------------------------------ ----- ------------------------------ ----- ---------- ----------
     1951 eth0     *6f44.cust.bredbandsbolaget.se 35396 zathras.ichimusai.org          15003 TCP        DROP      
@@ -1131,6 +1141,4 @@ Count    IF       Source                          Port Destination              
     1969 eth0     *6f44.cust.bredbandsbolaget.se 57365 zathras.ichimusai.org           1108 TCP        DROP      
     1970 eth0     *6f44.cust.bredbandsbolaget.se 48566 zathras.ichimusai.org           8443 TCP        DROP      
 \end{verbatim} \normalsize
-
-
 \end{document} 
