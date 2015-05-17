@@ -25,17 +25,20 @@
 
 # Variables here
 
-objects = main.o import-syslog.o analyze.o gethostbyaddr.o	\
-	  print_licence.o db_maintenance.o follow.o config.o 
+objects = main.o import-syslog.o analyze.o gethostbyaddr.o   \
+	  print_licence.o db_maintenance.o follow.o config.o \
+	  cfg2.o
+
 #dns_cache.o
 target = ipta
 headers = ipta.h
 includes = /usr/include/mysql/
 libs = /usr/local/mysql/lib/
 link = mysqlclient
+#link = /usr/lib64/mysqlclient
 
-width = -m64
-#width = -m32
+#width = -m64
+width = -m32
 
 cflags = -O3 -Wall ${width}
 
@@ -51,6 +54,9 @@ main.o: main.c ipta.h
 
 dns_cache.o: dns_cache.c ipta.h
 	gcc ${cflags} -c dns_cache.c -I ${includes}
+
+cfg2.o:
+	gcc ${cflags} -c cfg2.c -I ${includes}
 
 import-syslog.o: import-syslog.c ipta.h
 	gcc ${cflags} -c import-syslog.c -L ${libs} -I ${includes}	

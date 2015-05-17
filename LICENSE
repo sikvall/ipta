@@ -54,6 +54,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Credits for this software
 
-All original inventing, coding, documentation, and testing of the
-original package and inventing the software in the first place: Anders
+Original inventing, coding, documentation, and testing of the original
+package and inventing the software in the first place: Anders
 "Ichimusai" Sikvall <ichi@ichimusai.org> http://ichimusai.org/
+
+Configuration file parsing partially built on code from Lubomir I.
+Ivanov <neolit123@gmail.com/ and can be found at http://github.com/ in
+its original form as well.
+
