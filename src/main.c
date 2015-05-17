@@ -118,9 +118,8 @@ int main(int argc, char *argv[])
     }
 
     if(!strcmp(argv[i], "--license")) {
-      known_flag = FLAG_SET;
-      print_license_flag = FLAG_SET;
-      action_flag = FLAG_SET;
+      print_license();
+      goto clean_exit;
     }
 
     if(!strcmp(argv[i], "--usage")) {
@@ -233,8 +232,7 @@ int main(int argc, char *argv[])
     if(!strcmp(argv[i], "--db-host") || !strcmp(argv[i], "-h")) {
       known_flag = FLAG_SET;
       if(argc < (i+2)) {
-	fprintf(stderr, "? If you want to use use %s to select database host, I need a name.\n", 
-		argv[i]);
+	fprintf(stderr, "? If you want to use use %s to select database host, I need a name.\n", argv[i]);
 	retval = RETVAL_ERROR;
 	goto clean_exit;
       }
@@ -391,9 +389,6 @@ int main(int argc, char *argv[])
     }
   }
   
-  if(print_license_flag) {
-    print_license();
-  }
   
   
  clean_exit:
