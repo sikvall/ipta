@@ -98,25 +98,26 @@ int main(int argc, char *argv[])
   retval = cfg_parse_file(st, "~/.ipta");
   printf("cfg_parse_file() returned: %d\n", retval);
   if(retval) {
-    fprintf(stderr, "! Error in parsing configuration file. Please check the syntax.\n");
-    retval = RETVAL_ERROR;
-    goto clean_exit;
+    fprintf(stderr, "! Unable to open config file, skipping.\n");
+  } else {
+    /* Print all found keys */
+    i = 0;
+    printf("st->nkeys: %d\n", st->nkeys);
+    while(i < st->nkeys) {
+      printf("%s, %s\n", st->entry[i].key, st->entry[i].value);
+      i++;
+    }
+    
+    /* Look for the standard parameter names and move the value to the
+       internal hold as needed */
+    
+    /* TODO */
+   
+
+
+    
   }
-
-  /* Print all found keys */
-  i = 0;
-  printf("st->nkeys: %d\n", st->nkeys);
-  while(i < st->nkeys) {
-    printf("%s, %s\n", st->entry[i].key, st->entry[i].value);
-    i++;
-  }
-
-
-  /* Look for the standard parameter names and move the value to the
-     internal hold as needed */
-
-  /* TODO */
-
+  
 
   action_flag = FLAG_CLEAR;
   for(i=1; i < argc; i++) {
