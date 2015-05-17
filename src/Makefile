@@ -31,14 +31,14 @@ objects = main.o import-syslog.o analyze.o gethostbyaddr.o   \
 
 #dns_cache.o
 target = ipta
-headers = ipta.h
+headers = ipta.h cfg.h
 includes = /usr/include/mysql/
 libs = /usr/local/mysql/lib/
 link = mysqlclient
 #link = /usr/lib64/mysqlclient
 
 #width = -m64
-width = -m32
+#width = -m32
 
 cflags = -O3 -Wall ${width}
 
@@ -55,7 +55,7 @@ main.o: main.c ipta.h
 dns_cache.o: dns_cache.c ipta.h
 	gcc ${cflags} -c dns_cache.c -I ${includes}
 
-cfg2.o:
+cfg2.o: cfg2.c cfg2.h
 	gcc ${cflags} -c cfg2.c -I ${includes}
 
 import-syslog.o: import-syslog.c ipta.h

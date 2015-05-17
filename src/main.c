@@ -29,6 +29,7 @@
 #include <my_global.h>
 #include <mysql.h>
 #include "ipta.h"
+#include "cfg2.h"
 
 
 int main(int argc, char *argv[]) 
@@ -57,6 +58,8 @@ int main(int argc, char *argv[])
   int list_tables_flg = 0;
   int print_license_flag = 0;
   //  int slask = 0;
+  cfg_t *st; /* Configuration store */
+  char *buf = "";
 
   flags = calloc(sizeof(struct ipta_flags), 1);
   if(NULL == flags) {
@@ -69,7 +72,7 @@ int main(int argc, char *argv[])
     fprintf(stderr, "! Error, memory allocation failed.\n");
     exit(RETVAL_ERROR);
   }
-  
+
   // Load default parameters
   strcpy(db_info->host, DEFAULT_DB_HOSTNAME);
   strcpy(db_info->user, DEFAULT_DB_USERNAME);
@@ -77,19 +80,43 @@ int main(int argc, char *argv[])
   strcpy(db_info->name, DEFAULT_DB_NAME);
   strcpy(db_info->table, DEFAULT_DB_TABLENAME);
 
-  // Check if there is a config file, if so we should parse that for our
-  // data before we override that with something on the command line
+  /* Initialize config structure with no cache, we do not need it here
+     because there is not a lot of keywords to look at */
 
-  config_file = fopen("~/.ipta", "r");
-  if(NULL != config_file) {
-    fprintf(stderr, "o Opening config file is a stub right now.\n");
-    // File exists so we look for keywords in the file to match to our
-    // parameters but any missing keyword will be default
-    
-    // TO BE DONE
-  } else {
-    fprintf(stderr, "o No config file detected.\n");
+  st = calloc(sizeof(cfg_t), 1);
+  retval = cfg_init(st, 0);
+  if(retval) {
+    fprintf(stderr,
+	    "! Error, unable to initialize configuration file struct.\n"
+	    "  This is an internal error and should be reported as a bug.\n"
+	    "  Information: cfg_init() returned %d.\n", retval);
+    retval = RETVAL_ERROR;
+    goto clean_exit;
   }
+
+  //retval = cfg_parse_buffer(&st, buf, strlen(buf));
+  retval = cfg_parse_file(st, "~/.ipta");
+  printf("cfg_parse_file() returned: %d\n", retval);
+  if(retval) {
+    fprintf(stderr, "! Error in parsing configuration file. Please check the syntax.\n");
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
+
+  /* Print all found keys */
+  i = 0;
+  printf("st->nkeys: %d\n", st->nkeys);
+  while(i < st->nkeys) {
+    printf("%s, %s\n", st->entry[i].key, st->entry[i].value);
+    i++;
+  }
+
+
+  /* Look for the standard parameter names and move the value to the
+     internal hold as needed */
+
+  /* TODO */
+
 
   action_flag = FLAG_CLEAR;
   for(i=1; i < argc; i++) {
@@ -396,5 +423,6 @@ int main(int argc, char *argv[])
     fclose(config_file);
   free(flags);
   free(db_info);
+  cfg_free(st);
   return retval;
 }
