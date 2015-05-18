@@ -35,6 +35,9 @@
 #include "ipta.h"
 #include "cfg2.h"
 
+#define DEBUG 1L
+
+
 
 int main(int argc, char *argv[]) 
 {
@@ -109,12 +112,10 @@ int main(int argc, char *argv[])
   } else {
     /* Print all found keys */
     i = 0;
-#ifdef DEBUG
     while(i < st->nkeys) {
       printf("%s, %s\n", st->entry[i].key, st->entry[i].value);
       i++;
     }
-#endif
 
     /* Look for the standard parameter names and move the value to the
        internal hold as needed */
@@ -353,7 +354,7 @@ int main(int argc, char *argv[])
 
   // Process the actual modes to do something here
   if(!action_flag) {
-    fprintf(stderr, "No action. Exit.\n");
+    fprintf(stderr, "- No action, exiting.\n");
     retval = RETVAL_WARN;
     goto clean_exit;
   }
