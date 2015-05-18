@@ -22,12 +22,16 @@
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
 #include <my_global.h>
 #include <mysql.h>
+#include <linux/limits.h>
 #include "ipta.h"
 #include "cfg2.h"
 
@@ -42,8 +46,6 @@ int main(int argc, char *argv[])
   int clear_db = 0;
   int analyze_limit = 10;
   int known_flag, action_flag = 0;
-  //char input_db_pass[512];
-  //  char hostname[256];
   char password_input[1024];
   FILE *config_file = NULL;
   int print_usage_flag = 0;
@@ -57,9 +59,9 @@ int main(int argc, char *argv[])
   int analyze_flag = 0;
   int list_tables_flg = 0;
   int print_license_flag = 0;
-  //  int slask = 0;
   cfg_t *st; /* Configuration store */
-  char *buf = "";
+  struct passwd *pw = NULL;
+  char home[PATH_MAX];
 
   flags = calloc(sizeof(struct ipta_flags), 1);
   if(NULL == flags) {
@@ -95,19 +97,25 @@ int main(int argc, char *argv[])
   }
 
   //retval = cfg_parse_buffer(&st, buf, strlen(buf));
-  retval = cfg_parse_file(st, "~/.ipta");
-  printf("cfg_parse_file() returned: %d\n", retval);
+
+  /* get user home dir and construct home path string */
+  pw = getpwuid(getuid());
+  retval = sprintf(home, "%s/.ipta", pw->pw_dir);
+
+  retval = cfg_parse_file(st, home);
   if(retval) {
     fprintf(stderr, "! Unable to open config file, skipping.\n");
+    fprintf(stderr, "! Errno: %d\n", errno);
   } else {
     /* Print all found keys */
     i = 0;
-    printf("st->nkeys: %d\n", st->nkeys);
+#ifdef DEBUG
     while(i < st->nkeys) {
       printf("%s, %s\n", st->entry[i].key, st->entry[i].value);
       i++;
     }
-    
+#endif
+
     /* Look for the standard parameter names and move the value to the
        internal hold as needed */
     
