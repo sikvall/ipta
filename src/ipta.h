@@ -82,6 +82,8 @@ struct ipta_config {
   struct ipta_flags *flags;
 };
 
+    
+    
 
 /* Function declarations */
 
