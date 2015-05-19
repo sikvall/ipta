@@ -38,7 +38,6 @@
 #define DEBUG 1L
 
 
-
 int main(int argc, char *argv[]) 
 {
   struct ipta_flags *flags = NULL;
@@ -109,25 +108,61 @@ int main(int argc, char *argv[])
   if(retval) {
     fprintf(stderr, "- Configuration file not found, using defaults.");
   } 
+
   else {
-    /* Print all found keys */
-    i = 0;
-    while(i < st->nkeys) {
-      printf("%s, %s\n", st->entry[i].key, st->entry[i].value);
-      i++;
-    }
-    
+
     /* Look for the standard parameter names and move the value to the
        internal hold as needed */
-    
-    /* TODO */
+    i = 0;
+    while(i < st->nkeys) {
+      //      printf("# Key: %s   Value: %s\n", st->entry[i].key, st->entry[i].value);
+      if(strlen(st->entry[i].value) >= IPTA_DB_INFO_STRLEN) {
+	fprintf(stderr, "! Error in configuration file, key value too long.\n");
+	fprintf(stderr, "  Key: %s\n", st->entry[i].key);
+	retval = RETVAL_ERROR;
+	goto clean_exit;
+      }
 
+      if(!strcmp("db_host", st->entry[i].key))
+	strncpy(db_info->host,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
+      if(!strcmp("db_user", st->entry[i].key))
+	strncpy(db_info->user,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
+      if(!strcmp("db_pass", st->entry[i].key))
+	strncpy(db_info->pass,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
+      if(!strcmp("db_name", st->entry[i].key))
+	strncpy(db_info->name,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
+      if(!strcmp("db_table", st->entry[i].key))
+	strncpy(db_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
 
+      if(!strcmp("analyzer limit", st->entry[i].key)) {
 
+	analyze_limit = strtol(st->entry[i].value, NULL, 10);
 
-    
-  }
+	if(analyze_limit < 1) {
+	  fprintf(stderr, "! Error, analyze limit must be > 0.");
+	  retval = RETVAL_ERROR;
+	  goto clean_exit;
+	}
+
+	if(analyze_limit > 1000) {
+	  fprintf(stderr, "! Error, analyze limit must be < 1000.\n");
+	  retval = RETVAL_ERROR;
+	  goto clean_exit;
+	}
+
+	fprintf(stderr, "  analyzer_limit: %d\n", analyze_limit);
+
+      }
+      
+      i++; /* Next key */
+    } /* while keys left */
+  } /* else */
   
+  fprintf(stderr, "db_host: %s\n", db_info->host);
+  fprintf(stderr, "db_user: %s\n", db_info->user);
+  fprintf(stderr, "db_pass: %s\n", db_info->pass);
+  fprintf(stderr, "db_name: %s\n", db_info->name);
+  fprintf(stderr, "db_table: %s\n", db_info->table);
 
   action_flag = FLAG_CLEAR;
   for(i=1; i < argc; i++) {
@@ -437,3 +472,5 @@ int main(int argc, char *argv[])
   cfg_free(st);
   return retval;
 }
+
+  
