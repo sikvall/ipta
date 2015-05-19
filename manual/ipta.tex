@@ -737,7 +737,7 @@ same packets being logged.
 You can change the settings for the database in the ipta-system
 configuration file in your home folder. It should be called .ipta-conf
 and will be read upon start to find your database names, passwords
-etc. \hilight{Config file is not yet implemented.}
+etc. 
 
 \subsection{Options}
 
@@ -1154,4 +1154,73 @@ Count    IF       Source                          Port Destination              
     1969 eth0     *6f44.cust.bredbandsbolaget.se 57365 zathras.ichimusai.org           1108 TCP        DROP      
     1970 eth0     *6f44.cust.bredbandsbolaget.se 48566 zathras.ichimusai.org           8443 TCP        DROP      
 \end{verbatim} \normalsize
+
+\section{Configuration file}
+
+The configuration file is a simple text file that contains key = value pairs. The file should be in the users home directory and be called ".ipta" for it to be found. All the keys in the file are optional. Keys missing from the file will means ipta use the default value instead. Keys in the config file can be overridden on the command line using arguments such as \texttt{--db-host} and similar.
+
+\subsection{Keywords}
+
+This describes the keywords in the configuration file.
+
+\begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
+\hline
+Key & Value\\
+\hline
+analyzer limit & Sets the maximum lines to ouput in the analyzer module when ipta is being called with the \texttt{--analyze} argument. Some modules in the analyzer may output less lines however, but never more.\\ \hline
+
+db\_host & Sets the hostname for the MySQL server. Usually localhost for best performance but you may just as well use a separate database server if you prefer.\\\hline
+
+db\_user & Sets the username when connecting to the MySQL database.\\\hline
+
+db\_pass & Sets the password when connecting to the MySQL database.\\\hline
+
+db\_name & Sets the database name to use, default is "ipta".\\\hline
+
+db\_table & Sets the name of the table to use, default is "logs".\\\hline
+\end{longtable}
+
+\subsection{Config example}
+
+This is an example of a configuration file.
+
+\begin{verbatim}
+######################################################################
+## ipta configuration file
+#
+# This is an example file for your configuration
+# you can change these at any time. Because this file may potentially
+# contain your username and password to the database that ipta is 
+# using you should make sure you set permissions so others can't read
+# this file.
+#
+# chmod ~/.ipta 600
+#
+#
+
+##########################
+# miscellaneous settings #
+##########################
+
+analyzer limit = 15
+
+#####################
+# Database settings #
+#####################
+
+db_host = localhost
+db_user = ipta
+db_pass = ipta
+db_name = ipta
+db_table = logs
+
+# End
+\end{verbatim}
+
+You may copy and paste this to your init file.
+
+\section{Database format}
+
+\hilight{Coming in next release}
+
 \end{document} 
