@@ -107,21 +107,22 @@ int main(int argc, char *argv[])
 
   retval = cfg_parse_file(st, home);
   if(retval) {
-    fprintf(stderr, "! Unable to open config file, skipping.\n");
-    fprintf(stderr, "! Errno: %d\n", errno);
-  } else {
+    fprintf(stderr, "- Configuration file not found, using defaults.");
+  } 
+  else {
     /* Print all found keys */
     i = 0;
     while(i < st->nkeys) {
       printf("%s, %s\n", st->entry[i].key, st->entry[i].value);
       i++;
     }
-
+    
     /* Look for the standard parameter names and move the value to the
        internal hold as needed */
     
     /* TODO */
-   
+
+
 
 
     
