@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     exit(RETVAL_ERROR);
   }
 
-  // Load default parameters
+  /* Load default parameters */
   strcpy(db_info->host, DEFAULT_DB_HOSTNAME);
   strcpy(db_info->user, DEFAULT_DB_USERNAME);
   strcpy(db_info->pass, DEFAULT_DB_PASSWORD);
@@ -98,9 +98,7 @@ int main(int argc, char *argv[])
     goto clean_exit;
   }
 
-  //retval = cfg_parse_buffer(&st, buf, strlen(buf));
-
-  /* get user home dir and construct home path string */
+  /* Get user home dir and construct home path string */
   pw = getpwuid(getuid());
   retval = sprintf(home, "%s/.ipta", pw->pw_dir);
 
@@ -110,12 +108,11 @@ int main(int argc, char *argv[])
   } 
 
   else {
-
+    
     /* Look for the standard parameter names and move the value to the
        internal hold as needed */
     i = 0;
     while(i < st->nkeys) {
-      //      printf("# Key: %s   Value: %s\n", st->entry[i].key, st->entry[i].value);
       if(strlen(st->entry[i].value) >= IPTA_DB_INFO_STRLEN) {
 	fprintf(stderr, "! Error in configuration file, key value too long.\n");
 	fprintf(stderr, "  Key: %s\n", st->entry[i].key);
@@ -123,6 +120,7 @@ int main(int argc, char *argv[])
 	goto clean_exit;
       }
 
+      /* Check against the known keys, if match, copy value to hold */
       if(!strcmp("db_host", st->entry[i].key))
 	strncpy(db_info->host,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
       if(!strcmp("db_user", st->entry[i].key))
@@ -134,6 +132,8 @@ int main(int argc, char *argv[])
       if(!strcmp("db_table", st->entry[i].key))
 	strncpy(db_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
 
+      /* Analyzer limit is a little special and requires a range
+	 check */
       if(!strcmp("analyzer limit", st->entry[i].key)) {
 
 	analyze_limit = strtol(st->entry[i].value, NULL, 10);
@@ -152,9 +152,9 @@ int main(int argc, char *argv[])
 
 	fprintf(stderr, "  analyzer_limit: %d\n", analyze_limit);
 
-      }
+      } /* Is analyzer limit */ 
       
-      i++; /* Next key */
+      i++; 
     } /* while keys left */
   } /* else */
   
@@ -321,8 +321,8 @@ int main(int argc, char *argv[])
     }
 
 
-    /* Table operations defined here as flags are processed */
-
+    /* Table operations defined here as flags are processed
+     */
     if(!strcmp(argv[i], "-lt") || !strcmp(argv[i], "--list-tables")) {
       known_flag = FLAG_SET;
       action_flag = FLAG_SET;
@@ -371,7 +371,7 @@ int main(int argc, char *argv[])
       known_flag = FLAG_SET;
     }
     
-    // Sanity check for arguments we don't handle
+    /* Sanity check for arguments we don't handle */
     if(!known_flag) {
       fprintf(stderr, "Unknown option or argument %s found.\n", argv[i]);
       retval = RETVAL_WARN; 
@@ -379,7 +379,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  // Process the actual modes to do something here
+/* Process the actual modes to do something here */
   if(!action_flag) {
     fprintf(stderr, "- No action, exiting.\n");
     retval = RETVAL_WARN;
@@ -409,8 +409,8 @@ int main(int argc, char *argv[])
     retval = list_tables(db_info);
     if(retval)
       goto clean_exit;
-    // If retval is FALSE then there is no problem and we can
-    // continue to process other things.
+    /* If retval is FALSE then there is no problem and we can continue
+       to process other things. */
   }
 
   if(delete_table_flag) {
@@ -424,7 +424,7 @@ int main(int argc, char *argv[])
   }
 
   if(clear_db) {
-    // Clear the database
+    /* Do clear the database */
     retval = clear_database(db_info);
     if(retval != 0) {
       fprintf(stderr, "! Error, clearing database, exiting.\n");
@@ -435,6 +435,7 @@ int main(int argc, char *argv[])
   }
   
   if(import_flag) {
+    /* import from syslog */
     retval = import_syslog(db_info, import_fname);
     if(retval != 0) {
       fprintf(stderr, "! Error importing. Sorry.\n");
@@ -445,6 +446,7 @@ int main(int argc, char *argv[])
   }
   
   if(analyze_flag) {
+    /* Analyze imported data that's in MySQL */
     retval = analyze(db_info, flags, analyze_limits);
     if(retval) {
       fprintf(stderr, "! Error in analyzer. Sorry.\n");
@@ -452,9 +454,7 @@ int main(int argc, char *argv[])
       goto clean_exit;
     }
   }
-  
-  
-  
+
  clean_exit:
   if(config_file)
     fclose(config_file);
