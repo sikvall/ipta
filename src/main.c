@@ -162,9 +162,6 @@ int main(int argc, char *argv[])
   for(i=1; i < argc; i++) {
     known_flag = FLAG_CLEAR;
 
-    //    printf("* Checking argument %s\n", argv[i]);
-
-    if(!strcmp(argv[i], "--version") || !strcmp(argv[i], "-v")) {
       printf(IPTA_VERSION);
       goto clean_exit;
     }
