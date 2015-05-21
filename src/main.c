@@ -158,12 +158,6 @@ int main(int argc, char *argv[])
     } /* while keys left */
   } /* else */
   
-  fprintf(stderr, "db_host: %s\n", db_info->host);
-  fprintf(stderr, "db_user: %s\n", db_info->user);
-  fprintf(stderr, "db_pass: %s\n", db_info->pass);
-  fprintf(stderr, "db_name: %s\n", db_info->name);
-  fprintf(stderr, "db_table: %s\n", db_info->table);
-
   action_flag = FLAG_CLEAR;
   for(i=1; i < argc; i++) {
     known_flag = FLAG_CLEAR;
