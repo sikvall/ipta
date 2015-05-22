@@ -194,7 +194,7 @@ int create_table(struct ipta_db_info *db_info)
     goto finish;
   }
 
-  printf("* Table '%s' created in database which you may now use.\n", db_info->table);
+  fprintf(stderr, "* Table '%s' created in database which you may now use.\n", db_info->table);
 
   /* We goto here if something went wrong to make sure we free our
      resources but only once. I know some of you hates goto but in
@@ -230,8 +230,8 @@ int delete_table(struct ipta_db_info *db_info)
   fprintf(stderr, "* Opening database.\n");
   con = mysql_init(NULL);
   if(con == NULL) {
-    printf("ERROR: Unable to initialize MySQL connection.\n");
-    printf("Error message: %s\n", mysql_error(con));
+    fprintf(stderr, "! ERROR: Unable to initialize MySQL connection.\n");
+    fprintf(stderr, "  Error message: %s\n", mysql_error(con));
     retval = RETVAL_ERROR;
     goto clean_exit;
   }
@@ -399,7 +399,7 @@ int clear_database(struct ipta_db_info *db_info)
   fprintf(stderr, "* Selecting database %s.\n", db_info->name);
   sprintf(query_string, "USE %s;", db_info->name);
   if(mysql_query(con, query_string)) {
-    fprintf(stderr, "%s\n", mysql_error(con));
+    fprintf(stderr, "  %s\n", mysql_error(con));
     retval = RETVAL_ERROR;
     goto clean_exit;
   }
