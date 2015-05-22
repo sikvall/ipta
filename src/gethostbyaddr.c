@@ -53,6 +53,10 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
   int retval = RETVAL_OK;
   int dns_reply = 0;
 
+  /* Check if the answer is in the cache */
+
+  /* TODO */
+
   /* Clear all stuff */
   memset(&ip4addr, 0, sizeof(struct sockaddr_in));
 
