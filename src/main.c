@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 	  retval = RETVAL_ERROR;
 	  goto clean_exit;
 	}
-
+	
 	fprintf(stderr, "  analyzer_limit: %d\n", analyze_limit);
 
       } /* Is analyzer limit */ 
@@ -161,10 +161,6 @@ int main(int argc, char *argv[])
   action_flag = FLAG_CLEAR;
   for(i=1; i < argc; i++) {
     known_flag = FLAG_CLEAR;
-
-      printf(IPTA_VERSION);
-      goto clean_exit;
-    }
 
     if(!strcmp(argv[i], "--rdns") || !strcmp(argv[i], "-r")) {
       flags->rdns = FLAG_SET;
