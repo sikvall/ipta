@@ -24,7 +24,7 @@
 
 
 /* Overall generic defines */
-#define IPTA_VERSION "ipta version 1.0.0\n"
+#define IPTA_VERSION "ipta version Releaste-V0.3\n"
 
 /* Specific error defines */
 #define ERROR_FILE_OPEN -1
