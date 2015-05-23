@@ -109,8 +109,8 @@ int main(int argc, char *argv[])
 
   else {
     
-    /* Look for the standard parameter names and move the value to the
-       internal hold as needed */
+    /* Look for the standard parameter names and move the value to the internal
+       hold as needed */
     i = 0;
     while(i < st->nkeys) {
       if(strlen(st->entry[i].value) >= IPTA_DB_INFO_STRLEN) {
@@ -132,8 +132,7 @@ int main(int argc, char *argv[])
       if(!strcmp("db_table", st->entry[i].key))
 	strncpy(db_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
 
-      /* Analyzer limit is a little special and requires a range
-	 check */
+      /* Analyzer limit is a little special and requires a range check */
       if(!strcmp("analyzer limit", st->entry[i].key)) {
 
 	analyze_limit = strtol(st->entry[i].value, NULL, 10);
@@ -161,6 +160,11 @@ int main(int argc, char *argv[])
   action_flag = FLAG_CLEAR;
   for(i=1; i < argc; i++) {
     known_flag = FLAG_CLEAR;
+
+    if(!strcmp(argv[i], "--version") || !strcmp("-v")) {
+      printf(IPTA_VERSION);
+      retval = RETVAL_OK;
+      continue;
 
     if(!strcmp(argv[i], "--rdns") || !strcmp(argv[i], "-r")) {
       flags->rdns = FLAG_SET;
