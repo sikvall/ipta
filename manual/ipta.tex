@@ -1223,4 +1223,17 @@ You may copy and paste this to your init file.
 
 \hilight{Coming in next release}
 
+\section{DNS Cache functions}
+
+The built-in DNS caching function will save you a number of lookups as it will first query the local database and only if the TTL has expired or if there is no record of the IP again will the operating system be queried to do a reverse DNS lookup on the IP number.
+
+This save a large number of unnecessary requests but it also introduces the risk that we show old information to the user. Therefore a time to live should be used so that when we have old records we will still query the DNS subsystem rather than pulling old names out of our proverbial hat.
+
+The defalt time to live is 14 days. While this is quite okay for most cases it may not work well if you have a lot of dynamically assigned names to IP addresses (although it is rarer, the reverse is much more common) you can modify this by using \texttt{--dns-cache-ttl <hours>} to expire it faster or slower.
+
+14 days equals 336 hours anyhow and anything from sayt 6 hours to 900 hours should be pretty sane to use here.
+
+You can also clear the entire DNS cache by issuing the option \texttt{--dns-cache-clear} of course. This will remove all entries from the dns cache and start caching things anew.
+
+
 \end{document} 
