@@ -165,6 +165,7 @@ int main(int argc, char *argv[])
       printf(IPTA_VERSION);
       retval = RETVAL_OK;
       continue;
+    }
 
     if(!strcmp(argv[i], "--rdns") || !strcmp(argv[i], "-r")) {
       flags->rdns = FLAG_SET;
@@ -391,11 +392,11 @@ int main(int argc, char *argv[])
     retval = follow(follow_file, flags);
     goto clean_exit;
   }
-
+  
   if(print_usage_flag) {
     print_usage();
   }
-
+  
   /* Setup the default db setting and stor in .ipta */
   if(save_db_flag) {
     retval = save_db(db_info);
