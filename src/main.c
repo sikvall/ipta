@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
   for(i=1; i < argc; i++) {
     known_flag = FLAG_CLEAR;
 
-    if(!strcmp(argv[i], "--version") || !strcmp("-v")) {
+    if(!strcmp(argv[i], "--version") || !strcmp(argv[i], "-v")) {
       printf(IPTA_VERSION);
       retval = RETVAL_OK;
       continue;
