@@ -33,6 +33,56 @@
 #include <mysql.h>
 #include "ipta.h"
 
+
+/*****************************************************************************
+ * dns_cache_create_table creates a new table and populates it with
+ * the necessary parths to be used later as a dns_cache for the ipta
+ * system
+ *****************************************************************************/
+int dns_cache_create_table(struct ipta_db_info *db) {
+}
+
+
+/**********************************************************************
+ * Delete a table pointed out by the struct and return success
+ * RETVAL_OK if all went well or error code if there was a problem.
+ **********************************************************************/
+int dns_cache_delete_table(struct ipta_db_info *db) {
+}
+
+
+int dns_cache_clear_table(struct ipta_db_info *db) {
+}
+
+
+/***********************************************************************
+ * Drop any record that has an expired TTL in the database when this
+ * function is called. The TTL is set in form of a date. When new
+ * records are added they are added with a default TTL determined in
+ * ipta.h. Expiry will look up todays date and select all records that
+ * have older dates and then remove them.
+ *
+ * PARAMETERS
+ * 
+ * struct ipta_db_info *db
+ *     Pointer to struct ipta_db_info detailing the database
+ *     connection and other parameters needed to identify the table.
+ *     Defined in ipta.h
+ *
+ * RETURNS
+ *
+ * int : The number of selected/deleted rows that was expired from the
+ *       database.
+ *
+ ***********************************************************************/
+int dns_cache_drop_old_records(struct ipta_db_info *db) { 
+
+}
+
+
+
+
+
 int dns_cache_add(char *ip_address, char *hostname, 
 		  struct ipta_db_info *db)
 {
