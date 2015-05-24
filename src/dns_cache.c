@@ -40,6 +40,10 @@
  * system
  *****************************************************************************/
 int dns_cache_create_table(struct ipta_db_info *db) {
+  perror("Not implemented function is a stub.\n");
+  assert(0);
+  return RETVAL_ERROR;
+
 }
 
 
@@ -48,10 +52,16 @@ int dns_cache_create_table(struct ipta_db_info *db) {
  * RETVAL_OK if all went well or error code if there was a problem.
  **********************************************************************/
 int dns_cache_delete_table(struct ipta_db_info *db) {
+  perror("Function is a stub and not implemented. \n");
+  assert(0);
+  return RETVAL_ERROR;
 }
 
 
 int dns_cache_clear_table(struct ipta_db_info *db) {
+  perror("Function is a stub and not implemented.\n");
+  assert(0);
+  return RETVAL_ERROR;
 }
 
 
@@ -76,7 +86,10 @@ int dns_cache_clear_table(struct ipta_db_info *db) {
  *
  ***********************************************************************/
 int dns_cache_drop_old_records(struct ipta_db_info *db) { 
+  perror("Function is a stub and not implemented.\n");
+  assert(0);
 
+  return RETVAL_ERROR;
 }
 
 
@@ -88,8 +101,8 @@ int dns_cache_add(char *ip_address, char *hostname,
 {
   char *query_string = NULL;
   MYSQL *con = NULL;
-  MYSQL_RES *result = NULL;
-  MYSQL_ROW row = 0;
+  //  MYSQL_RES *result = NULL;
+  //  MYSQL_ROW row = 0;
   int retval = 0;
 
   /* Initialize databse object */
@@ -133,8 +146,11 @@ int dns_cache_add(char *ip_address, char *hostname,
 }
 
 int dns_cache_retrieve(char *ip_address, char *hostname, 
-		       struct db_info *db_info)
+		       struct ipta_db_info *db_info)
 {
+  fprintf(stderr, "The function is a stub.");
+  assert(0);
+  return RETVAL_ERROR;
 
 }
 

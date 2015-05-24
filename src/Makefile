@@ -27,7 +27,7 @@
 
 objects = main.o import-syslog.o analyze.o gethostbyaddr.o   \
 	  print_licence.o db_maintenance.o follow.o config.o \
-	  cfg2.o
+	  cfg2.o dns_cache.o
 
 #dns_cache.o
 target = ipta
