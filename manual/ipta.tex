@@ -748,6 +748,7 @@ are given it will check the configuration file and if there is no
 config file it will use default settings.
 
 
+\subsubsection{Mode switches}
 \scriptsize
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
@@ -790,6 +791,8 @@ queries to the database in such a way that you can create your own
 analysis.\\\hline
 
 \end{longtable}
+
+\subsubsection{Database options}
 
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
@@ -863,6 +866,8 @@ a file and used as default settings next time you run ipta.\\\hline
 \end{longtable}
 \normalsize
 
+\subsubsection{Format switches}
+
 \scriptsize
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
@@ -911,6 +916,27 @@ This switch removes all packets marked with the action "ACCEPT" from
 the analyzer output and focuses the analysis on the dropped and
 invalid packets.\\\hline
 \end{longtable}
+
+\subsubsection{DNS Cache switches}
+
+\scriptsize
+\begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
+	\hline
+	\textbf{DNS Cache options} & \textbf{Description}\\ \hline
+	
+	\texttt{--dnsc, -d [table]} & Use the built-in DNS cache feature. This implies \texttt{--rdns} option and will also save the lookup hostnames into a quick-access table. Next time the same IP address shows up the name will be fetched from the cache rather than from the DNS subsystem. The ``table'' is an optional parameter giving a name for the table to use rather than the default (ipta-dns).\\\hline
+	
+	\texttt{--dnsc-delete [table]} & Delete the DNS cache table called ``table'' from the system. This operation removes the table entirely.\\\hline
+	
+	\texttt{--dnsc-clear [table]} & Remove all entries in the DNS cache table but keep the table to be populated again. This is used to remove all entries if they are old.\\\hline
+	
+	\texttt{--dnsc-prune [table]} & Prune all old entries with expired TTL (time to live) from the cache table. This ensures you do not get the wrong names if they were cached too long ago. The standard TTL in the cache table for reverse DNS names is 14 days. The optional parameter ``table'' says which table to look in. Default is ipta-dns.\\\hline
+	
+	\texttt{--ttl <hours>} & Time to live for the DNS. Used to change the default 14 days (339 hours) into some other value. The time is given in hours.\\\hline
+\end{longtable}
+\normalsize
+
+\subsubsection{Miscellaneous switches}
 
 \scriptsize
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
