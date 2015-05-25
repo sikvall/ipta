@@ -924,15 +924,15 @@ invalid packets.\\\hline
 	\hline
 	\textbf{DNS Cache options} & \textbf{Description}\\ \hline
 	
-	\texttt{--dnsc, -d [table]} & Use the built-in DNS cache feature. This implies \texttt{--rdns} option and will also save the lookup hostnames into a quick-access table. Next time the same IP address shows up the name will be fetched from the cache rather than from the DNS subsystem. The ``table'' is an optional parameter giving a name for the table to use rather than the default (ipta-dns).\\\hline
+	\texttt{--dnsc, -d [table]} & \hilight{Not implemented yet.} Use the built-in DNS cache feature. This implies \texttt{--rdns} option and will also save the lookup hostnames into a quick-access table. Next time the same IP address shows up the name will be fetched from the cache rather than from the DNS subsystem. The ``table'' is an optional parameter giving a name for the table to use rather than the default (ipta-dns).\\\hline
 	
-	\texttt{--dnsc-delete [table]} & Delete the DNS cache table called ``table'' from the system. This operation removes the table entirely.\\\hline
+	\texttt{--dnsc-delete [table]} & \hilight{Not implemented yet.} Delete the DNS cache table called ``table'' from the system. This operation removes the table entirely.\\\hline
 	
-	\texttt{--dnsc-clear [table]} & Remove all entries in the DNS cache table but keep the table to be populated again. This is used to remove all entries if they are old.\\\hline
+	\texttt{--dnsc-clear [table]} & \hilight{Not implemented yet.} Remove all entries in the DNS cache table but keep the table to be populated again. This is used to remove all entries if they are old.\\\hline
 	
-	\texttt{--dnsc-prune [table]} & Prune all old entries with expired TTL (time to live) from the cache table. This ensures you do not get the wrong names if they were cached too long ago. The standard TTL in the cache table for reverse DNS names is 14 days. The optional parameter ``table'' says which table to look in. Default is ipta-dns.\\\hline
+	\texttt{--dnsc-prune [table]} & \hilight{Not implemented yet.} Prune all old entries with expired TTL (time to live) from the cache table. This ensures you do not get the wrong names if they were cached too long ago. The standard TTL in the cache table for reverse DNS names is 14 days. The optional parameter ``table'' says which table to look in. Default is ipta-dns.\\\hline
 	
-	\texttt{--ttl <hours>} & Time to live for the DNS. Used to change the default 14 days (339 hours) into some other value. The time is given in hours.\\\hline
+	\texttt{--ttl <hours>} & \hilight{Not implemented yet.} Time to live for the DNS. Used to change the default 14 days (339 hours) into some other value. The time is given in hours.\\\hline
 \end{longtable}
 \normalsize
 
@@ -1209,7 +1209,7 @@ db\_table & Sets the name of the table to use, default is "logs".\\\hline
 \subsection{Config example}
 
 This is an example of a configuration file.
-
+\scriptsize
 \begin{verbatim}
 ######################################################################
 ## ipta configuration file
@@ -1242,6 +1242,7 @@ db_table = logs
 
 # End
 \end{verbatim}
+\normalsize
 
 You may copy and paste this to your init file.
 
@@ -1250,6 +1251,8 @@ You may copy and paste this to your init file.
 \hilight{Coming in next release}
 
 \section{DNS Cache functions}
+
+\hilight{To be implemented in next release.}
 
 The built-in DNS caching function will save you a number of lookups as it will first query the local database and only if the TTL has expired or if there is no record of the IP again will the operating system be queried to do a reverse DNS lookup on the IP number.
 
