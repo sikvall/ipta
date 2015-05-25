@@ -40,10 +40,72 @@
  * system
  *****************************************************************************/
 int dns_cache_create_table(struct ipta_db_info *db) {
-  perror("Not implemented function is a stub.\n");
-  assert(0);
-  return RETVAL_ERROR;
+  char *query_string = NULL;
+  MYSQL *con = NULL;
+  int retval = RETVAL_OK;
 
+  /* Allocate memory */
+  query_string = calloc(1, 10000);
+  if(NULL == query_string) {
+    fprintf(stderr, "! Error, unable to allocate memory. Quitting!\n");
+    exit(RETVAL_ERROR);
+  }
+
+  /* Initiate the con for MySQL */
+  con = mysql_init(NULL);
+  if(NULL == con) {
+    fprintf(stderr, "! Unable to initialize MySQL connection. \n");
+    fprintf(stderr, "  Error: %s\n", mysql_error(con));
+    
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
+
+  /* Attempt proper connection to database */
+  if(NULL == mysql_real_connect(con, db->host, db->user, db->pass, 
+			       NULL, 0, NULL, 0) == NULL) {
+    fprintf(stderr, "! Unable to connect to database.\n");
+    fprintf(stderr, "  Error: %s\n", mysql_error(con));
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
+
+  /* Select the indicated database */
+  sprintf(query_string, "USE %s;", db->name);
+  if(mysql_query(con, query_string)) {
+    fprintf(stderr, "! Database %s not found, or not possible to connect.\n",
+	    db->name);
+    fprintf(stderr, "  Error: %s\n", mysql_error(con));
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
+
+  /* Create the query needed to create the database */
+  sprintf(query_string, 
+	  "CREATE TABLE %s (" \
+	  "ip int(10) unsigned PRIMARY KEY NOT NULL," \
+	  "host varchar(256) DEFAULT NULL;",
+	  db->table);
+
+  /* Attempt to create the table */
+  if(mysql_query(con, query_string)) {
+    fprintf(stderr, 
+	    "! Unable to create table.\n"	\
+	    "  Error: %s\n", mysql_error(con));
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
+
+  /* Table is created, clean up and exit nicely */
+  retval = RETVAL_OK;
+
+  /* Return resources, clean up and return to caller with retval */
+ clean_exit:
+  free(query_string);
+  if(con) 
+    mysql_close(con);
+  
+  return retval;
 }
 
 
@@ -57,7 +119,10 @@ int dns_cache_delete_table(struct ipta_db_info *db) {
   return RETVAL_ERROR;
 }
 
-
+/***********************************************************************
+ * clear the entire table which removes all records but lets the table
+ * remain to be populated by ne records.
+ ***********************************************************************/
 int dns_cache_clear_table(struct ipta_db_info *db) {
   perror("Function is a stub and not implemented.\n");
   assert(0);
@@ -85,7 +150,7 @@ int dns_cache_clear_table(struct ipta_db_info *db) {
  *       database.
  *
  ***********************************************************************/
-int dns_cache_drop_old_records(struct ipta_db_info *db) { 
+int dns_cache_prune(struct ipta_db_info *db) { 
   perror("Function is a stub and not implemented.\n");
   assert(0);
 
@@ -95,10 +160,13 @@ int dns_cache_drop_old_records(struct ipta_db_info *db) {
 
 
 
-
-int dns_cache_add(char *ip_address, char *hostname, 
-		  struct ipta_db_info *db)
-{
+/***********************************************************************
+ * dns_cache_add
+ *
+ * Adds a record to the ipta DNS cache system.
+ *
+ ***********************************************************************/
+int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname) {
   char *query_string = NULL;
   MYSQL *con = NULL;
   //  MYSQL_RES *result = NULL;
@@ -145,12 +213,9 @@ int dns_cache_add(char *ip_address, char *hostname,
   return retval;
 }
 
-int dns_cache_retrieve(char *ip_address, char *hostname, 
-		       struct ipta_db_info *db_info)
-{
+int dns_cache_get(struct ipta_db_info *db_info, char *ip_address, char *hostname) {
   fprintf(stderr, "The function is a stub.");
   assert(0);
   return RETVAL_ERROR;
-
 }
 

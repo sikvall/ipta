@@ -44,10 +44,16 @@ cflags = -O3 -Wall ${width}
 
 # Actual targets here, main first, then all supporting objects please.
 
-all: ipta
+all: ipta dns_cache-test
 
 ipta: ${objects}
 	gcc ${cflags} ${objects} -o ${target} -l ${link}
+
+dns_cache-test: ${objects} dns_cache-test.o
+	gcc ${cflags} dns_cache.o dns_cache-test.o -o dns_cache-test -l ${link}
+
+dns_cache-test.o:
+	gcc ${cflags} -c dns_cache-test.c -I ${includes}
 
 main.o: main.c ipta.h
 	gcc ${cflags} -c main.c -I ${includes}
