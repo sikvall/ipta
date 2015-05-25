@@ -62,7 +62,7 @@ int dns_cache_create_table(struct ipta_db_info *db) {
   }
 
   /* Attempt proper connection to database */
-  if(NULL == mysql_real_connect(con, db->host, db->user, db->pass, 
+  if(mysql_real_connect(con, db->host, db->user, db->pass, 
 			       NULL, 0, NULL, 0) == NULL) {
     fprintf(stderr, "! Unable to connect to database.\n");
     fprintf(stderr, "  Error: %s\n", mysql_error(con));
@@ -80,11 +80,11 @@ int dns_cache_create_table(struct ipta_db_info *db) {
     goto clean_exit;
   }
 
-  /* Create the query needed to create the database */
+  /* Create the query needed to create the database table */
   sprintf(query_string, 
 	  "CREATE TABLE %s (" \
 	  "ip int(10) unsigned PRIMARY KEY NOT NULL," \
-	  "host varchar(256) DEFAULT NULL;",
+	  "host varchar(256) DEFAULT NULL);",
 	  db->table);
 
   /* Attempt to create the table */
@@ -95,6 +95,9 @@ int dns_cache_create_table(struct ipta_db_info *db) {
     retval = RETVAL_ERROR;
     goto clean_exit;
   }
+
+  fprintf(stderr, "+ Table %s created successfully in database %s!\n",
+	  db->table, db->name);
 
   /* Table is created, clean up and exit nicely */
   retval = RETVAL_OK;
