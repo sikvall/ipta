@@ -52,7 +52,7 @@ ipta: ${objects}
 dns_cache-test: ${objects} dns_cache-test.o
 	gcc ${cflags} dns_cache.o dns_cache-test.o -o dns_cache-test -l ${link}
 
-dns_cache-test.o:
+dns_cache-test.o: dns_cache-test.c dns_cache.c ipta.h
 	gcc ${cflags} -c dns_cache-test.c -I ${includes}
 
 main.o: main.c ipta.h
