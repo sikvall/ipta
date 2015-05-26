@@ -382,7 +382,6 @@ a database for ipta and set the permissions to use it.
 
 \small
 \begin{verbatim}
-mysql> CREATE USER 'ipta'@'localhost' IDENTIFIED BY 'ipta';
 mysql> CREATE DATABASE ipta;
 mysql> GRANT ALL ON ipta.* TO 'ipta'@'localhost' IDENTIFIED BY 'ipta';
 mysql> FLUSH PRIVILEGES;
@@ -393,6 +392,10 @@ Bye.
 
 You can now verify that it works by invoking ipta to create the table 
 needed for analysis. This is done by the following command:
+
+\subsection{Initiate the database}
+
+The next step is to set up the database table needed for ipta to work properly. The default table is ``logs'' in the database ``ipta'' but you can use command line switches to override this as fit. There is also a configuration file you may store this in so you don't have to type it in every time.
 
 \begin{verbatim}
 $ ipta --create-table
@@ -451,7 +454,7 @@ $ sudo service rsyslog restart
 It should now restart with the new configuration and hopefully log all
 iptables messages to a new file.
 
-\subsubsection{Set up log-rotate for daily or weekly rotate}
+\subsection{Enable log-rotate}
 
 Since the logfile has a potential of becoming big, I suggest rotating
 it on a daily basis and just keeping what you need. It is probably a
@@ -491,19 +494,6 @@ Of course if you want to rotate on a weekly basis or something else,
 you can change this accordingly. Insert it into the rsyslog or create
 a new one called "ipta" or something like that, then save it. Check
 it out a couple of days later that it is actually rotating your logs.
-
-\subsection{Logging loops caution}
-\hilight{Move this section later}
-
-As with any complex system there is the potential to have unintended
-consequences depending on how you set it up. During development I
-found out that it is easy to get into a "logging loop" with the
-\texttt{--follow} mode engaged. The problem here is that if you log
-certain types of packets, such as DNS requests (port 53) or ssh (port
-22) and you use the \texttt{--rdns} option or view the traffic over
-SSH the ipta may generate it's own traffic that in its turn creates
-even more traffic as it attempts to display the already generated
-traffic. I will show you two examples of what not to do.
 
 \subsection{Setting up iptables}
 
@@ -713,9 +703,20 @@ packets from known hosts etc, the limits are endless. We do recommend
 you have these three log chains however since the statistict module in
 ipta looks for these three actions.
 
-\subsubsection{Interesting tips \& tricks}
+\subsection{Logging loops caution}
 
-\hilight{Coming later}
+As with any complex system there is the potential to have unintended
+consequences depending on how you set it up. During development I
+found out that it is easy to get into a "logging loop" with the
+\texttt{--follow} mode engaged. The problem here is that if you log
+certain types of packets, such as DNS requests (port 53) or ssh (port
+22) and you use the \texttt{--rdns} option or view the traffic over
+SSH the ipta may generate it's own traffic that in its turn creates
+even more traffic as it attempts to display the already generated
+traffic. 
+
+To avoid this you should take care to not log packets for an established SSH session if that is how you are running ipta, or DNS queries if you are using the \texttt{--rdns} switch.
+
 
 
 \section{Usage and Syntax}
