@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	
 	/* Test III: Select from the records the previously created one */
 	fprintf(stderr, "* Test III: Selecting the previously inserted record.\n");
-	retval = dns_cache_get(&db, "10.0.0.1", &hostname, "10");
+	retval = dns_cache_get(&db, "10.0.0.1", hostname, "10");
 	if(retval == RETVAL_OK) {
 		fprintf(stderr, "  Found host in lookup: %s\n", hostname);
 	} else {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 	
 	/* Test IV: Select a non-existent record */
 	fprintf(stderr, "* Test IV: Performing lookup on non-existent record\n");
-	retval = dns_cache_get(&db, "10.42.0.1", &hostname, "10");
+	retval = dns_cache_get(&db, "10.42.0.1", hostname, "10");
 	if(retval == RETVAL_OK) {
 		fprintf(stderr, "- Found host in lookup: %s\n", hostname);
 	} else {

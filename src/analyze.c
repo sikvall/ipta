@@ -41,8 +41,8 @@ int analyze(struct ipta_db_info *db_info,
   MYSQL *con = NULL;
   MYSQL_RES *result = NULL;
   MYSQL_ROW row = 0;
-  int num_fields = 0;
-  int i = 0;
+//  int num_fields = 0;
+//  int i = 0;
   char src_ip_hostname[HOSTNAME_MAX_LEN];
   char dst_ip_hostname[HOSTNAME_MAX_LEN];
   int rdns_flg[2];
@@ -105,7 +105,7 @@ int analyze(struct ipta_db_info *db_info,
     goto clean_exit;
   }
   result = mysql_store_result(con);
-  num_fields = mysql_num_fields(result);
+//  num_fields = mysql_num_fields(result);
 
   // Present each row in the query that was returned to us
   // in a readable fashtion. Substituting null fields with "-"
@@ -143,7 +143,7 @@ int analyze(struct ipta_db_info *db_info,
     return RETVAL_ERROR;
   }
   result = mysql_store_result(con);
-  num_fields = mysql_num_fields(result);
+//  num_fields = mysql_num_fields(result);
 
   // Present each row in the query that was returned to us
   // in a readable fashtion. Substituting null fields with "-"
@@ -180,7 +180,7 @@ int analyze(struct ipta_db_info *db_info,
     return RETVAL_ERROR;
   }
   result = mysql_store_result(con);
-  num_fields = mysql_num_fields(result);
+//  num_fields = mysql_num_fields(result);
 
   // Present each row in the query that was returned to us
   // in a readable fashtion. Substituting null fields with "-"
@@ -210,7 +210,7 @@ int analyze(struct ipta_db_info *db_info,
     return RETVAL_ERROR;
   }
   result = mysql_store_result(con);
-  num_fields = mysql_num_fields(result);
+//  num_fields = mysql_num_fields(result);
 
   // Present each row in the query that was returned to us
   // in a readable fashtion. Substituting null fields with "-"
@@ -247,7 +247,7 @@ int analyze(struct ipta_db_info *db_info,
     return RETVAL_ERROR;
   }
   result = mysql_store_result(con);
-  num_fields = mysql_num_fields(result);
+//  num_fields = mysql_num_fields(result);
 
   // Present each row in the query that was returned to us
   // in a readable fashtion. Substituting null fields with "-"

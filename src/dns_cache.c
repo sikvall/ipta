@@ -198,9 +198,9 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname)
 		db->table, ip_address, hostname);
 	
 	if(mysql_query(con, query_string)) {
-		printf(stderr, 
-		       "! Unable to perform insertion in to table.\n"	\
-		       "  Error: %s\n", mysql_error(con));
+		fprintf(stderr, 
+			"! Unable to perform insertion in to table.\n"	\
+			"  Error: %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
@@ -239,7 +239,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, cha
 	int retval = RETVAL_OK;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row = 0;
-	int num_fields = 0;
+	//int num_fields = 0;
 	
 	/* Allocate memory */
 	query_string = malloc(10000); // Fix later
@@ -273,7 +273,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, cha
 	}
 	
 	result = mysql_store_result(con);
-	num_fields = mysql_num_fields(result);
+//	num_fields = mysql_num_fields(result);
 	row = mysql_fetch_row(result);
 	if(row)  {
 		strcpy(hostname, row[0]);
@@ -332,20 +332,29 @@ int dns_cache_prune(struct ipta_db_info *db) {
  **********************************************************************/
 int dns_cache_delete_table(struct ipta_db_info *db) 
 {
-	MYSQL *con;
-	char *query;
+	MYSQL *con = NULL;
+	char *query = NULL;
+	int retval = RETVAL_OK;
 	
 	query = malloc(10000);
 	if(!query) {
 		fprintf(stderr, "! Error, memory allocation failed.\n");
+		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
-	
+
+	con = dns_open_db(db);
+	if(!con) {
+		fprintf(stderr, "! Error, unable to initialize Mysql.\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
 	
 clean_exit:
 	free(query);
 	if(con)
-		mysql_clode(con);
+		mysql_close(con);
+	return retval;
 }
 
 /***********************************************************************
