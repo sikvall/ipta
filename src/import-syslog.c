@@ -125,6 +125,14 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 	while (( read = getline(&line, &len, logfile)) != -1) {
 		lines++;
 		if(strstr(line, prefix)) {
+
+			/* This entire part here is in order to future
+			 * be able to add fields for time stamps to
+			 * the database and thereby be able to analyze
+			 * happenings over time or find some times
+			 * more frequent than others and so on. */
+
+
 			/* month_string = strtok(line, " "); */
 			/* day_string = strtok(NULL, " "); */
 			/* hour_string = strtok(NULL, ":"); */
@@ -155,17 +163,13 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 				host_time = strtok(NULL, "] ");
 				log_prefix = strtok(NULL, " "); */
 			
-			/* Wind the tape until "IPT:" is found */
-			
+			/* Wind the "tape" until "IPT:" is found */
 			module = strtok(line, " ");
 			do {
 				module = strtok(NULL, " ");
 			} while (strcmp(module, "IPT:"));
 			
-			fprintf(stderr,"* Found line\n");
-			
 			/* Next one will be our action here */
-			
 			log_action = strtok(NULL, " ");
 			
 			/* Clear records for next run */
