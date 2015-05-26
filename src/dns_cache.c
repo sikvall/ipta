@@ -97,7 +97,7 @@ int dns_cache_create_table(struct ipta_db_info *db) {
     goto clean_exit;
   }
 
-  fprintf(stderr, "+ Table %s created successfully in database %s!\n",
+  fprintf(stderr, "+ Table %s created in database %s.\n",
 	  db->table, db->name);
 
   /* Table is created, clean up and exit nicely */
@@ -127,19 +127,18 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname) {
   MYSQL *con = NULL;
   int retval = 0;
 
-  query_string = malloc(10000); // Fix this later
+  query_string = calloc(1,10000); // Fix this later
   if(!query_string) {
-    perror("! Unable to allocate memory!\n");
+    fprintf(stderr, "! Unable to allocate memory!\n");
     assert(0);
   }
     
-
   /* Initialize databse object */
   con = mysql_init(NULL);
   if(con == NULL) {
     printf("! Unable to initialize MySQL connection.\n");
     printf("  Error message: %s\n", mysql_error(con));
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -148,7 +147,7 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname) {
     fprintf(stderr, "! Error, unable to connect to database. Exiting.\n");
     fprintf(stderr, "  %s\n", mysql_error(con));
     mysql_close(con);
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -157,7 +156,7 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname) {
   if(mysql_query(con, query_string)) {
     printf("! Database %s not found, or not possible to connect. \n", db->name);
     printf("! %s\n", mysql_error(con));
-    retval = 20;
+    retval = RETVAL_ERROR;
     goto clean_exit;
   }
   
@@ -182,6 +181,11 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname) {
   return retval;
 }
 
+
+
+
+
+
 int dns_cache_get(struct ipta_db_info *db, char *ip_address, 
 		  char *hostname, char *ttl) {
   char *query_string = NULL;
@@ -194,7 +198,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address,
   /* Allocate memory */
   query_string = malloc(10000); // Fix later
   if(!query_string) {
-    perror("! Allocation failed!\n");
+    fprintf(stderr, "! Allocation failed!\n");
     retval = RETVAL_ERROR;
     goto clean_exit;
   }
@@ -242,7 +246,6 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address,
 
   result = mysql_store_result(con);
   num_fields = mysql_num_fields(result);
-  //  printf("Num fields: %d\n", num_fields);
   row = mysql_fetch_row(result);
   if(row)  {
     strcpy(hostname, row[0]);
@@ -286,7 +289,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address,
  *
  ***********************************************************************/
 int dns_cache_prune(struct ipta_db_info *db) { 
-  perror("Function is a stub and not implemented.\n");
+  fprintf(stderr, "Function is a stub and not implemented.\n");
   assert(0);
 
   return RETVAL_ERROR;
@@ -300,7 +303,7 @@ int dns_cache_prune(struct ipta_db_info *db) {
  * RETVAL_OK if all went well or error code if there was a problem.
  **********************************************************************/
 int dns_cache_delete_table(struct ipta_db_info *db) {
-  perror("Function is a stub and not implemented. \n");
+  fprintf(stderr, "Function is a stub and not implemented. \n");
   assert(0);
   return RETVAL_ERROR;
 }
@@ -310,7 +313,7 @@ int dns_cache_delete_table(struct ipta_db_info *db) {
  * remain to be populated by ne records.
  ***********************************************************************/
 int dns_cache_clear_table(struct ipta_db_info *db) {
-  perror("Function is a stub and not implemented.\n");
+  fprintf(stderr,"Function is a stub and not implemented.\n");
   assert(0);
   return RETVAL_ERROR;
 }
