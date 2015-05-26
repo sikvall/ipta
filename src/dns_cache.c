@@ -113,24 +113,155 @@ int dns_cache_create_table(struct ipta_db_info *db) {
 }
 
 
-/**********************************************************************
- * Delete a table pointed out by the struct and return success
- * RETVAL_OK if all went well or error code if there was a problem.
- **********************************************************************/
-int dns_cache_delete_table(struct ipta_db_info *db) {
-  perror("Function is a stub and not implemented. \n");
-  assert(0);
-  return RETVAL_ERROR;
-}
+
+
 
 /***********************************************************************
- * clear the entire table which removes all records but lets the table
- * remain to be populated by ne records.
+ * dns_cache_add
+ *
+ * Adds a record to the ipta DNS cache system.
+ *
  ***********************************************************************/
-int dns_cache_clear_table(struct ipta_db_info *db) {
-  perror("Function is a stub and not implemented.\n");
-  assert(0);
-  return RETVAL_ERROR;
+int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname) {
+  char *query_string = NULL;
+  MYSQL *con = NULL;
+  int retval = 0;
+
+  query_string = malloc(10000); // Fix this later
+  if(!query_string) {
+    perror("! Unable to allocate memory!\n");
+    assert(0);
+  }
+    
+
+  /* Initialize databse object */
+  con = mysql_init(NULL);
+  if(con == NULL) {
+    printf("! Unable to initialize MySQL connection.\n");
+    printf("  Error message: %s\n", mysql_error(con));
+    retval = 20;
+    goto clean_exit;
+  }
+  
+  /* Connect to database and check connection is sounds before proceeding. */
+  if(mysql_real_connect(con, db->host, db->user, db->pass, NULL, 0, NULL, 0) == NULL) {
+    fprintf(stderr, "! Error, unable to connect to database. Exiting.\n");
+    fprintf(stderr, "  %s\n", mysql_error(con));
+    mysql_close(con);
+    retval = 20;
+    goto clean_exit;
+  }
+  
+  /* Select the database to use */
+  sprintf(query_string, "USE %s;", db->name);
+  if(mysql_query(con, query_string)) {
+    printf("! Database %s not found, or not possible to connect. \n", db->name);
+    printf("! %s\n", mysql_error(con));
+    retval = 20;
+    goto clean_exit;
+  }
+  
+  /* Attempt to update the key */
+  sprintf(query_string, 
+	  "REPLACE INTO %s (ip, host, ttl) VALUES ("	\
+	  "INET_ATON('%s'), '%s', now());",
+	  db->table, ip_address, hostname);
+	  
+  if(mysql_query(con, query_string)) {
+    printf(stderr, 
+	   "! Unable to perform insertion in to table.\n"	\
+	   "  Error: %s\n", mysql_error(con));
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
+
+ clean_exit:
+  free(query_string);
+  if(con)
+    mysql_close(con);
+  return retval;
+}
+
+int dns_cache_get(struct ipta_db_info *db, char *ip_address, 
+		  char *hostname, char *ttl) {
+  char *query_string = NULL;
+  MYSQL *con = NULL;
+  int retval = RETVAL_OK;
+  MYSQL_RES *result = NULL;
+  MYSQL_ROW row = 0;
+  int num_fields = 0;
+  
+  /* Allocate memory */
+  query_string = malloc(10000); // Fix later
+  if(!query_string) {
+    perror("! Allocation failed!\n");
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
+
+ /* Initialize databse object */
+  con = mysql_init(NULL);
+  if(con == NULL) {
+    printf("! Unable to initialize MySQL connection.\n");
+    printf("  Error message: %s\n", mysql_error(con));
+    retval = 20;
+    goto clean_exit;
+  }
+  
+  /* Connect to database and check connection is sounds before proceeding. */
+  if(mysql_real_connect(con, db->host, db->user, db->pass, NULL, 0, NULL, 0) == NULL) {
+    fprintf(stderr, "! Error, unable to connect to database. Exiting.\n");
+    fprintf(stderr, "  %s\n", mysql_error(con));
+    mysql_close(con);
+    retval = 20;
+    goto clean_exit;
+  }
+
+  /* Select the database to use */
+  sprintf(query_string, "USE %s;", db->name);
+  if(mysql_query(con, query_string)) {
+    printf("! Database %s not found, or not possible to connect. \n", db->name);
+    printf("! %s\n", mysql_error(con));
+    retval = 20;
+    goto clean_exit;
+  }
+
+  /* Attempt to query database */
+  sprintf(query_string,
+	  "SELECT host FROM %s "			\
+	  "WHERE ip=INET_ATON('%s') "			\
+	  "AND ttl > NOW() - INTERVAL '%s' HOUR;",
+	  db->table, ip_address, ttl);
+  if(mysql_query(con, query_string)) {
+    fprintf(stderr, 
+	    "! Querying database failed.\n"
+	    "  Error: %s\n", mysql_error(con));
+    retval = RETVAL_ERROR;
+    goto clean_exit;
+  }
+
+  result = mysql_store_result(con);
+  num_fields = mysql_num_fields(result);
+  //  printf("Num fields: %d\n", num_fields);
+  row = mysql_fetch_row(result);
+  if(row)  {
+    strcpy(hostname, row[0]);
+    retval = RETVAL_OK;
+  } else{
+    strcpy(hostname, "");
+    retval = RETVAL_WARN;
+  }
+
+ clean_exit:
+  if(query_string)
+    free(query_string);
+  if(result)
+    mysql_free_result(result);
+  if(con)
+    mysql_close(con);
+
+  return retval;
+
 }
 
 
@@ -164,62 +295,25 @@ int dns_cache_prune(struct ipta_db_info *db) {
 
 
 
-/***********************************************************************
- * dns_cache_add
- *
- * Adds a record to the ipta DNS cache system.
- *
- ***********************************************************************/
-int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname) {
-  char *query_string = NULL;
-  MYSQL *con = NULL;
-  //  MYSQL_RES *result = NULL;
-  //  MYSQL_ROW row = 0;
-  int retval = 0;
-
-  /* Initialize databse object */
-  con = mysql_init(NULL);
-  if(con == NULL) {
-    printf("! Unable to initialize MySQL connection.\n");
-    printf("! Error message: %s\n", mysql_error(con));
-    retval = 20;
-    goto clean_exit;
-  }
-  
-  /* Connect to database and check connection is sounds before proceeding. */
-  if(mysql_real_connect(con, db->host, db->user, db->pass, NULL, 0, NULL, 0) == NULL) {
-    fprintf(stderr, "! Error, unable to connect to database. Exiting.\n");
-    fprintf(stderr, "  %s\n", mysql_error(con));
-    mysql_close(con);
-    retval = 20;
-    goto clean_exit;
-  }
-  
-  /* Select the database to use */
-  sprintf(query_string, "USE %s;", db->name);
-  if(mysql_query(con, query_string)) {
-    printf("! Database %s not found, or not possible to connect. \n", db->name);
-    printf("! %s\n", mysql_error(con));
-    retval = 20;
-    goto clean_exit;
-  }
-  
-  
-  /* Check if key exists */
-
-  /* If exists update and reset ttl */
-
-  /* If not exist then insert and set ttl */
-
-
- clean_exit:
-  free(query_string);
-  return retval;
-}
-
-int dns_cache_get(struct ipta_db_info *db_info, char *ip_address, char *hostname) {
-  fprintf(stderr, "The function is a stub.");
+/**********************************************************************
+ * Delete a table pointed out by the struct and return success
+ * RETVAL_OK if all went well or error code if there was a problem.
+ **********************************************************************/
+int dns_cache_delete_table(struct ipta_db_info *db) {
+  perror("Function is a stub and not implemented. \n");
   assert(0);
   return RETVAL_ERROR;
 }
+
+/***********************************************************************
+ * clear the entire table which removes all records but lets the table
+ * remain to be populated by ne records.
+ ***********************************************************************/
+int dns_cache_clear_table(struct ipta_db_info *db) {
+  perror("Function is a stub and not implemented.\n");
+  assert(0);
+  return RETVAL_ERROR;
+}
+
+
 
