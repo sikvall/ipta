@@ -91,6 +91,7 @@ clean:
 	rm -rf *.o
 	rm -rf *~
 	rm ipta
+	rm dns_cache-test
 
 checkout:
 	co -l *.c *.h Makefile LICENSE
