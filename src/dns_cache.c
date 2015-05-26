@@ -82,9 +82,10 @@ int dns_cache_create_table(struct ipta_db_info *db) {
 
   /* Create the query needed to create the database table */
   sprintf(query_string, 
-	  "CREATE TABLE %s (" \
-	  "ip int(10) unsigned PRIMARY KEY NOT NULL," \
-	  "host varchar(256) DEFAULT NULL);",
+	  "CREATE TABLE %s ("			      \
+	  "ip INT(10) UNSIGNED PRIMARY KEY NOT NULL," \
+	  "host VARCHAR(256) DEFAULT NULL,"	      \
+	  "ttl TIMESTAMP);",
 	  db->table);
 
   /* Attempt to create the table */
