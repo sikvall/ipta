@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   int import_flag = 0;
   int analyze_flag = 0;
   int list_tables_flg = 0;
-  int print_license_flag = 0;
+//  int print_license_flag = 0;
   cfg_t *st; /* Configuration store */
   struct passwd *pw = NULL;
   char home[PATH_MAX];

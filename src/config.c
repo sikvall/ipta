@@ -59,10 +59,11 @@ int create_config(void) {
 
 int read_config(struct ipta_config *config, char *filename) {
   FILE *fp = NULL;
-  int num = 0;
+//  int retval = 0;
+//  int num = 0;
   
 
-  fopen(filename, "r");
+  fp = fopen(filename, "r");
   if(!fp) {
     fprintf(stderr, "! Unable to open file '%s'.\n", filename);
     return RETVAL_ERROR;

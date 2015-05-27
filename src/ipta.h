@@ -86,13 +86,6 @@ struct ipta_config {
     
 
 /* Function declarations */
-
-/* >>>>> Todo: Insert function declarations here! */
-
-/**
- ** Function prototypes
- **/
-
 int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_limit);
 int create_config(void);
 int restore_db(struct ipta_db_info *db_info);
@@ -109,8 +102,9 @@ void print_usage(void);
 
 /* dns cache prototypes */
 int dns_cache_create_table(struct ipta_db_info *db);
+int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname);
+int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl);
+
 int dns_cache_delete_table(struct ipta_db_info *db);
 int dns_cache_clear_table(struct ipta_db_info *db);
 int dns_cache_prune(struct ipta_db_info *db);
-int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname);
-int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl);

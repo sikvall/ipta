@@ -24,10 +24,10 @@ int main(void)
   int i, err;
 	cfg_t st;
 	char buf[] =
-"key1=\\tvalue1\n" \
-"key2=value2\n" \
-"key3=value3\n" \
-"key4=value4\n\0";
+	  "key1=\\tvalue1\n"			\
+	  "key2=value2\n"			\
+	  "key3=value3\n"			\
+	  "key4=value4\n\0";
 
 	puts("[cfg2 test]");
 	puts("* init");
@@ -55,7 +55,8 @@ int main(void)
 	i = 0;
 	/* print all keys / values */
 	while (i < st.nkeys) {
-		printf("%#08x, %#08x, %s, %s\n", st.entry[i].key_hash, st.entry[i].value_hash, st.entry[i].key, st.entry[i].value);
+		printf("%#08x, %#08x, %s, %s\n", st.entry[i].key_hash, 
+		       st.entry[i].value_hash, st.entry[i].key, st.entry[i].value);
 		i++;
 	}
 
@@ -72,7 +73,9 @@ int main(void)
 	puts("* cache");
 	i = 0;
 	while (i < st.cache_size) {
-		printf("cache item: %d, index: %d, value: %s\n", i, st.cache_keys_index[i], st.entry[st.cache_keys_index[i]].value);
+		printf("cache item: %d, index: %d, value: %s\n", i, 
+		       st.cache_keys_index[i], 
+		       st.entry[st.cache_keys_index[i]].value);
 		i++;
 	}
 
@@ -80,5 +83,5 @@ int main(void)
 	puts("* free");
 	cfg_free(&st);
 	puts("* end");
-  return 0;
+	return 0;
 }
