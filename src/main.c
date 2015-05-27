@@ -109,8 +109,8 @@ int main(int argc, char *argv[])
 	
 	else {
 		
-		/* Look for the standard parameter names and move the value to the internal
-		   hold as needed */
+		/* Look for the standard parameter names and move the value
+		   to the internal hold as needed */
 		i = 0;
 		while(i < st->nkeys) {
 			if(strlen(st->entry[i].value) >= IPTA_DB_INFO_STRLEN) {
