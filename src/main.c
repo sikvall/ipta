@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 	
 	retval = cfg_parse_file(st, home);
 	if(retval) {
-		fprintf(stderr, "- Configuration file not found, using defaults.\n");
+		fprintf(stderr, "- No config file.\n");
 	} 
 	
 	else {
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 			follow_flag = FLAG_SET;
 			
 			if ( argc < (i+2) ) {
-				fprintf(stderr, "! Error: Follow needs a file name!\n");
+				fprintf(stderr, "! Error: Follow mode needs a file name!\n");
 				retval = RETVAL_ERROR;
 				goto clean_exit;
 			}
@@ -306,7 +306,7 @@ int main(int argc, char *argv[])
 		
 		if(!strcmp(argv[i], "--db-pass") || !strcmp(argv[i], "-p")) {
 			fprintf(stderr, 
-				"! Warning for security reasons option is discouraged and instead\n" \
+				"! Warning; for security reasons option is discouraged and instead\n" \
 				"  --db-pass-i or -pi is recommended.\n");
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
 		}
 		
 		if(!strcmp(argv[i], "-i") || !strcmp(argv[i], "--import")) {
-			fprintf(stderr, "* Importing from syslog\n");
+//			fprintf(stderr, "* Importing from syslog\n");
 			action_flag = FLAG_SET;
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
@@ -427,9 +427,7 @@ int main(int argc, char *argv[])
 		if(retval != 0) {
 			fprintf(stderr, "! Error, clearing database, exiting.\n");
 			goto clean_exit;
-		} else {
-			fprintf(stderr, "* Database cleared.\n");
-		}
+		} 
 	}
 	
 	if(import_flag) {
@@ -438,9 +436,7 @@ int main(int argc, char *argv[])
 		if(retval != 0) {
 			fprintf(stderr, "! Error importing. Sorry.\n");
 			goto clean_exit;
-		} else {
-			fprintf(stderr, "* Done importing.\n");
-		}
+		} 
 	}
 	
 	if(analyze_flag) {
