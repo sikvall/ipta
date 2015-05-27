@@ -113,4 +113,4 @@ int dns_cache_delete_table(struct ipta_db_info *db);
 int dns_cache_clear_table(struct ipta_db_info *db);
 int dns_cache_prune(struct ipta_db_info *db);
 int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname);
-
+int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl);
