@@ -59,31 +59,29 @@
 #define CONFIG_FILE_PATH "~/.ipta/config"
 
 struct ipta_flags {
-  int no_lo;
-  int rdns;
-  int no_accept;
+	int no_lo;
+	int rdns;
+	int no_accept;
 };
 
 #define IPTA_DB_INFO_STRLEN 256
 struct ipta_db_info {
-  char host[IPTA_DB_INFO_STRLEN];
-  char user[IPTA_DB_INFO_STRLEN];
-  char pass[IPTA_DB_INFO_STRLEN];
-  char name[IPTA_DB_INFO_STRLEN];
-  char table[IPTA_DB_INFO_STRLEN];
+	char host[IPTA_DB_INFO_STRLEN];
+	char user[IPTA_DB_INFO_STRLEN];
+	char pass[IPTA_DB_INFO_STRLEN];
+	char name[IPTA_DB_INFO_STRLEN];
+	char table[IPTA_DB_INFO_STRLEN];
 };
 
 struct ipta_config {
-  char db_host[IPTA_DB_INFO_STRLEN];
-  char db_user[IPTA_DB_INFO_STRLEN];
-  char db_pass[IPTA_DB_INFO_STRLEN];
-  char db_name[IPTA_DB_INFO_STRLEN];
-  char db_table[IPTA_DB_INFO_STRLEN];
-  struct ipta_flags *flags;
+	char db_host[IPTA_DB_INFO_STRLEN];
+	char db_user[IPTA_DB_INFO_STRLEN];
+	char db_pass[IPTA_DB_INFO_STRLEN];
+	char db_name[IPTA_DB_INFO_STRLEN];
+	char db_table[IPTA_DB_INFO_STRLEN];
+	struct ipta_flags *flags;
 };
 
-    
-    
 
 /* Function declarations */
 int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_limit);
@@ -104,7 +102,6 @@ void print_usage(void);
 int dns_cache_create_table(struct ipta_db_info *db);
 int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname);
 int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl);
-
 int dns_cache_delete_table(struct ipta_db_info *db);
 int dns_cache_clear_table(struct ipta_db_info *db);
-int dns_cache_prune(struct ipta_db_info *db);
+int dns_cache_prune(struct ipta_db_info *db); /* This should change to include ttl */
