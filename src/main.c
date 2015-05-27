@@ -149,8 +149,6 @@ int main(int argc, char *argv[])
 					goto clean_exit;
 				}
 				
-				//	fprintf(stderr, "  analyzer_limit: %d\n", analyze_limit);
-				
 			} /* Is analyzer limit */ 
 			
 			i++; 
