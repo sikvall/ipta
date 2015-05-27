@@ -191,16 +191,12 @@ int create_table(struct ipta_db_info *db_info)
 		goto finish;
 	}
 	
-	fprintf(stderr, "* Table '%s' created in database which you may now use.\n", db_info->table);
+	fprintf(stderr, "* Table '%s' created in database '%s' which you may now use.\n", 
+		db_info->table, db_info->name);
 	
-	/* We goto here if something went wrong to make sure we free our
-	   resources but only once. I know some of you hates goto but in
-	   these cases they are quite useful. Mmmkay? */
-	
-finish:
-	
+
 	/* Clear things up and exit with return value previously set */
-	
+finish:
 	mysql_close(con);
 	free(query);
 	
@@ -246,7 +242,6 @@ int delete_table(struct ipta_db_info *db_info)
 	query = calloc(10000,1);
 	
 	// Select the database to use
-	fprintf(stderr, "* Selecting database %s.\n", db_info->name);
 	sprintf(query, "USE %s;", db_info->name);
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "%s\n", mysql_error(con));
@@ -255,13 +250,15 @@ int delete_table(struct ipta_db_info *db_info)
 	}
 	
 	// Empty the table before populating it with new data if flag set
-	fprintf(stderr, "* Dropping table %s.\n", db_info->table);
 	sprintf(query, "DROP TABLE %s", db_info->table);
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "%s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
+	
+	fprintf(stderr,"* Table %s deleted from database %s.\n",
+		db_info->table, db_info->name);
 	
 clean_exit:
 	free(query);
@@ -291,7 +288,6 @@ int list_tables(struct ipta_db_info *db_info)
 	int row_counter = 0;
 
 	/* Connect to mysql database */
-	fprintf(stderr, "* Opening database.\n");
 	con = mysql_init(NULL);
 	if(con == NULL) {
 		fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");
@@ -313,7 +309,6 @@ int list_tables(struct ipta_db_info *db_info)
 	query = calloc(QUERY_STRING_SIZE, 1);
 
 	// Select the database to use
-	fprintf(stderr, "* Selecting database %s.\n", db_info->name);
 	sprintf(query, "USE %s;", db_info->name);
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "%s\n", mysql_error(con));
@@ -322,7 +317,6 @@ int list_tables(struct ipta_db_info *db_info)
 	}
   
 	// Empty the table before populating it with new data if flag set
-	fprintf(stderr, "* Showing tables in database %s.\n", db_info->name);
 	sprintf(query, "SHOW TABLES");
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "%s\n", mysql_error(con));
@@ -336,11 +330,11 @@ int list_tables(struct ipta_db_info *db_info)
 	while ((row = mysql_fetch_row(result))) { 
 		row_counter++;
 		for(i = 0; i < num_fields; i++) { 
-			fprintf(stderr, "  %3d: %s ", row_counter, row[i] ? row[i] : "NULL"); 
+			printf("  %3d: %s ", row_counter, row[i] ? row[i] : "NULL"); 
 		} 
 		printf("\n"); 
 	}
-  
+
 clean_exit:
 	mysql_free_result(result);
 	free(query);
@@ -373,7 +367,6 @@ int clear_database(struct ipta_db_info *db_info)
 	}
 
 	/* Connect to mysql database */
-	fprintf(stderr, "* Opening database.\n");
 	con = mysql_init(NULL);
 	if(con == NULL) {
 		fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");
@@ -393,7 +386,6 @@ int clear_database(struct ipta_db_info *db_info)
 	}
   
 	// Select the database to use
-	fprintf(stderr, "* Selecting database %s.\n", db_info->name);
 	sprintf(query, "USE %s;", db_info->name);
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "  %s\n", mysql_error(con));
@@ -402,7 +394,6 @@ int clear_database(struct ipta_db_info *db_info)
 	}
   
 	// Empty the table before populating it with new data if flag set
-	fprintf(stderr, "* Deleting old data from database table %s.\n", db_info->table);
 	sprintf(query, "DELETE FROM %s;", db_info->table);
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "%s\n", mysql_error(con));
