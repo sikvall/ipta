@@ -110,7 +110,6 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 	}
 	
 	/* Open log file and prepare for data */
-	fprintf(stderr, "* Opening log file '%s'.\n", filename);
 	logfile = fopen(filename, "r");
 	if ( logfile == NULL ) {
 		fprintf(stderr, "! Error, unable to open syslog file %s.\n", filename);
@@ -121,7 +120,6 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 	lines = 0;
 	row_counter = 0;
 	
-	fprintf(stderr, "* Reading log file and inserting in database.\n");
 	while (( read = getline(&line, &len, logfile)) != -1) {
 		lines++;
 		if(strstr(line, prefix)) {
