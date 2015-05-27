@@ -32,6 +32,16 @@
 #include <string.h>
 #include "ipta.h"
 
+/* TODO
+ * 
+ * The idea here is to flesh it out with the dns_cache functions so that we
+ * can fetch names directly from the cache instead for requesting it from the
+ * DNS subsystem every time.
+ *
+ * This should be added before the Release-V0.3
+ */
+
+
 /***********************************************************************
  * Get host by address
  * 
