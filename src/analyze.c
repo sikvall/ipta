@@ -50,7 +50,7 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 	/* Allocate memory for the query string */
 	query = malloc(QUERY_STRING_SIZE);
 	if(!query) {
-		printf("! Memory allocation failed.\n");
+		fprintf(stderr, "! Memory allocation failed.\n");
 		retval = RETVAL_ERROR; 
 		goto clean_exit;
 	}
@@ -58,8 +58,8 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 	// Connect to mysql database
 	con = mysql_init(NULL);
 	if(con == NULL) {
-		printf("! Unable to initialize MySQL connection.\n");
-		printf("! Error message: %s\n", mysql_error(con));
+		fprintf(stderr, "! Unable to initialize MySQL connection.\n");
+		fprintf(stderr, "! Error message: %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
@@ -69,7 +69,7 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 			      db_info->user, 
 			      db_info->pass, 
 			      NULL, 0, NULL, 0) == NULL) {
-		printf("! %s\n", mysql_error(con));
+		fprintf(stderr, "! %s\n", mysql_error(con));
 		mysql_close(con);
 		retval = RETVAL_ERROR;
 		goto clean_exit;
@@ -78,8 +78,8 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 	/* Select the database to use */
 	sprintf(query, "USE %s;", db_info->name);
 	if(mysql_query(con, query)) {
-		printf("! Database %s not found, or not possible to connect. \n", db_info->name);
-		printf("! %s\n", mysql_error(con));
+		fprintf(stderr, "! Database %s not found, or not possible to connect. \n", db_info->name);
+		fprintf(stderr, "! %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
@@ -96,8 +96,8 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		db_info->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
-		printf("! Query not accepted from database.\n");
-		printf("! %s\n", mysql_error(con));
+		fprintf(stderr, "! Query not accepted from database.\n");
+		fprintf(stderr, "! %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
@@ -134,8 +134,8 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		db_info->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
-		printf("! Query not accepted from database.\n");
-		printf("! %s\n", mysql_error(con));
+		fprintf(stderr, "! Query not accepted from database.\n");
+		fprintf(stderr, "! %s\n", mysql_error(con));
 		return RETVAL_ERROR;
 	}
 	result = mysql_store_result(con);
@@ -169,8 +169,8 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		db_info->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
-		printf("! Query not accepted from database.\n");
-		printf("! %s\n", mysql_error(con));
+		fprintf(stderr, "! Query not accepted from database.\n");
+		fprintf(stderr, "! %s\n", mysql_error(con));
 		return RETVAL_ERROR;
 	}
 	result = mysql_store_result(con);
@@ -198,8 +198,8 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		db_info->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
-		printf("! Query not accepted from database.\n");
-		printf("! %s\n", mysql_error(con));
+		fprintf(stderr, "! Query not accepted from database.\n");
+		fprintf(stderr, "! %s\n", mysql_error(con));
 		return RETVAL_ERROR;
 	}
 	result = mysql_store_result(con);
@@ -234,8 +234,8 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		db_info->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
-		printf("! Query not accepted from database.\n");
-		printf("! %s\n", mysql_error(con));
+		fprintf(stderr, "! Query not accepted from database.\n");
+		fprintf(stderr, "! %s\n", mysql_error(con));
 		return RETVAL_ERROR;
 	}
 	result = mysql_store_result(con);
