@@ -382,7 +382,6 @@ a database for ipta and set the permissions to use it.
 
 \small
 \begin{verbatim}
-mysql> CREATE USER 'ipta'@'localhost' IDENTIFIED BY 'ipta';
 mysql> CREATE DATABASE ipta;
 mysql> GRANT ALL ON ipta.* TO 'ipta'@'localhost' IDENTIFIED BY 'ipta';
 mysql> FLUSH PRIVILEGES;
@@ -393,6 +392,10 @@ Bye.
 
 You can now verify that it works by invoking ipta to create the table 
 needed for analysis. This is done by the following command:
+
+\subsection{Initiate the database}
+
+The next step is to set up the database table needed for ipta to work properly. The default table is ``logs'' in the database ``ipta'' but you can use command line switches to override this as fit. There is also a configuration file you may store this in so you don't have to type it in every time.
 
 \begin{verbatim}
 $ ipta --create-table
@@ -451,7 +454,7 @@ $ sudo service rsyslog restart
 It should now restart with the new configuration and hopefully log all
 iptables messages to a new file.
 
-\subsubsection{Set up log-rotate for daily or weekly rotate}
+\subsection{Enable log-rotate}
 
 Since the logfile has a potential of becoming big, I suggest rotating
 it on a daily basis and just keeping what you need. It is probably a
@@ -491,19 +494,6 @@ Of course if you want to rotate on a weekly basis or something else,
 you can change this accordingly. Insert it into the rsyslog or create
 a new one called "ipta" or something like that, then save it. Check
 it out a couple of days later that it is actually rotating your logs.
-
-\subsection{Logging loops caution}
-\hilight{Move this section later}
-
-As with any complex system there is the potential to have unintended
-consequences depending on how you set it up. During development I
-found out that it is easy to get into a "logging loop" with the
-\texttt{--follow} mode engaged. The problem here is that if you log
-certain types of packets, such as DNS requests (port 53) or ssh (port
-22) and you use the \texttt{--rdns} option or view the traffic over
-SSH the ipta may generate it's own traffic that in its turn creates
-even more traffic as it attempts to display the already generated
-traffic. I will show you two examples of what not to do.
 
 \subsection{Setting up iptables}
 
@@ -713,9 +703,20 @@ packets from known hosts etc, the limits are endless. We do recommend
 you have these three log chains however since the statistict module in
 ipta looks for these three actions.
 
-\subsubsection{Interesting tips \& tricks}
+\subsection{Logging loops caution}
 
-\hilight{Coming later}
+As with any complex system there is the potential to have unintended
+consequences depending on how you set it up. During development I
+found out that it is easy to get into a "logging loop" with the
+\texttt{--follow} mode engaged. The problem here is that if you log
+certain types of packets, such as DNS requests (port 53) or ssh (port
+22) and you use the \texttt{--rdns} option or view the traffic over
+SSH the ipta may generate it's own traffic that in its turn creates
+even more traffic as it attempts to display the already generated
+traffic. 
+
+To avoid this you should take care to not log packets for an established SSH session if that is how you are running ipta, or DNS queries if you are using the \texttt{--rdns} switch.
+
 
 
 \section{Usage and Syntax}
@@ -748,6 +749,7 @@ are given it will check the configuration file and if there is no
 config file it will use default settings.
 
 
+\subsubsection{Mode switches}
 \scriptsize
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
@@ -780,8 +782,8 @@ a new header is written detailing the fields to aid the operator
 idetinfyin what he sees on the screen.
 
 This is useful for real-time monitoring of any logged packets. It will
-not affect the database in any way or store any data so all the switches and 
-parameters dealing with that has no effect when this mode
+not affect the database in any way or store any data so all the
+switches and parameters dealing with that has no effect when this mode
 is employed.\\\hline
 
 \texttt{-ai, --analyze-interactive} & \hilight{Not yet implemented.}
@@ -790,6 +792,8 @@ queries to the database in such a way that you can create your own
 analysis.\\\hline
 
 \end{longtable}
+
+\subsubsection{Database options}
 
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
@@ -863,6 +867,8 @@ a file and used as default settings next time you run ipta.\\\hline
 \end{longtable}
 \normalsize
 
+\subsubsection{Format switches}
+
 \scriptsize
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
@@ -912,6 +918,44 @@ the analyzer output and focuses the analysis on the dropped and
 invalid packets.\\\hline
 \end{longtable}
 
+\subsubsection{DNS Cache switches}
+
+\scriptsize
+\begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
+\hline
+\textbf{DNS Cache options} & \textbf{Description}\\ \hline
+	
+\texttt{--dnsc, -d [table]} & \hilight{Not implemented yet.} Use the
+built-in DNS cache feature. This implies \texttt{--rdns} option and
+will also save the lookup hostnames into a quick-access table. Next
+time the same IP address shows up the name will be fetched from the
+cache rather than from the DNS subsystem. The ``table'' is an optional
+parameter giving a name for the table to use rather than the default
+(ipta-dns).\\\hline
+	
+\texttt{--dnsc-delete [table]} & \hilight{Not implemented yet.} Delete
+the DNS cache table called ``table'' from the system. This operation
+removes the table entirely.\\\hline
+	
+\texttt{--dnsc-clear [table]} & \hilight{Not implemented yet.} Remove
+all entries in the DNS cache table but keep the table to be populated
+again. This is used to remove all entries if they are old.\\\hline
+	
+\texttt{--dnsc-prune [table]} & \hilight{Not implemented yet.} Prune
+all old entries with expired TTL (time to live) from the cache table.
+This ensures you do not get the wrong names if they were cached too
+long ago. The standard TTL in the cache table for reverse DNS names is
+14 days. The optional parameter ``table'' says which table to look in.
+Default is ipta-dns.\\\hline
+	
+\texttt{--ttl <hours>} & \hilight{Not implemented yet.} Time to live
+for the DNS. Used to change the default 14 days (339 hours) into some
+other value. The time is given in hours.\\\hline
+\end{longtable}
+\normalsize
+
+\subsubsection{Miscellaneous switches}
+
 \scriptsize
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
 \hline
@@ -946,7 +990,8 @@ for use. The next step is to import the current iptables log file into
 the MySQL database where it can be later easily analyzed.
 
 This is done by the import mode and triggered by the mode switch
-\texttt{--import} followed by the file name. It could be something like this:
+\texttt{--import} followed by the file name. It could be something
+like this:
 
 \begin{verbatim}
 $ ipta --import /var/log/iptables.log
@@ -1157,33 +1202,43 @@ Count    IF       Source                          Port Destination              
 
 \section{Configuration file}
 
-The configuration file is a simple text file that contains key = value pairs. The file should be in the users home directory and be called ".ipta" for it to be found. All the keys in the file are optional. Keys missing from the file will means ipta use the default value instead. Keys in the config file can be overridden on the command line using arguments such as \texttt{--db-host} and similar.
+The configuration file is a simple text file that contains key = value
+pairs. The file should be in the users home directory and be called
+".ipta" for it to be found. All the keys in the file are optional.
+Keys missing from the file will means ipta use the default value
+instead. Keys in the config file can be overridden on the command line
+using arguments such as \texttt{--db-host} and similar.
 
 \subsection{Keywords}
 
 This describes the keywords in the configuration file.
 
 \begin{longtable}{|p{.3\textwidth}|p{.65\textwidth}|}
-\hline
-Key & Value\\
-\hline
-analyzer limit & Sets the maximum lines to ouput in the analyzer module when ipta is being called with the \texttt{--analyze} argument. Some modules in the analyzer may output less lines however, but never more.\\ \hline
+\hline Key & Value\\ \hline analyzer limit & Sets the maximum lines to
+ouput in the analyzer module when ipta is being called with the
+\texttt{--analyze} argument. Some modules in the analyzer may output
+less lines however, but never more.\\ \hline
 
-db\_host & Sets the hostname for the MySQL server. Usually localhost for best performance but you may just as well use a separate database server if you prefer.\\\hline
+db\_host & Sets the hostname for the MySQL server. Usually localhost
+for best performance but you may just as well use a separate database
+server if you prefer.\\\hline
 
-db\_user & Sets the username when connecting to the MySQL database.\\\hline
+db\_user & Sets the username when connecting to the MySQL
+database.\\\hline
 
-db\_pass & Sets the password when connecting to the MySQL database.\\\hline
+db\_pass & Sets the password when connecting to the MySQL
+database.\\\hline
 
 db\_name & Sets the database name to use, default is "ipta".\\\hline
 
-db\_table & Sets the name of the table to use, default is "logs".\\\hline
+db\_table & Sets the name of the table to use, default is
+"logs".\\\hline
 \end{longtable}
 
 \subsection{Config example}
 
 This is an example of a configuration file.
-
+\scriptsize
 \begin{verbatim}
 ######################################################################
 ## ipta configuration file
@@ -1216,11 +1271,57 @@ db_table = logs
 
 # End
 \end{verbatim}
+\normalsize
 
 You may copy and paste this to your init file.
 
 \section{Database format}
 
 \hilight{Coming in next release}
+
+\section{DNS Cache functions}
+
+\hilight{To be implemented in next release.}
+
+The built-in DNS caching function will save you a number of lookups as
+it will first query the local database and only if the TTL has expired
+or if there is no record of the IP again will the operating system be
+queried to do a reverse DNS lookup on the IP number.
+
+This save a large number of unnecessary requests but it also
+introduces the risk that we show old information to the user.
+Therefore a time to live should be used so that when we have old
+records we will still query the DNS subsystem rather than pulling old
+names out of our proverbial hat.
+
+The defalt time to live is 14 days. While this is quite okay for most
+cases it may not work well if you have a lot of dynamically assigned
+names to IP addresses (although it is rarer, the reverse is much more
+common) you can modify this by using \texttt{--dns-cache-ttl <hours>}
+to expire it faster or slower.
+
+14 days equals 336 hours anyhow and anything from sayt 6 hours to 900
+hours should be pretty sane to use here. Using a ttl of 0 means the
+records will never expire. However they can be removed manually by
+using the \texttt{--dnsc-clear} switch that will remove all records
+irregardless of their time to live.
+
+You can also clear the entire DNS cache by issuing the option
+\texttt{--dns-cache-clear} of course. This will remove all entries
+from the dns cache and start caching things anew.
+
+\subsection{Using BIND for local cache}
+
+If you have your own BIND system running on the local machine (for
+caching all DNS queries) you do not, and probably should not, employ
+the dns cache in ipta. The reason for that is that the proper BIND
+system have it's own TTL and will use the TTL set by the DNS servers
+upstream that it will query. It will likely be more efficient to use
+what you already have especially since other tools such as
+\texttt{traceroute} etc will be able to benefit from the cached BIND
+records.
+
+So regard the ipta internal cache as something that will aid you in
+case you are not running your own caching DNS server.
 
 \end{document} 

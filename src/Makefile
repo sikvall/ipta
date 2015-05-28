@@ -26,8 +26,8 @@
 # Variables here
 
 objects = main.o import-syslog.o analyze.o gethostbyaddr.o   \
-	  print_licence.o db_maintenance.o follow.o config.o \
-	  cfg2.o
+	  print_licence.o db_maintenance.o follow.o \
+	  cfg2.o dns_cache.o
 
 #dns_cache.o
 target = ipta
@@ -44,10 +44,16 @@ cflags = -O3 -Wall ${width}
 
 # Actual targets here, main first, then all supporting objects please.
 
-all: ipta
+all: ipta dns_cache-test
 
 ipta: ${objects}
 	gcc ${cflags} ${objects} -o ${target} -l ${link}
+
+dns_cache-test: ${objects} dns_cache-test.o
+	gcc ${cflags} dns_cache.o dns_cache-test.o -o dns_cache-test -l ${link}
+
+dns_cache-test.o: dns_cache-test.c dns_cache.c ipta.h
+	gcc ${cflags} -c dns_cache-test.c -I ${includes}
 
 main.o: main.c ipta.h
 	gcc ${cflags} -c main.c -I ${includes}
@@ -76,15 +82,13 @@ db_maintenance.o: db_maintenance.c ipta.h
 follow.o: follow.c ipta.h
 	gcc ${cflags} -c follow.c -L ${libs} -I ${includes}
 
-config.o: config.c ipta.h
-	gcc ${cflags} -c config.c -L ${libs} -I ${includes}
-
 # Special targets here
 
 clean:
 	rm -rf *.o
 	rm -rf *~
 	rm ipta
+	rm dns_cache-test
 
 checkout:
 	co -l *.c *.h Makefile LICENSE

@@ -149,8 +149,8 @@ static cfg_uint32 cfg_hash_get(cfg_char *str)
 		while(*str) {
 			/* or multiple with addition and bit shifting:
 			 * hash += (hash << 1) + (hash << 4) + (hash
-			 * << 7) + (hash << 8) + (hash << 24);
-			*/
+			 * << 7) + (hash << 8) + (hash << 24); 
+			 */
 			hash *= hash;
 			hash ^= *str++;
 		}

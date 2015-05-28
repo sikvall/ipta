@@ -24,7 +24,7 @@
 
 
 /* Overall generic defines */
-#define IPTA_VERSION "ipta version Releaste-V0.3\n"
+#define IPTA_VERSION "ipta version Release-V0.3\n"
 
 /* Specific error defines */
 #define ERROR_FILE_OPEN -1
@@ -59,40 +59,31 @@
 #define CONFIG_FILE_PATH "~/.ipta/config"
 
 struct ipta_flags {
-  int no_lo;
-  int rdns;
-  int no_accept;
+	int no_lo;
+	int rdns;
+	int no_accept;
 };
 
 #define IPTA_DB_INFO_STRLEN 256
 struct ipta_db_info {
-  char host[IPTA_DB_INFO_STRLEN];
-  char user[IPTA_DB_INFO_STRLEN];
-  char pass[IPTA_DB_INFO_STRLEN];
-  char name[IPTA_DB_INFO_STRLEN];
-  char table[IPTA_DB_INFO_STRLEN];
+	char host[IPTA_DB_INFO_STRLEN];
+	char user[IPTA_DB_INFO_STRLEN];
+	char pass[IPTA_DB_INFO_STRLEN];
+	char name[IPTA_DB_INFO_STRLEN];
+	char table[IPTA_DB_INFO_STRLEN];
 };
 
 struct ipta_config {
-  char db_host[IPTA_DB_INFO_STRLEN];
-  char db_user[IPTA_DB_INFO_STRLEN];
-  char db_pass[IPTA_DB_INFO_STRLEN];
-  char db_name[IPTA_DB_INFO_STRLEN];
-  char db_table[IPTA_DB_INFO_STRLEN];
-  struct ipta_flags *flags;
+	char db_host[IPTA_DB_INFO_STRLEN];
+	char db_user[IPTA_DB_INFO_STRLEN];
+	char db_pass[IPTA_DB_INFO_STRLEN];
+	char db_name[IPTA_DB_INFO_STRLEN];
+	char db_table[IPTA_DB_INFO_STRLEN];
+	struct ipta_flags *flags;
 };
 
-    
-    
 
 /* Function declarations */
-
-/* >>>>> Todo: Insert function declarations here! */
-
-/**
- ** Function prototypes
- **/
-
 int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_limit);
 int create_config(void);
 int restore_db(struct ipta_db_info *db_info);
@@ -101,10 +92,16 @@ int create_table(struct ipta_db_info *db_info);
 int delete_table(struct ipta_db_info *db_info);
 int list_tables(struct ipta_db_info *db_info);
 int clear_database(struct ipta_db_info *db_info);
-int dns_cache_add(char *ip_address, char *hostname, struct ipta_db_info *db);
-int dns_cache_retrieve(char *ip_address, char *hostname, struct ipta_db_info *db_info);
 int follow(char *filename, struct ipta_flags *flags);
 int get_host_by_addr(char *ip_address, char *hostname, int maxlen);
 int import_syslog(struct ipta_db_info *db_info, char *filename);
 void print_license(void);
 void print_usage(void);
+
+/* dns cache prototypes */
+int dns_cache_create_table(struct ipta_db_info *db);
+int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname);
+int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl);
+int dns_cache_delete_table(struct ipta_db_info *db);
+int dns_cache_clear_table(struct ipta_db_info *db);
+int dns_cache_prune(struct ipta_db_info *db); /* This should change to include ttl */
