@@ -107,8 +107,6 @@ void main(int argc, char *argv[])
   strcpy(db_info->name,  "ipta");
   strcpy(db_info->table, "logs");
   
-  
-
  clean_exit:
 
   free(db_info);
@@ -116,3 +114,4 @@ void main(int argc, char *argv[])
 
   return 0;
 }
+
