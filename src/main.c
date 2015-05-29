@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 	int follow_flag = 0;
 	int analyze_limits = 20;
 	int save_db_flag = 0;
+	int create_db_flag = 0;
 	int delete_table_flag = 0;
 	int import_flag = 0;
 	int analyze_flag = 0;
@@ -193,13 +194,12 @@ int main(int argc, char *argv[])
 			action_flag = FLAG_SET;
 		}
 		
-		/* TODO: This should be removed or changed to something else, it
-		 * does not make too much sense as it is now. */
-		if(!strcmp(argv[i], "--setup-db") || 
-		   !strcmp(argv[i], "-s")) {
+		
+		if(!strcmp(argv[i], "--create-db") || 
+		   !strcmp(argv[i], "-cd")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
-			save_db_flag = FLAG_SET;
+			create_db_flag = FLAG_SET;
 		}
 		
 		if(!strcmp(argv[i], "--follow") || 
@@ -413,10 +413,12 @@ int main(int argc, char *argv[])
 	}
 	
 	/* Setup the default db setting and stor in .ipta */
-	if(save_db_flag) {
-		retval = save_db(db_info);
+	if(create_db_flag) {
+		retval = create_db(db_info);
 		if(!retval) {
-			fprintf(stderr, "! Error, save db failed, exiting.\n");
+			fprintf(stderr, 
+				"! Error, create db failed, exiting. You need to give MySQL root privileges\n"
+				"  for this to work as the database must be created and a grand given to ipta.\n");
 			goto clean_exit;
 		}
 	}
