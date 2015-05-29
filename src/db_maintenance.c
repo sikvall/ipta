@@ -29,7 +29,116 @@
 #include <mysql.h>
 #include "ipta.h"
 
-/* >>>>> Todo: Description here */
+
+/***********************************************************************
+ * dns_open_db
+ *
+ * DESCRIPTION
+ *
+ * This is a simple helper function that will open the con, select the
+ * right database from the parameters given in the ipta_db_info
+ * struct. Upon success it will return a MYSQL *con object. In failure
+ * it will just return NULL.
+ * 
+ * PARAMETERS 
+ *
+ * struct ipta_db_info *db - a pointer to a struct containing
+ *                           necessary information.
+ *
+ * RETURNS
+ *
+ * Upon Success: A MYSQL *con object pointer.
+ *
+ * Upon Failure: NULL
+ *
+ * OBSERVE! 
+ *
+ * The called must take care to destroy the con object themselves when
+ * done with it because this function will do nothing of the kind.
+ ***********************************************************************/
+MYSQL *open_db(struct ipta_db_info *db) 
+{ 
+	MYSQL *con = NULL; 
+	int retval = RETVAL_OK; 
+	char query_string[256]; // Fixme
+	
+	con = mysql_init(NULL);
+	if(con == NULL) {
+		fprintf(stderr, "! Error, unable to initiate MySQL.\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+	
+	/* Attempt proper connection to database */
+	if(mysql_real_connect(con, db->host, db->user, db->pass, 
+			      NULL, 0, NULL, 0) == NULL) {
+		fprintf(stderr, "! Unable to connect to database.\n");
+		fprintf(stderr, "  Error: %s\n", mysql_error(con));
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+	
+	/* Select the indicated database */
+	sprintf(query_string, "USE %s;", db->name);
+	if(mysql_query(con, query_string)) {
+		fprintf(stderr, "! Database %s not found, or not possible to connect.\n", db->name);
+		fprintf(stderr, "  Error: %s\n", mysql_error(con));
+		goto clean_exit;
+	}
+
+	/* This is where we would end up if all is ok, we should NOT destroy
+	 * con in this case. */
+	return con;
+	
+clean_exit:
+	if(retval != RETVAL_OK) {
+		if(con) 
+			mysql_close(con);
+	}
+	return NULL;
+}
+
+int create_db(struct ipta_db_info *db)
+{
+	MYSQL *con = NULL;
+	char *query = NULL;
+	int retval = RETVAL_OK;
+
+	con = open_db(db);
+	if(!con) {
+		fprintf(stderr, "! Failed to open the database, exiting.\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	query = malloc(10000); // fixme
+	if(!query) {
+		fprintf(stderr, "! Allocation failed, must exit.\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	sprintf(query, "CREATE DATABASE %s;", db->name);
+	if(mysql_query(con, query)) {
+		fprintf(stderr, "! Error, unable to create database '%s'.\n", db->name);
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+	
+	sprintf(query, "GRANT ALL PRIVILEGES ON %s.* TO '%s%'@'localhost' IDENTIFIED BY %s;",
+		db->name, db->user, db->pass);
+	if(mysql_query(con, query)) {
+		fprintf(stderr, "! Error, unable to grand privileges.\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+clean_exit:
+	if(con)
+		mysql_close(con);
+	free(query);
+}
+
 
 int restore_db(struct ipta_db_info *db_info)
 {
