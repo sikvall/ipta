@@ -159,13 +159,15 @@ int main(int argc, char *argv[])
 	for(i=1; i < argc; i++) {
 		known_flag = FLAG_CLEAR;
 		
-		if(!strcmp(argv[i], "--version") || !strcmp(argv[i], "-v")) {
+		if(!strcmp(argv[i], "--version") || 
+		   !strcmp(argv[i], "-v")) {
 			printf(IPTA_VERSION);
 			retval = RETVAL_OK;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--rdns") || !strcmp(argv[i], "-r")) {
+		if(!strcmp(argv[i], "--rdns") || 
+		   !strcmp(argv[i], "-r")) {
 			flags->rdns = FLAG_SET;
 			known_flag = FLAG_SET;
 		}
@@ -191,13 +193,17 @@ int main(int argc, char *argv[])
 			action_flag = FLAG_SET;
 		}
 		
-		if(!strcmp(argv[i], "--setup-db") || !strcmp(argv[i], "-s")) {
+		/* TODO: This should be removed or changed to something else, it
+		 * does not make too much sense as it is now. */
+		if(!strcmp(argv[i], "--setup-db") || 
+		   !strcmp(argv[i], "-s")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			save_db_flag = FLAG_SET;
 		}
 		
-		if(!strcmp(argv[i], "--follow") || !strcmp(argv[i], "-f")) {
+		if(!strcmp(argv[i], "--follow") || 
+		   !strcmp(argv[i], "-f")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			follow_flag = FLAG_SET;
@@ -257,7 +263,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-table") || !strcmp(argv[i], "-t")) {
+		if(!strcmp(argv[i], "--db-table") || 
+		   !strcmp(argv[i], "-t")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "! You must supply a name with argument %s\n", argv[i]);
@@ -269,7 +276,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-pass-i") || !strcmp(argv[i], "-pi")) {
+		if(!strcmp(argv[i], "--db-pass-i") || 
+		   !strcmp(argv[i], "-pi")) {
 			known_flag = FLAG_SET;
 			printf("? Enter your password: ");
 			if(1 != scanf("%s", password_input)) {
@@ -280,7 +288,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-name") || !strcmp(argv[i], "-d")) {
+		if(!strcmp(argv[i], "--db-name") || 
+		   !strcmp(argv[i], "-d")) {
 			known_flag = 1;
 			if(argc < (i+2)) {
 				fprintf(stderr, "? If you want to use use %s to select database, I need a name.\n", argv[i]);
@@ -292,7 +301,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-host") || !strcmp(argv[i], "-h")) {
+		if(!strcmp(argv[i], "--db-host") || 
+		   !strcmp(argv[i], "-h")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "? If you want to use use %s to select database host, I need a name.\n", argv[i]);
@@ -304,7 +314,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-pass") || !strcmp(argv[i], "-p")) {
+		if(!strcmp(argv[i], "--db-pass") || 
+		   !strcmp(argv[i], "-p")) {
 			fprintf(stderr, 
 				"! Warning; for security reasons option is discouraged and instead\n" \
 				"  --db-pass-i or -pi is recommended.\n");
@@ -321,40 +332,45 @@ int main(int argc, char *argv[])
 		
 		
 		/* Table operations defined here as flags are processed */
-		if(!strcmp(argv[i], "-lt") || !strcmp(argv[i], "--list-tables")) {
+		if(!strcmp(argv[i], "-lt") || 
+		   !strcmp(argv[i], "--list-tables")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			list_tables_flg = FLAG_SET;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-dt") || !strcmp(argv[i], "--delete-table")) {
+		if(!strcmp(argv[i], "-dt") || 
+		   !strcmp(argv[i], "--delete-table")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			delete_table_flag = FLAG_SET;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--create-table") || !strcmp(argv[i], "-ct")) {
+		if(!strcmp(argv[i], "--create-table") || 
+		   !strcmp(argv[i], "-ct")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			create_table_flag = FLAG_SET;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-c") || !strcmp(argv[i], "--clear")) {
+		if(!strcmp(argv[i], "-c") || 
+		   !strcmp(argv[i], "--clear")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			clear_db = FLAG_SET;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-i") || !strcmp(argv[i], "--import")) {
-//			fprintf(stderr, "* Importing from syslog\n");
+		if(!strcmp(argv[i], "-i") || 
+		   !strcmp(argv[i], "--import")) {
 			action_flag = FLAG_SET;
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
-				fprintf(stderr, "? To import syslog you need to specify a filename after '%s'.\n", argv[i]);
+				fprintf(stderr, 
+					"? To import syslog you need to specify a filename after '%s'.\n", argv[i]);
 				retval = RETVAL_WARN;
 				goto clean_exit;
 			}
@@ -363,7 +379,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-a") || !strcmp(argv[i], "--analyze")) {
+		if(!strcmp(argv[i], "--analyze") || 
+		   !strcmp(argv[i], "-a")) {
 			analyze_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			known_flag = FLAG_SET;
@@ -390,6 +407,7 @@ int main(int argc, char *argv[])
 		goto clean_exit;
 	}
 	
+	/* Print the usage of ipta */
 	if(print_usage_flag) {
 		print_usage();
 	}
@@ -403,6 +421,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	
+	/* Show the different tables used in the database */
 	if(list_tables_flg) {
 		retval = list_tables(db_info);
 		if(retval)
@@ -415,20 +434,22 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "! Delete table is a stub and not yet implemented.\n");
 	}
 	
+	/* Create the prime table needed to import the syslog entries */
 	if(create_table_flag) {
 		retval = create_table(db_info);
 		if(retval)
 			goto clean_exit;
 	}
-	
+
+	/* Clear all database entries */
 	if(clear_db) {
-		/* Do clear the database */
 		retval = clear_database(db_info);
 		if(retval != 0) {
 			fprintf(stderr, "! Error, clearing database, exiting.\n");
 			goto clean_exit;
 		} 
 	}
+	
 	
 	if(import_flag) {
 		/* import from syslog */
@@ -438,9 +459,9 @@ int main(int argc, char *argv[])
 			goto clean_exit;
 		} 
 	}
-	
+
+	/* Run the automatic analyzer module */
 	if(analyze_flag) {
-		/* Analyze imported data that's in MySQL */
 		retval = analyze(db_info, flags, analyze_limits);
 		if(retval) {
 			fprintf(stderr, "! Error in analyzer. Sorry.\n");
