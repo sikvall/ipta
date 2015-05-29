@@ -85,7 +85,7 @@ struct ipta_config {
 
 /* Function declarations */
 int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit);
-int open_db(struct ipta_db_info *db);
+MYSQL *open_db(struct ipta_db_info *db);
 int create_config(void);
 int restore_db(struct ipta_db_info *db);
 int save_db(struct ipta_db_info *db);
