@@ -237,8 +237,8 @@ clean_exit:
  ***********************************************************************/
 int create_table(struct ipta_db_info *db)
 {
-	char *query;
-	MYSQL *con;
+	char *query = NULL;
+	MYSQL *con = NULL;
 	int retval = RETVAL_OK;
 
 	con = open_db(db);
@@ -323,12 +323,12 @@ int delete_table(struct ipta_db_info *db)
 	
 	query = calloc(10000,1);
 	if(!query) {
-		printf(stderr, "! Error: Failed allocation, exit now.\n");
+		fprintf(stderr, "! Error: Failed allocation, exit now.\n");
 		exit(RETVAL_ERROR);
 	}
 	
 	// Empty the table before populating it with new data if flag set
-	sprintf(query, "DROP TABLE %s", db_info->table);
+	sprintf(query, "DROP TABLE %s", db->table);
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "%s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
@@ -336,7 +336,7 @@ int delete_table(struct ipta_db_info *db)
 	}
 	
 	fprintf(stderr,"* Table %s deleted from database %s.\n",
-		db_info->table, db_info->name);
+		db->table, db->name);
 	
 clean_exit:
 	free(query);
