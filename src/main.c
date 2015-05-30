@@ -228,7 +228,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-l") || !strcmp(argv[i], "--limit")) {
+		if(!strcmp(argv[i], "-l") || 
+		   !strcmp(argv[i], "--limit")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "? You need to supply an argument for the limit.\n");
@@ -248,7 +249,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-name") || !strcmp(argv[i], "-d")) {
+		if(!strcmp(argv[i], "--db-name") || 
+		   !strcmp(argv[i], "-d")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "! You must supply a name with argument %s\n", argv[i]);
@@ -335,10 +337,28 @@ int main(int argc, char *argv[])
 				retval = RETVAL_ERROR;
 				goto clean_exit;
 			}
-			strncpy(db_info->pass, argv[i+1], IPTA_DB_INFO_STRLEN); i++;
+			strncpy(db_info->pass, argv[i+1], IPTA_DB_INFO_STRLEN); 
+			i++;
 			continue;
 		}
 		
+
+		if(!strcmp(argv[i], "--dns-ttl")) {
+			if(argc < (i+2)) {
+				fprintf(stderr, "? Missing argument for --dns-ttl\n");
+				retval = RETVAL_ERROR;
+				goto clean_exit;
+			}
+			dns_ttl = atoi(argv[i+1]);
+			if(!dns_ttl) {
+				fprintf(stderr, "! Error, dns_ttl should not be 0.\n");
+				retval = RETVAL_ERROR;
+				goto clean_exit;
+			}
+			i++; /* Increase to swallow argument */
+//			printf("DEBUG: dns_ttl: %d\n", dns_ttl);
+			continue;
+		}
 		
 		/* Table operations defined here as flags are processed */
 		if(!strcmp(argv[i], "-lt") || 
