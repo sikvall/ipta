@@ -357,7 +357,7 @@ clean_exit:
  *********************************************************************/
 int list_tables(struct ipta_db_info *db_info)
 {
-	MYSQL *con;
+	MYSQL *con = NULL;
 	char *query = NULL;
 	int retval = RETVAL_OK;
 	MYSQL_ROW row;
@@ -367,35 +367,20 @@ int list_tables(struct ipta_db_info *db_info)
 	int row_counter = 0;
 
 	/* Connect to mysql database */
-	con = mysql_init(NULL);
+	con = open_db(db_info)
 	if(con == NULL) {
 		fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");
-		fprintf(stderr, "Error message: %s\n", mysql_error(con));
-		retval = RETVAL_ERROR;
-		goto clean_exit;
-	}
-  
-	if(mysql_real_connect(con, 
-			      db_info->host, 
-			      db_info->user, 
-			      db_info->pass, 
-			      NULL, 0, NULL, 0) == NULL) {
-		fprintf(stderr, "%s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
   
 	query = calloc(QUERY_STRING_SIZE, 1);
-
-	// Select the database to use
-	sprintf(query, "USE %s;", db_info->name);
-	if(mysql_query(con, query)) {
-		fprintf(stderr, "%s\n", mysql_error(con));
-		retval = RETVAL_ERROR;
-		goto clean_exit;
+	if(!query) {
+		fprintf(stderr, "! Error, allocation failed, immediate exit.\n");
+		exit(RETVAL_ERROR);
 	}
-  
-	// Empty the table before populating it with new data if flag set
+
+	/* Empty the table before populating it with new data if flag set */
 	sprintf(query, "SHOW TABLES");
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "%s\n", mysql_error(con));
@@ -417,9 +402,9 @@ int list_tables(struct ipta_db_info *db_info)
 clean_exit:
 	mysql_free_result(result);
 	free(query);
-	if(NULL != con)
+	if(con)
 		mysql_close(con);
-
+	
 	return retval;
 }
 
@@ -446,28 +431,9 @@ int clear_database(struct ipta_db_info *db_info)
 	}
 
 	/* Connect to mysql database */
-	con = mysql_init(NULL);
+	con = open_db(db_info);
 	if(con == NULL) {
 		fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");
-		fprintf(stderr, "Error message: %s\n", mysql_error(con));
-		retval = RETVAL_ERROR;
-		goto clean_exit;
-	}
-  
-	if(mysql_real_connect(con, 
-			      db_info->host, 
-			      db_info->user, 
-			      db_info->pass, 
-			      NULL, 0, NULL, 0) == NULL) {
-		fprintf(stderr, "%s\n", mysql_error(con));
-		retval = RETVAL_ERROR;
-		goto clean_exit;
-	}
-  
-	// Select the database to use
-	sprintf(query, "USE %s;", db_info->name);
-	if(mysql_query(con, query)) {
-		fprintf(stderr, "  %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
