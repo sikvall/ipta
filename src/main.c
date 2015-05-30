@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
 	char *follow_file = NULL;
 	int follow_flag = 0;
 	int analyze_limits = 20;
-	int save_db_flag = 0;
 	int create_db_flag = 0;
 	int delete_table_flag = 0;
 	int import_flag = 0;
