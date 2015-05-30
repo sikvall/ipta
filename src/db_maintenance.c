@@ -104,6 +104,13 @@ int create_db(struct ipta_db_info *db)
 	char *query = NULL;
 	int retval = RETVAL_OK;
 
+
+	/* TODO: There is a built-in bug here when using the open_db()
+	 * function since we don't have the database yet but this
+	 * function assumes it! We must replace it with our own
+	 * version in this case. But that is a job for tomorrow. 
+	 */
+
 	con = open_db(db);
 	if(!con) {
 		fprintf(stderr, "! Failed to open the database, exiting.\n");
@@ -120,7 +127,8 @@ int create_db(struct ipta_db_info *db)
 
 	sprintf(query, "CREATE DATABASE %s;", db->name);
 	if(mysql_query(con, query)) {
-		fprintf(stderr, "! Error, unable to create database '%s'.\n", db->name);
+		fprintf(stderr, "! Error, unable to create database '%s'.\n"
+			"  Error: %s.\n", db->name, mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
@@ -128,7 +136,8 @@ int create_db(struct ipta_db_info *db)
 	sprintf(query, "GRANT ALL PRIVILEGES ON %s.* TO '%s'@'localhost' IDENTIFIED BY %s;",
 		db->name, db->user, db->pass);
 	if(mysql_query(con, query)) {
-		fprintf(stderr, "! Error, unable to grand privileges.\n");
+		fprintf(stderr, "! Error, unable to grand privileges.\n"
+			"  Error: %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
