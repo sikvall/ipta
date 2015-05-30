@@ -118,10 +118,7 @@ int main(int argc, char *argv[])
 	pw = getpwuid(getuid());
 	retval = sprintf(home, "%s/.ipta", pw->pw_dir);
 	retval = cfg_parse_file(st, home);
-	if(retval) {
-		fprintf(stderr, "- No config file.\n");
-	} 
-	else {
+	if(!retval) {
 		/* Look for the standard parameter names and move the value
 		   to the internal hold as needed */
 		i = 0;
