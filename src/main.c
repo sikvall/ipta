@@ -60,7 +60,9 @@ int main(int argc, char *argv[])
 	int delete_table_flag = 0;
 	int import_flag = 0;
 	int analyze_flag = 0;
+	int prune_dns_flag = 0;
 	int list_tables_flg = 0;
+	int dns_ttl = 24*14;
         //  int print_license_flag = 0;
 	cfg_t *st; /* Configuration store */
 	struct passwd *pw = NULL;
@@ -358,6 +360,13 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
+		if(!strcmp(argv[i], "--dns-prune") ||
+		   !strcmp(argv[i], "-dp")) {
+			known_flag = FLAG_SET;
+			prune_dns_flag = FLAG_SET;
+			action_flag = FLAG_SET;
+		}
+
 		if(!strcmp(argv[i], "--create-table") || 
 		   !strcmp(argv[i], "-ct")) {
 			known_flag = FLAG_SET;
@@ -395,6 +404,7 @@ int main(int argc, char *argv[])
 			action_flag = FLAG_SET;
 			known_flag = FLAG_SET;
 		}
+
 		
 		/* Sanity check for arguments we don't handle */
 		if(!known_flag) {
@@ -411,7 +421,13 @@ int main(int argc, char *argv[])
 		goto clean_exit;
 	}
 	
-	/* This must be the first action as it may break all the others */
+	/* This must be the first action as it may break all the
+	 * others except for the dns settings */
+
+	if(prune_dns_flag) {
+		retval = dns_cache_prune(dns_info, dns_ttl);
+	}
+
 	if(follow_flag) {
 		retval = follow(follow_file, flags, dns_info);
 		goto clean_exit;

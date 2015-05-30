@@ -160,15 +160,15 @@ clean_exit:
  * hostname to the pointer passed to it. If unsuccessful it will
  * return RETVAL_ERROR and the hostname written will be the empty
  * string.
- */
-int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl) 
+ ***********************************************************************/
+int dns_cache_get(struct ipta_db_info *db, char *ip_address, 
+		  char *hostname, char *ttl) 
 {
 	char *query_string = NULL;
 	MYSQL *con = NULL;
 	int retval = RETVAL_OK;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row = 0;
-	//int num_fields = 0;
 	
 	/* Allocate memory */
 	query_string = malloc(10000); // Fix later
@@ -202,7 +202,6 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, cha
 	}
 	
 	result = mysql_store_result(con);
-//	num_fields = mysql_num_fields(result);
 	row = mysql_fetch_row(result);
 	if(row)  {
 		strcpy(hostname, row[0]);
@@ -245,11 +244,45 @@ clean_exit:
  *       database.
  *
  ***********************************************************************/
-int dns_cache_prune(struct ipta_db_info *db) { 
-  fprintf(stderr, "Function is a stub and not implemented.\n");
-  assert(0);
+int dns_cache_prune(struct ipta_db_info *db, int ttl) { 
+	MYSQL *con = NULL;
+	int retval = RETVAL_OK;
+	char *query = NULL;
 
-  return RETVAL_ERROR;
+	con = open_db(db);
+	if(!con) {
+		fprintf(stderr, "! Unable to open database.\n" \
+			"  Error: %s", mysql_error(con));
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	query = calloc(1, 10000); // Fixme: Should be done nicer.
+	if(!query) {
+		fprintf(stderr, "! Error, unable to allocate memory.\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	sprintf(query, 
+		"DELETE FROM %s "			\
+		"WHERE ttl < NOW() - INTERVAL '%d' HOUR;",
+		db->table, ttl);
+	printf("DEBUG: %s\n", query);
+	if(mysql_query(con, query)) {
+		fprintf(stderr, "! Error: %s\n", mysql_error(con));
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	retval = RETVAL_OK;
+	
+clean_exit:
+	free(query);
+	if(con)
+		mysql_close(con);
+
+	return retval;
 }
 
 /**********************************************************************
