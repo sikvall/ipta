@@ -309,7 +309,7 @@ clean_exit:
  *********************************************************************/
 int delete_table(struct ipta_db_info *db)
 {
-	MYSQL *con;
+	MYSQL *con = NULL;
 	char *query = NULL;
 	int retval = RETVAL_OK;
 	
@@ -321,24 +321,10 @@ int delete_table(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 	
-	if(mysql_real_connect(con, 
-			      db_info->host, 
-			      db_info->user, 
-			      db_info->pass, 
-			      NULL, 0, NULL, 0) == NULL) {
-		fprintf(stderr, "%s\n", mysql_error(con));
-		retval = RETVAL_WARN;
-		goto clean_exit;
-	}
-	
 	query = calloc(10000,1);
-	
-	// Select the database to use
-	sprintf(query, "USE %s;", db_info->name);
-	if(mysql_query(con, query)) {
-		fprintf(stderr, "%s\n", mysql_error(con));
-		retval = RETVAL_ERROR;
-		goto clean_exit;
+	if(!query) {
+		printf(stderr, "! Error: Failed allocation, exit now.\n");
+		exit(RETVAL_ERROR);
 	}
 	
 	// Empty the table before populating it with new data if flag set
@@ -354,7 +340,8 @@ int delete_table(struct ipta_db_info *db)
 	
 clean_exit:
 	free(query);
-	mysql_close(con);
+	if(con)
+		mysql_close(con);
 	return retval;
 }
 
