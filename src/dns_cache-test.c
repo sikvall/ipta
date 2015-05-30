@@ -1,8 +1,29 @@
 /***********************************************************************
  * dns_cache-test.c
  *
- * Test framework for the dns cache system
- ***********************************************************************/
+ * Anders "Ichimusai" Sikvall
+ * anders@sikvall.se
+ *
+ * Test framework for the dns cache system, not needed to compile the
+ * tools, just the test for the dns cache framework.
+ *
+ * This source file is part of the ipta package and is maintained by
+ * the package owner, see http://ichimusai.org/ipta/ for more info
+ * about this. Any changes, patches, diffs etc that you would like to
+ * offer should be sent by email to ichi@ichimusai.org for review
+ * before they will be applied to the main code base.
+ *
+ * As usual this software is offered "as is" and placed in the public
+ * domain. You are free to copy, modify, spread and make use of this
+ * software. For the terms and conditions for this software you should
+ * refer to the "LICENCE" file in the source directory or run a
+ * compiled binary with the "--licence" option which will display the
+ * licence.
+ *
+ * Any modifications to this source MUST retain this header. You are
+ * however allowed to add below your own changes and redistribute, as
+ * long as you do not violate any terms and condition in the LICENCE.
+ **********************************************************************/
 
 #include <sys/types.h>
 #include <sys/socket.h>

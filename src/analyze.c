@@ -22,10 +22,6 @@
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
 
-/* This is a dummy comment. The file has been reverted to an older
-   version because of messing it up. This is just added so we can
-   check it in again under a new version number. */
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -34,7 +30,8 @@
 #include <mysql.h>
 #include "ipta.h"
 
-int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit) 
+int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit, 
+	struct ipta_db_info *dnsdb) 
 {
 	char *query = NULL;
 	MYSQL *con = NULL;
@@ -90,9 +87,9 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 	while((row = mysql_fetch_row(result))) {
 		if(flags->rdns) {
 			rdns_flg[0] = rdns_flg[1] = FLAG_SET;
-			if(get_host_by_addr(row[1], src_ip_hostname, 25))
+			if(get_host_by_addr(row[1], src_ip_hostname, 25, dnsdb))
 				rdns_flg[0] = FLAG_CLEAR;
-			if(get_host_by_addr(row[3], dst_ip_hostname, 25))
+			if(get_host_by_addr(row[3], dst_ip_hostname, 25, dnsdb))
 				rdns_flg[1] = FLAG_CLEAR;
 		}      
 		printf("%6d %-25s %5d %-25s %5d %-6s %-10s\n", 
@@ -127,9 +124,9 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 	while((row = mysql_fetch_row(result))) {
 		if(flags->rdns) {
 			rdns_flg[0] = rdns_flg[1] = FLAG_SET;
-			if(get_host_by_addr(row[1], src_ip_hostname, 25))
+			if(get_host_by_addr(row[1], src_ip_hostname, 25, dnsdb))
 				rdns_flg[0] = FLAG_CLEAR;
-			if(get_host_by_addr(row[2], dst_ip_hostname, 25))
+			if(get_host_by_addr(row[2], dst_ip_hostname, 25, dnsdb))
 				rdns_flg[1] = FLAG_CLEAR;
 		}      
 		
@@ -192,9 +189,9 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 	while((row = mysql_fetch_row(result))) {
 		if(flags->rdns) {
 			rdns_flg[0] = rdns_flg[1] = FLAG_SET;
-			if(get_host_by_addr(row[1], src_ip_hostname, 25))
+			if(get_host_by_addr(row[1], src_ip_hostname, 25, dnsdb))
 				rdns_flg[0] = FLAG_CLEAR;
-			if(get_host_by_addr(row[3], dst_ip_hostname, 25))
+			if(get_host_by_addr(row[3], dst_ip_hostname, 25, dnsdb))
 				rdns_flg[1] = FLAG_CLEAR;
 			
 		}

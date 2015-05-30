@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 {
 	struct ipta_flags *flags = NULL;
 	struct ipta_db_info *db_info = NULL;
+	struct ipta_db_info *dns_info = NULL;
 	int i = 0;
 	int retval = 0;
 	char *import_fname = NULL;
@@ -84,6 +85,19 @@ int main(int argc, char *argv[])
 	strcpy(db_info->name, DEFAULT_DB_NAME);
 	strcpy(db_info->table, DEFAULT_DB_TABLENAME);
 	
+	dns_info = calloc(sizeof(struct ipta_db_info), 1);
+	if(NULL == db_info) {
+		fprintf(stderr, "! Error, memory allocation failed.\n");
+		exit(RETVAL_ERROR);
+	}
+
+	// Fixme - must be configurable later
+	strcpy(dns_info->host, "localhost");
+	strcpy(dns_info->user, "ipta");
+	strcpy(dns_info->pass, "ipta");
+	strcpy(dns_info->name, "ipta");
+	strcpy(dns_info->table, "dns");
+
 	/* Initialize config structure with no cache, we do not need it here
 	   because there is not a lot of keywords to look at */
 	
@@ -399,7 +413,7 @@ int main(int argc, char *argv[])
 	
 	/* This must be the first action as it may break all the others */
 	if(follow_flag) {
-		retval = follow(follow_file, flags);
+		retval = follow(follow_file, flags, dns_info);
 		goto clean_exit;
 	}
 	
@@ -460,7 +474,7 @@ int main(int argc, char *argv[])
 
 	/* Run the automatic analyzer module */
 	if(analyze_flag) {
-		retval = analyze(db_info, flags, analyze_limits);
+		retval = analyze(db_info, flags, analyze_limits, dns_info);
 		if(retval) {
 			fprintf(stderr, "! Error in analyzer. Sorry.\n");
 			retval = RETVAL_ERROR;

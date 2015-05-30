@@ -55,7 +55,8 @@
  *                             tld is preserved.
  ***********************************************************************/
 
-int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
+int get_host_by_addr(char *ip_address, char *hostname, int maxlen, 
+		     struct ipta_db_info *db) {
 	struct sockaddr_in ip4addr;
 	int len = 0;
 	char host[NI_MAXHOST];        // Holding hostname
@@ -64,13 +65,17 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
 	int dns_reply = 0;
 
 	/* Check if the answer is in the cache */
-
-	/* TODO */
-
-	/* Clear all stuff */
+	retval = dns_cache_get(db, ip_address, hostname, "300"); // Fixme: Should be controlled by user
+	if(!retval) {
+		/* Found the cache, return this answer */
+		strncpy(hostname, ip_address, maxlen);
+		return RETVAL_OK;
+	}
+	
+	/* Not found in cache, try to look it up */
 	memset(&ip4addr, 0, sizeof(struct sockaddr_in));
 
-	/* Set up family and port */
+	/* Set protocol and type of request */
 	ip4addr.sin_family = AF_INET;
 	ip4addr.sin_port = htons(0);
 
@@ -85,6 +90,12 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
 	/* If we got a name then we copy the name to maxlen characters into the
 	   hostname pointer provided by the call. */
 	if (dns_reply == 0) {
+		/* Record found, put it in the cache, or if exists update it */
+		retval = dns_cache_add(db, ip_address, host);
+		if(retval)
+			fprintf(stderr, "! Warning, failed to add new hostname to cache.\n");
+		
+		/* Format properly and return */
 		len = strlen(host);
 		if(len > maxlen) {
 			strcpy(host, host+(len-maxlen));

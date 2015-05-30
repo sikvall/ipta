@@ -34,7 +34,7 @@
  * is logged in a nicely formatted way.
  **********************************************************************/
 
-int follow(char *filename, struct ipta_flags *flags) {
+int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb) {
 	FILE *logfile;
 	int flag_rdns = FLAG_CLEAR;
 	char *line;
@@ -141,7 +141,7 @@ int follow(char *filename, struct ipta_flags *flags) {
 					if(!strncmp("SRC=", token, 4)) {
 						log_src = token + strlen("SRC=");
 						if(flag_rdns) {
-							retval = get_host_by_addr(log_src, src_hostname, hostname_len);
+							retval = get_host_by_addr(log_src, src_hostname, hostname_len, dnsdb);
 							if(retval != 0) 
 								strcpy(src_hostname, log_src);
 						}
@@ -150,7 +150,7 @@ int follow(char *filename, struct ipta_flags *flags) {
 					if(!strncmp("DST=", token, 4)) {
 						log_dst = token + strlen("DST=");
 						if(flag_rdns) {
-							retval = get_host_by_addr(log_dst, dst_hostname, hostname_len);
+							retval = get_host_by_addr(log_dst, dst_hostname, hostname_len, dnsdb);
 							if(retval != 0) 
 								strcpy(src_hostname, log_dst);
 						}
