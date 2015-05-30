@@ -22,6 +22,8 @@
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
 
+#include <my_global.h>
+#include <mysql.h>
 
 /* Overall generic defines */
 #define IPTA_VERSION "ipta version Release-V0.3\n"
@@ -89,7 +91,7 @@ MYSQL *open_db(struct ipta_db_info *db);
 int create_config(void);
 int restore_db(struct ipta_db_info *db);
 int save_db(struct ipta_db_info *db);
-int create_database(struct ipta_db_info *db);
+int create_db(struct ipta_db_info *db);
 int create_table(struct ipta_db_info *db);
 int delete_table(struct ipta_db_info *db);
 int list_tables(struct ipta_db_info *db);
