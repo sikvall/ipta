@@ -30,8 +30,8 @@
 #include <mysql.h>
 #include "ipta.h"
 
-int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit, 
-	struct ipta_db_info *dnsdb) 
+int analyze(struct ipta_db_info *db, struct ipta_flags *flags, 
+	    int analyze_limit, 	struct ipta_db_info *dnsdb) 
 {
 	char *query = NULL;
 	MYSQL *con = NULL;
