@@ -53,7 +53,7 @@ int dns_cache_create_table(struct ipta_db_info *db)
 		exit(RETVAL_ERROR);
 	}
 	
-	con = dns_open_db(db);
+	con = open_db(db);
 	if(!con) {
 		fprintf(stderr, "! Error, unable to open database.\n");
 		retval = RETVAL_ERROR;
@@ -112,7 +112,7 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname)
 	}
 	
 	/* Initialize databse object */
-	con = dns_open_db(db);
+	con = open_db(db);
 	if(con == NULL) {
 		printf("! Unable to initialize MySQL connection.\n");
 		printf("  Error message: %s\n", mysql_error(con));
@@ -179,7 +179,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, cha
 	}
 	
 	/* Initialize databse object */
-	con = dns_open_db(db);
+	con = open_db(db);
 	if(con == NULL) {
 		printf("! Unable to initialize MySQL connection.\n");
 		printf("  Error message: %s\n", mysql_error(con));
@@ -269,7 +269,7 @@ int dns_cache_delete_table(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 
-	con = dns_open_db(db);
+	con = open_db(db);
 	if(!con) {
 		fprintf(stderr, "! Error, unable to initialize Mysql.\n");
 		retval = RETVAL_ERROR;
