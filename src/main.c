@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
 	int analyze_flag = 0;
 	int prune_dns_flag = 0;
 	int list_tables_flg = 0;
+	int dns_create_table_flag = 0;
 	int dns_ttl = 24*14;
         //  int print_license_flag = 0;
 	cfg_t *st; /* Configuration store */
@@ -236,7 +237,8 @@ int main(int argc, char *argv[])
 				retval = RETVAL_ERROR;
 				goto clean_exit;
 			}
-			analyze_limit = atoi(argv[i+1]); i++;
+			analyze_limit = atoi(argv[i+1]); 
+			i++;
 			if(analyze_limit < 1) {
 				fprintf(stderr, "! Invalid analyze limit %d must be at least 1.\n", analyze_limit);
 				retval = RETVAL_ERROR;
@@ -301,7 +303,7 @@ int main(int argc, char *argv[])
 		
 		if(!strcmp(argv[i], "--db-name") || 
 		   !strcmp(argv[i], "-d")) {
-			known_flag = 1;
+			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "? If you want to use use %s to select database, I need a name.\n", argv[i]);
 				retval = RETVAL_ERROR;
@@ -356,8 +358,13 @@ int main(int argc, char *argv[])
 				goto clean_exit;
 			}
 			i++; /* Increase to swallow argument */
-//			printf("DEBUG: dns_ttl: %d\n", dns_ttl);
 			continue;
+		}
+
+		if(!strcmp(argv[i], "--dns-create-table")) {
+			known_flag = FLAG_SET;
+			action_flag = FLAG_SET;
+			dns_create_table_flag = FLAG_SET;
 		}
 		
 		/* Table operations defined here as flags are processed */
@@ -430,6 +437,12 @@ int main(int argc, char *argv[])
 			goto clean_exit;
 		}
 	}
+
+
+	/***********************************************************************
+	 * Process the various flags in the correct order no matter
+	 * how they were inserted on the command line.
+	 ***********************************************************************/
 	
 	/* Process the actual modes to do something here */
 	if(!action_flag) {
@@ -443,6 +456,14 @@ int main(int argc, char *argv[])
 
 	if(prune_dns_flag) {
 		retval = dns_cache_prune(dns_info, dns_ttl);
+	}
+
+	if(dns_create_table_flag) {
+		retval = dns_cache_create_table(dns_info);
+		if(retval) {
+			fprintf(stderr, "! Error in creating DNS table.\n");
+			goto clean_exit;
+		}
 	}
 
 	if(follow_flag) {
@@ -516,10 +537,13 @@ int main(int argc, char *argv[])
 	}
 
 clean_exit:
+
 	if(config_file)
 		fclose(config_file);
 	free(flags);
 	free(db_info);
+	free(dns_info);
 	cfg_free(st);
+
 	return retval;
 }
