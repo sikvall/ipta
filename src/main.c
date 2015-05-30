@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
 	int create_table_flag = 0;
 	char *follow_file = NULL;
 	int follow_flag = 0;
-	int analyze_limits = 20;
 	int create_db_flag = 0;
 	int delete_table_flag = 0;
 	int import_flag = 0;
@@ -527,7 +526,7 @@ int main(int argc, char *argv[])
 
 	/* Run the automatic analyzer module */
 	if(analyze_flag) {
-		retval = analyze(db_info, flags, analyze_limits, dns_info);
+		retval = analyze(db_info, flags, analyze_limit, dns_info);
 		if(retval) {
 			fprintf(stderr, "! Error in analyzer. Sorry.\n");
 			retval = RETVAL_ERROR;
