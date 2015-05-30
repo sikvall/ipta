@@ -364,6 +364,15 @@ int main(int argc, char *argv[])
 			action_flag = FLAG_SET;
 			dns_create_table_flag = FLAG_SET;
 		}
+
+		if(!strcmp(argv[i], "--dns-table")) {
+			if(argc < (i+2)) {
+				fprintf(stderr, "! Error, must have table name following --dns-table switch.\n");
+				retval = RETVAL_ERROR;
+				goto clean_exit;
+			}
+			strncpy(dns_info->table, argv[i+2], IPTA_DB_INFO_STRLEN);
+		}
 		
 		/* Table operations defined here as flags are processed */
 		if(!strcmp(argv[i], "-lt") || 
