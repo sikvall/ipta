@@ -19,7 +19,7 @@
  * however allowed to add below your own changes and redistribute, as
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
-#define _GNU_SOURCE
+//#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -201,9 +201,7 @@ int follow(char *filename, struct ipta_flags *flags) {
 	}
 	
 clean_exit:
-	fcloseall();
+	fclose(logfile);
 	free(line);
 	return retval;
 }
-  
-
