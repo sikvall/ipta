@@ -68,7 +68,14 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen,
 	retval = dns_cache_get(db, ip_address, hostname, "300"); // Fixme: Should be controlled by user
 	if(!retval) {
 		/* Found the cache, return this answer */
-		strncpy(hostname, ip_address, maxlen);
+		if(len > maxlen) {
+			len = strlen(hostname);
+			strcpy(hostname, hostname+(len-maxlen));
+			host[0] = '*'; /* If the name is too long for the
+					  display field, insert * to indicate
+					  that */
+		}
+
 		return RETVAL_OK;
 	}
 	
@@ -104,7 +111,7 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen,
 					  that */
 		}
 		sprintf(hostname, "%s", host);
-		return retval;
+		return RETVAL_OK;
 	} else {
       
 		/* If not, then we return the actual IP address. We also signal
