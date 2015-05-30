@@ -101,14 +101,11 @@ int main(int argc, char *argv[])
 	/* Get user home dir and construct home path string */
 	pw = getpwuid(getuid());
 	retval = sprintf(home, "%s/.ipta", pw->pw_dir);
-	
 	retval = cfg_parse_file(st, home);
 	if(retval) {
 		fprintf(stderr, "- No config file.\n");
 	} 
-	
 	else {
-		
 		/* Look for the standard parameter names and move the value
 		   to the internal hold as needed */
 		i = 0;
