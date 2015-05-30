@@ -34,7 +34,7 @@
 #include <mysql.h>
 #include "ipta.h"
 
-int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_limit) 
+int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit) 
 {
 	char *query = NULL;
 	MYSQL *con = NULL;
@@ -54,36 +54,14 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		retval = RETVAL_ERROR; 
 		goto clean_exit;
 	}
-	
-	// Connect to mysql database
-	con = mysql_init(NULL);
-	if(con == NULL) {
-		fprintf(stderr, "! Unable to initialize MySQL connection.\n");
-		fprintf(stderr, "! Error message: %s\n", mysql_error(con));
-		retval = RETVAL_ERROR;
-		goto clean_exit;
-	}
-  
-	if(mysql_real_connect(con, 
-			      db_info->host, 
-			      db_info->user, 
-			      db_info->pass, 
-			      NULL, 0, NULL, 0) == NULL) {
-		fprintf(stderr, "! %s\n", mysql_error(con));
-		mysql_close(con);
-		retval = RETVAL_ERROR;
-		goto clean_exit;
-	}
-  
-	/* Select the database to use */
-	sprintf(query, "USE %s;", db_info->name);
-	if(mysql_query(con, query)) {
-		fprintf(stderr, "! Database %s not found, or not possible to connect. \n", db_info->name);
-		fprintf(stderr, "! %s\n", mysql_error(con));
-		retval = RETVAL_ERROR;
-		goto clean_exit;
-	}
 
+	con = open_db(db);
+	if(!con) {
+		fprintf(stderr, "! Unable to initialize MySQL connection.\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+  
 	/* This is a query that will show top 10 ranked IP addresses and
 	 * their destination ports and protocol used to attack. All "ALLOW"
 	 * traffic is sorted out 
@@ -93,11 +71,11 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		"SELECT COUNT(*), INET_NTOA(src_ip), src_prt, INET_NTOA(dst_ip), dst_prt, proto, " \
 		"action FROM %s WHERE action<>'ACCEPT' AND if_in<>'lo' and if_out<>'lo' GROUP BY " \
 		"src_ip, dst_prt, action, proto ORDER BY COUNT(*) DESC LIMIT %d;", 
-		db_info->table, analyze_limit);
+		db->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Query not accepted from database.\n");
-		fprintf(stderr, "! %s\n", mysql_error(con));
+		fprintf(stderr, "  %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
@@ -131,7 +109,7 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		"SELECT COUNT(*), INET_NTOA(src_ip), INET_NTOA(dst_ip), action FROM %s WHERE proto='ICMP' " \
 		"AND if_in<>'lo' AND if_out<>'lo' GROUP BY src_ip, dst_prt, action, proto ORDER BY COUNT(*) " \
 		"DESC LIMIT %d;", 
-		db_info->table, analyze_limit);
+		db->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Query not accepted from database.\n");
@@ -166,7 +144,7 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 	sprintf(query, 
 		"SELECT COUNT(*), dst_prt, proto, action FROM %s WHERE if_in<>'lo' AND if_out<>'lo' " \
 		"AND action<>'ACCEPT' GROUP BY dst_prt, action, proto ORDER BY COUNT(*) DESC LIMIT %d;", 
-		db_info->table, analyze_limit);
+		db->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Query not accepted from database.\n");
@@ -195,7 +173,7 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 		"SELECT COUNT(*), INET_NTOA(src_ip), src_prt, INET_NTOA(dst_ip), dst_prt, proto FROM %s " \
 		"WHERE if_in<>'lo' AND if_out<>'lo' AND action='INVALID' GROUP BY src_ip, dst_prt, proto " \
 		"ORDER BY COUNT(*) DESC LIMIT %d;", 
-		db_info->table, analyze_limit);
+		db->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Query not accepted from database.\n");
@@ -231,7 +209,7 @@ int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_
 	sprintf(query, 
 		"SELECT COUNT(*),if_in,action,proto FROM %s WHERE action<>'ACCEPT' GROUP BY " \
 		"if_in,action,proto ORDER BY COUNT(*) DESC LIMIT %d;", 
-		db_info->table, analyze_limit);
+		db->table, analyze_limit);
 	
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Query not accepted from database.\n");
