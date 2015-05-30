@@ -151,33 +151,33 @@ clean_exit:
 }
 
 
-int restore_db(struct ipta_db_info *db_info)
-{
-	FILE *fp;
-	char *line;
-	size_t len = 0;
-	ssize_t read;
+/* int restore_db(struct ipta_db_info *db_info) */
+/* { */
+/* 	FILE *fp; */
+/* 	char *line; */
+/* 	size_t len = 0; */
+/* 	ssize_t read; */
 	
-	fprintf(stderr, "* Warning, restore_db() is a stub function\n");
+/* 	fprintf(stderr, "* Warning, restore_db() is a stub function\n"); */
 	
-	/* Open the .ipta file */
-	fp = fopen("~/.ipta", "r");
-	if(NULL == fp) {
-		fprintf(stderr, "! Error, unable to open .ipta file. Check permission and that it exists.\n");
-		return RETVAL_ERROR;
-	}
+/* 	/\* Open the .ipta file *\/ */
+/* 	fp = fopen("~/.ipta", "r"); */
+/* 	if(NULL == fp) { */
+/* 		fprintf(stderr, "! Error, unable to open .ipta file. Check permission and that it exists.\n"); */
+/* 		return RETVAL_ERROR; */
+/* 	} */
 	
-	/* File is open, read each line and find the keywords, then insert
-	   into structure */
-	while((read = getline(&line, &len, fp)) != -1) {
-		if(!strncmp("host=", line, strlen("host="))) {
-			/* Do stuff here */
-			return RETVAL_OK;
-		}
-	}
+/* 	/\* File is open, read each line and find the keywords, then insert */
+/* 	   into structure *\/ */
+/* 	while((read = getline(&line, &len, fp)) != -1) { */
+/* 		if(!strncmp("host=", line, strlen("host="))) { */
+/* 			/\* Do stuff here *\/ */
+/* 			return RETVAL_OK; */
+/* 		} */
+/* 	} */
   
-	return RETVAL_OK;
-}
+/* 	return RETVAL_OK; */
+/* } */
 
 
 /**********************************************************************
@@ -188,43 +188,43 @@ int restore_db(struct ipta_db_info *db_info)
  * can pick it up next time and restore the settings without having to
  * read them from the command line. 
  **********************************************************************/
-int save_db(struct ipta_db_info *db_info)
-{
-	FILE *fp;
-	int retval = RETVAL_OK;
+/* int save_db(struct ipta_db_info *db_info) */
+/* { */
+/* 	FILE *fp; */
+/* 	int retval = RETVAL_OK; */
 	
-	/* Open the file, or attempt to */
-	fp = fopen("~/.ipta", "w");
-	if(NULL == fp) {
-		fprintf(stderr, "! Error, unable to open .ipta file! Check ownership and attributes.\n");
-		return RETVAL_ERROR;
-	}
+/* 	/\* Open the file, or attempt to *\/ */
+/* 	fp = fopen("~/.ipta", "w"); */
+/* 	if(NULL == fp) { */
+/* 		fprintf(stderr, "! Error, unable to open .ipta file! Check ownership and attributes.\n"); */
+/* 		return RETVAL_ERROR; */
+/* 	} */
 	
-	/* Enforce file persmissions and ownership as it contains passwords */
-	retval = chmod("~/.ipta", 600);
-	if(retval) {
-		fprintf(stderr, "! Error, unable to set mode permissions, error code %d\n", retval);
-		return RETVAL_ERROR;
-	}
+/* 	/\* Enforce file persmissions and ownership as it contains passwords *\/ */
+/* 	retval = chmod("~/.ipta", 600); */
+/* 	if(retval) { */
+/* 		fprintf(stderr, "! Error, unable to set mode permissions, error code %d\n", retval); */
+/* 		return RETVAL_ERROR; */
+/* 	} */
 	
-	/* File is open so output the data in a human readable fashion */
-	fprintf(fp,				\
-		"host=%s\n"			\
-		"user=%s\n"			\
-		"pass=%s\n"			\
-		"name=%s\n"			\
-		"table=%s",
-		db_info->host,
-		db_info->user,
-		db_info->pass,
-		db_info->name,
-		db_info->table);
+/* 	/\* File is open so output the data in a human readable fashion *\/ */
+/* 	fprintf(fp,				\ */
+/* 		"host=%s\n"			\ */
+/* 		"user=%s\n"			\ */
+/* 		"pass=%s\n"			\ */
+/* 		"name=%s\n"			\ */
+/* 		"table=%s", */
+/* 		db_info->host, */
+/* 		db_info->user, */
+/* 		db_info->pass, */
+/* 		db_info->name, */
+/* 		db_info->table); */
 	
-	/* Close file and return no error */
-	fclose(fp);
-	return RETVAL_OK;
+/* 	/\* Close file and return no error *\/ */
+/* 	fclose(fp); */
+/* 	return RETVAL_OK; */
 	
-}
+/* } */
 
 
 
@@ -235,52 +235,25 @@ int save_db(struct ipta_db_info *db_info)
  * database with the correct number of columns and their definitions
  * to be used by ipta
  ***********************************************************************/
-int create_table(struct ipta_db_info *db_info)
+int create_table(struct ipta_db_info *db)
 {
 	char *query;
 	MYSQL *con;
 	int retval = RETVAL_OK;
-	
+
+	con = open_db(db);
+	if(!con) {
+		fprintf(stderr, "! Unable to open database connection, giving up!\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
 	/* Just grab some heap */
 	query = malloc(10000);
 	if(query == NULL) {
 		fprintf(stderr, "! ERROR: Unable to allocate memory, exiting!\n");
 		/* Immediate exit */
 		exit(RETVAL_ERROR);
-	}
-	
-	/* Memory ok, initiate the con for MySQL */
-	con = mysql_init(NULL);
-	if(con == NULL) {
-		fprintf(stderr, "! Unable to initialize MySQL connection.\n");
-		fprintf(stderr, "! Error: %s\n", mysql_error(con));
-		
-		/* Set error condition and clean exit */
-		retval = RETVAL_ERROR;
-		goto finish;
-	}
-	
-	/* Attempt a proper db connection */
-	if(mysql_real_connect(con, 
-			      db_info->host, 
-			      db_info->user, 
-			      db_info->pass, 
-			      NULL, 0, NULL, 0) == NULL) {
-		fprintf(stderr, "! %s\n", mysql_error(con));
-		/* Set error condition and clean exit */
-		retval = RETVAL_ERROR;
-		goto finish;
-	}
-	
-	/* Select the database */
-	
-	sprintf(query, "USE %s;", db_info->name);
-	if(mysql_query(con, query)) {
-		fprintf(stderr, "! Database %s not found, or not possible to connect. \n", db_info->name);
-		fprintf(stderr, "! %s\n", mysql_error(con));
-		/* Set error condition and clean exit */
-		retval = RETVAL_ERROR;
-		goto finish;
 	}
 	
 	/* Create the SQL to create the table. No sanity check is performed
