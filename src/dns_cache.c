@@ -268,7 +268,7 @@ int dns_cache_prune(struct ipta_db_info *db, int ttl) {
 		"DELETE FROM %s "			\
 		"WHERE ttl < NOW() - INTERVAL '%d' HOUR;",
 		db->table, ttl);
-	printf("DEBUG: %s\n", query);
+//	printf("DEBUG: %s\n", query);
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Error: %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
