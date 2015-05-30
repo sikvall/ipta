@@ -273,7 +273,7 @@ int create_table(struct ipta_db_info *db)
 		"proto varchar(10) DEFAULT NULL,"			\
 		"action varchar(10) DEFAULT NULL,"			\
 		"mac varchar(40) DEFAULT NULL);", 
-		db_info->table);
+		db->table);
 	
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Query not accepted from database.\n");
@@ -281,16 +281,17 @@ int create_table(struct ipta_db_info *db)
 		
 		/* Set error condition and then clean_exit */
 		retval = RETVAL_ERROR;
-		goto finish;
+		goto clean_exit;
 	}
 	
 	fprintf(stderr, "* Table '%s' created in database '%s' which you may now use.\n", 
-		db_info->table, db_info->name);
+		db->table, db->name);
 	
 
 	/* Clear things up and exit with return value previously set */
-finish:
-	mysql_close(con);
+clean_exit:
+	if(con)
+		mysql_close(con);
 	free(query);
 	
 	return retval;
@@ -306,18 +307,16 @@ finish:
  * remain after running this. When this is done you may need to create
  * a new table in order to use ipta again.
  *********************************************************************/
-int delete_table(struct ipta_db_info *db_info)
+int delete_table(struct ipta_db_info *db)
 {
 	MYSQL *con;
 	char *query = NULL;
 	int retval = RETVAL_OK;
 	
 	/* Connect to mysql database */
-	fprintf(stderr, "* Opening database.\n");
-	con = mysql_init(NULL);
+	con = open_db(db);
 	if(con == NULL) {
 		fprintf(stderr, "! ERROR: Unable to initialize MySQL connection.\n");
-		fprintf(stderr, "  Error message: %s\n", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
