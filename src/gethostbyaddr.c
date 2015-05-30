@@ -82,8 +82,8 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
 	dns_reply = getnameinfo((struct sockaddr *) &ip4addr, sizeof(struct sockaddr_in), 
 				host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
 
-	/* If we got a name then we copy the name to maxlen characters into
-	   the hostname pointer provided by the call. */
+	/* If we got a name then we copy the name to maxlen characters into the
+	   hostname pointer provided by the call. */
 	if (dns_reply == 0) {
 		len = strlen(host);
 		if(len > maxlen) {
@@ -94,16 +94,15 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
 		}
 		sprintf(hostname, "%s", host);
 		return retval;
-	}  
-	else {
+	} else {
       
-		/* If not, then we return the actual IP address. We also
-		   signal that we could not look it up with a "1" as RETVAL
-		   Return the address cut so that it fits the field length */
+		/* If not, then we return the actual IP address. We also signal
+		   that we could not look it up with a "1" as RETVAL Return the
+		   address cut so that it fits the field length */
 		strncpy(hostname, ip_address, maxlen);
 
-		return RETVAL_NONAME; /* Nor regarded as a fatal error, just
-					 a signal in RETVAL that we did not
-					 look up a name */
+		return RETVAL_NONAME; /* Nor regarded as a fatal error, just a
+					 signal in RETVAL that we did not look
+					 up a name */
 	}
 }
