@@ -95,10 +95,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Fixme - must be configurable later
-	strcpy(dns_info->host, "localhost");
-	strcpy(dns_info->user, "ipta");
-	strcpy(dns_info->pass, "ipta");
-	strcpy(dns_info->name, "ipta");
+	memcpy(dns_info, db_info, sizeof(db_info));
 	strcpy(dns_info->table, "dns");
 
 	/* Initialize config structure with no cache, we do not need it here
@@ -142,6 +139,8 @@ int main(int argc, char *argv[])
 				strncpy(db_info->name,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
 			if(!strcmp("db_table", st->entry[i].key))
 				strncpy(db_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("dns_table", st->-entry[i].key))
+				strncpy(dns_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
 			
 			/* Analyzer limit is a little special and requires a range check */
 			if(!strcmp("analyzer limit", st->entry[i].key)) {
