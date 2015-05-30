@@ -115,6 +115,11 @@ int get_host_by_addr(char *ip_address, char *hostname, int maxlen,
 		   address cut so that it fits the field length */
 		strncpy(hostname, ip_address, maxlen);
 
+		/* But... also put it in the cache with ip address for host name */
+		retval = dns_cache_add(db, ip_address, ip_address);
+		if(retval)
+			fprintf(stderr, "! Warning, failed to add new hostname to cache.\n");
+
 		return RETVAL_NONAME; /* Nor regarded as a fatal error, just a
 					 signal in RETVAL that we did not look
 					 up a name */
