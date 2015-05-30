@@ -125,7 +125,7 @@ int create_db(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 	
-	sprintf(query, "GRANT ALL PRIVILEGES ON %s.* TO '%s%'@'localhost' IDENTIFIED BY %s;",
+	sprintf(query, "GRANT ALL PRIVILEGES ON %s.* TO '%s'@'localhost' IDENTIFIED BY %s;",
 		db->name, db->user, db->pass);
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Error, unable to grand privileges.\n");
@@ -137,6 +137,8 @@ clean_exit:
 	if(con)
 		mysql_close(con);
 	free(query);
+
+	return retval;
 }
 
 
