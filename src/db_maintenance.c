@@ -367,7 +367,7 @@ int list_tables(struct ipta_db_info *db_info)
 	int row_counter = 0;
 
 	/* Connect to mysql database */
-	con = open_db(db_info)
+	con = open_db(db_info);
 	if(con == NULL) {
 		fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");
 		retval = RETVAL_ERROR;
