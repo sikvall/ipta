@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
 	int import_flag = 0;
 	int analyze_flag = 0;
 	int prune_dns_flag = 0;
+	int dns_dump_flag = 0;
 	int list_tables_flg = 0;
 	int dns_create_table_flag = 0;
 	int dns_ttl = 24*14;
@@ -179,6 +180,12 @@ int main(int argc, char *argv[])
 		   !strcmp(argv[i], "-r")) {
 			flags->rdns = FLAG_SET;
 			known_flag = FLAG_SET;
+		}
+		
+		if(!strcmp(argv[i], "--dns-dump")) {
+			known_flag = FLAG_SET;
+			action_flag = FLAG_SET;
+			dns_dump_flag = FLAG_SET;
 		}
 		
 		if(!strcmp(argv[i], "--no-lo")) {
@@ -492,6 +499,11 @@ int main(int argc, char *argv[])
 				"  for this to work as the database must be created and a grand given to ipta.\n");
 			goto clean_exit;
 		}
+	}
+
+	/* Dump the DNS cache in human readable format */
+	if(dns_dump_flag) {
+		dns_dump_cache(dns_info);
 	}
 	
 	/* Show the different tables used in the database */

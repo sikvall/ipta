@@ -104,6 +104,7 @@ void print_license(void);
 void print_usage(void);
 
 /* dns cache prototypes */
+int dns_dump_cache(struct ipta_db_info *db);
 int dns_cache_create_table(struct ipta_db_info *db);
 int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname);
 int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl);

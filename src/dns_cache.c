@@ -33,6 +33,55 @@
 #include <mysql.h>
 #include "ipta.h"
 
+int dns_dump_cache(struct ipta_db_info *db)
+{
+	MYSQL *con = NULL;
+	MYSQL_RES *result = NULL;
+	MYSQL_ROW row = 0;
+	int retval = RETVAL_OK;
+	char *query = NULL;
+
+	con = open_db(db);
+	if(!con) {
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	query = malloc(10000); //fixme
+	if(!query) {
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	sprintf(query,
+		"SELECT INET_NTOA(ip),host FROM %s ORDER BY ip;",
+		db->table);
+	if(mysql_query(con, query)) {
+		fprintf(stderr, "! Error: %s\n", mysql_error(con));
+		goto clean_exit;
+	}
+	result = mysql_store_result(con);
+
+	/* Produce output for the results, row by row */
+	while((row = mysql_fetch_row(result))) 
+		/* Filter out those that are just ip numbers and do
+		 * not reverse */
+		if(strcmp(row[0], row[1]))
+			printf("%20s    %-50s\n", row[0], row[1]);
+	mysql_free_result(result);
+	result = NULL;
+
+clean_exit:
+	if(con)
+		mysql_close(con);
+	if(result)
+		mysql_free_result(result);
+	if(query)
+		free(query);
+
+	return retval;
+}
+
 
 
 /*****************************************************************************
