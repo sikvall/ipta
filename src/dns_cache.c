@@ -33,74 +33,55 @@
 #include <mysql.h>
 #include "ipta.h"
 
+int dns_dump_cache(struct ipta_db_info *db)
+{
+	MYSQL *con = NULL;
+	MYSQL_RES *result = NULL;
+	MYSQL_ROW row = 0;
+	int retval = RETVAL_OK;
+	char *query = NULL;
 
-/***********************************************************************
- * dns_open_db
- *
- * DESCRIPTION
- *
- * This is a simple helper function that will open the con, select the
- * right database from the parameters given in the ipta_db_info
- * struct. Upon success it will return a MYSQL *con object. In failure
- * it will just return NULL.
- * 
- * PARAMETERS 
- *
- * struct ipta_db_info *db - a pointer to a struct containing
- *                           necessary information.
- *
- * RETURNS
- *
- * Upon Success: A MYSQL *con object pointer.
- *
- * Upon Failure: NULL
- *
- * OBSERVE! 
- *
- * The called must take care to destroy the con object themselves when
- * done with it because this function will do nothing of the kind.
- ***********************************************************************/
-MYSQL *dns_open_db(struct ipta_db_info *db) 
-{ 
-	MYSQL *con = NULL; 
-	int retval = RETVAL_OK; 
-	char query_string[256]; // Fixme
-	
-	con = mysql_init(NULL);
-	if(con == NULL) {
-		fprintf(stderr, "! Error, unable to initiate MySQL.\n");
+	con = open_db(db);
+	if(!con) {
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
-	
-	/* Attempt proper connection to database */
-	if(mysql_real_connect(con, db->host, db->user, db->pass, 
-			      NULL, 0, NULL, 0) == NULL) {
-		fprintf(stderr, "! Unable to connect to database.\n");
-		fprintf(stderr, "  Error: %s\n", mysql_error(con));
+
+	query = malloc(10000); //fixme
+	if(!query) {
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
-	
-	/* Select the indicated database */
-	sprintf(query_string, "USE %s;", db->name);
-	if(mysql_query(con, query_string)) {
-		fprintf(stderr, "! Database %s not found, or not possible to connect.\n", db->name);
-		fprintf(stderr, "  Error: %s\n", mysql_error(con));
+
+	sprintf(query,
+		"SELECT INET_NTOA(ip),host FROM %s ORDER BY ip;",
+		db->table);
+	if(mysql_query(con, query)) {
+		fprintf(stderr, "! Error: %s\n", mysql_error(con));
 		goto clean_exit;
 	}
+	result = mysql_store_result(con);
 
-	/* This is where we would end up if all is ok, we should NOT destroy
-	 * con in this case. */
-	return con;
-	
+	/* Produce output for the results, row by row */
+	while((row = mysql_fetch_row(result))) 
+		/* Filter out those that are just ip numbers and do
+		 * not reverse */
+		if(strcmp(row[0], row[1]))
+			printf("%20s    %-50s\n", row[0], row[1]);
+	mysql_free_result(result);
+	result = NULL;
+
 clean_exit:
-	if(retval != RETVAL_OK) {
-		if(con) 
-			mysql_close(con);
-	}
-	return NULL;
+	if(con)
+		mysql_close(con);
+	if(result)
+		mysql_free_result(result);
+	if(query)
+		free(query);
+
+	return retval;
 }
+
 
 
 /*****************************************************************************
@@ -121,7 +102,7 @@ int dns_cache_create_table(struct ipta_db_info *db)
 		exit(RETVAL_ERROR);
 	}
 	
-	con = dns_open_db(db);
+	con = open_db(db);
 	if(!con) {
 		fprintf(stderr, "! Error, unable to open database.\n");
 		retval = RETVAL_ERROR;
@@ -180,7 +161,7 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname)
 	}
 	
 	/* Initialize databse object */
-	con = dns_open_db(db);
+	con = open_db(db);
 	if(con == NULL) {
 		printf("! Unable to initialize MySQL connection.\n");
 		printf("  Error message: %s\n", mysql_error(con));
@@ -228,15 +209,15 @@ clean_exit:
  * hostname to the pointer passed to it. If unsuccessful it will
  * return RETVAL_ERROR and the hostname written will be the empty
  * string.
- */
-int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl) 
+ ***********************************************************************/
+int dns_cache_get(struct ipta_db_info *db, char *ip_address, 
+		  char *hostname, char *ttl) 
 {
 	char *query_string = NULL;
 	MYSQL *con = NULL;
 	int retval = RETVAL_OK;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row = 0;
-	//int num_fields = 0;
 	
 	/* Allocate memory */
 	query_string = malloc(10000); // Fix later
@@ -247,7 +228,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, cha
 	}
 	
 	/* Initialize databse object */
-	con = dns_open_db(db);
+	con = open_db(db);
 	if(con == NULL) {
 		printf("! Unable to initialize MySQL connection.\n");
 		printf("  Error message: %s\n", mysql_error(con));
@@ -270,7 +251,6 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, cha
 	}
 	
 	result = mysql_store_result(con);
-//	num_fields = mysql_num_fields(result);
 	row = mysql_fetch_row(result);
 	if(row)  {
 		strcpy(hostname, row[0]);
@@ -313,11 +293,46 @@ clean_exit:
  *       database.
  *
  ***********************************************************************/
-int dns_cache_prune(struct ipta_db_info *db) { 
-  fprintf(stderr, "Function is a stub and not implemented.\n");
-  assert(0);
+int dns_cache_prune(struct ipta_db_info *db, int ttl) 
+{ 
+	MYSQL *con = NULL;
+	int retval = RETVAL_OK;
+	char *query = NULL;
+	
+	con = open_db(db);
+	if(!con) {
+		fprintf(stderr, "! Unable to open database.\n" \
+			"  Error: %s", mysql_error(con));
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
 
-  return RETVAL_ERROR;
+	query = calloc(1, 10000); // Fixme: Should be done nicer.
+	if(!query) {
+		fprintf(stderr, "! Error, unable to allocate memory.\n");
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	sprintf(query, 
+		"DELETE FROM %s "			\
+		"WHERE ttl < NOW() - INTERVAL '%d' HOUR;",
+		db->table, ttl);
+
+	if(mysql_query(con, query)) {
+		fprintf(stderr, "! Error: %s\n", mysql_error(con));
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	retval = RETVAL_OK;
+	
+clean_exit:
+	free(query);
+	if(con)
+		mysql_close(con);
+
+	return retval;
 }
 
 /**********************************************************************
@@ -337,7 +352,7 @@ int dns_cache_delete_table(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 
-	con = dns_open_db(db);
+	con = open_db(db);
 	if(!con) {
 		fprintf(stderr, "! Error, unable to initialize Mysql.\n");
 		retval = RETVAL_ERROR;

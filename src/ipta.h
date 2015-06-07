@@ -22,6 +22,8 @@
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
 
+#include <my_global.h>
+#include <mysql.h>
 
 /* Overall generic defines */
 #define IPTA_VERSION "ipta version Release-V0.3\n"
@@ -84,24 +86,28 @@ struct ipta_config {
 
 
 /* Function declarations */
-int analyze(struct ipta_db_info *db_info, struct ipta_flags *flags, int analyze_limit);
+int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit, 
+	    struct ipta_db_info *dns);
+MYSQL *open_db(struct ipta_db_info *db);
 int create_config(void);
-int restore_db(struct ipta_db_info *db_info);
-int save_db(struct ipta_db_info *db_info);
-int create_table(struct ipta_db_info *db_info);
-int delete_table(struct ipta_db_info *db_info);
-int list_tables(struct ipta_db_info *db_info);
-int clear_database(struct ipta_db_info *db_info);
-int follow(char *filename, struct ipta_flags *flags);
-int get_host_by_addr(char *ip_address, char *hostname, int maxlen);
-int import_syslog(struct ipta_db_info *db_info, char *filename);
+int restore_db(struct ipta_db_info *db);
+int save_db(struct ipta_db_info *db);
+int create_db(struct ipta_db_info *db);
+int create_table(struct ipta_db_info *db);
+int delete_table(struct ipta_db_info *db);
+int list_tables(struct ipta_db_info *db);
+int clear_database(struct ipta_db_info *db);
+int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dns);
+int get_host_by_addr(char *ip_address, char *hostname, int maxlen, struct ipta_db_info *db);
+int import_syslog(struct ipta_db_info *db, char *filename);
 void print_license(void);
 void print_usage(void);
 
 /* dns cache prototypes */
+int dns_dump_cache(struct ipta_db_info *db);
 int dns_cache_create_table(struct ipta_db_info *db);
 int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname);
 int dns_cache_get(struct ipta_db_info *db, char *ip_address, char *hostname, char *ttl);
 int dns_cache_delete_table(struct ipta_db_info *db);
 int dns_cache_clear_table(struct ipta_db_info *db);
-int dns_cache_prune(struct ipta_db_info *db); /* This should change to include ttl */
+int dns_cache_prune(struct ipta_db_info *db, int ttl); /* This should change to include ttl */

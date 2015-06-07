@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 {
 	struct ipta_flags *flags = NULL;
 	struct ipta_db_info *db_info = NULL;
+	struct ipta_db_info *dns_info = NULL;
 	int i = 0;
 	int retval = 0;
 	char *import_fname = NULL;
@@ -54,12 +55,15 @@ int main(int argc, char *argv[])
 	int create_table_flag = 0;
 	char *follow_file = NULL;
 	int follow_flag = 0;
-	int analyze_limits = 20;
-	int save_db_flag = 0;
+	int create_db_flag = 0;
 	int delete_table_flag = 0;
 	int import_flag = 0;
 	int analyze_flag = 0;
+	int prune_dns_flag = 0;
+	int dns_dump_flag = 0;
 	int list_tables_flg = 0;
+	int dns_create_table_flag = 0;
+	int dns_ttl = 24*14;
         //  int print_license_flag = 0;
 	cfg_t *st; /* Configuration store */
 	struct passwd *pw = NULL;
@@ -84,6 +88,16 @@ int main(int argc, char *argv[])
 	strcpy(db_info->name, DEFAULT_DB_NAME);
 	strcpy(db_info->table, DEFAULT_DB_TABLENAME);
 	
+	dns_info = calloc(sizeof(struct ipta_db_info), 1);
+	if(NULL == db_info) {
+		fprintf(stderr, "! Error, memory allocation failed.\n");
+		exit(RETVAL_ERROR);
+	}
+
+	// Fixme - must be configurable later
+	memcpy(dns_info, db_info, sizeof(struct ipta_db_info));
+	strcpy(dns_info->table, "dns");
+
 	/* Initialize config structure with no cache, we do not need it here
 	   because there is not a lot of keywords to look at */
 	
@@ -101,14 +115,8 @@ int main(int argc, char *argv[])
 	/* Get user home dir and construct home path string */
 	pw = getpwuid(getuid());
 	retval = sprintf(home, "%s/.ipta", pw->pw_dir);
-	
 	retval = cfg_parse_file(st, home);
-	if(retval) {
-		fprintf(stderr, "- No config file.\n");
-	} 
-	
-	else {
-		
+	if(!retval) {
 		/* Look for the standard parameter names and move the value
 		   to the internal hold as needed */
 		i = 0;
@@ -131,6 +139,8 @@ int main(int argc, char *argv[])
 				strncpy(db_info->name,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
 			if(!strcmp("db_table", st->entry[i].key))
 				strncpy(db_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("dns_table", st->entry[i].key))
+				strncpy(dns_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
 			
 			/* Analyzer limit is a little special and requires a range check */
 			if(!strcmp("analyzer limit", st->entry[i].key)) {
@@ -159,15 +169,23 @@ int main(int argc, char *argv[])
 	for(i=1; i < argc; i++) {
 		known_flag = FLAG_CLEAR;
 		
-		if(!strcmp(argv[i], "--version") || !strcmp(argv[i], "-v")) {
+		if(!strcmp(argv[i], "--version") || 
+		   !strcmp(argv[i], "-v")) {
 			printf(IPTA_VERSION);
 			retval = RETVAL_OK;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--rdns") || !strcmp(argv[i], "-r")) {
+		if(!strcmp(argv[i], "--rdns") || 
+		   !strcmp(argv[i], "-r")) {
 			flags->rdns = FLAG_SET;
 			known_flag = FLAG_SET;
+		}
+		
+		if(!strcmp(argv[i], "--dns-dump")) {
+			known_flag = FLAG_SET;
+			action_flag = FLAG_SET;
+			dns_dump_flag = FLAG_SET;
 		}
 		
 		if(!strcmp(argv[i], "--no-lo")) {
@@ -191,13 +209,16 @@ int main(int argc, char *argv[])
 			action_flag = FLAG_SET;
 		}
 		
-		if(!strcmp(argv[i], "--setup-db") || !strcmp(argv[i], "-s")) {
+		
+		if(!strcmp(argv[i], "--create-db") || 
+		   !strcmp(argv[i], "-cd")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
-			save_db_flag = FLAG_SET;
+			create_db_flag = FLAG_SET;
 		}
 		
-		if(!strcmp(argv[i], "--follow") || !strcmp(argv[i], "-f")) {
+		if(!strcmp(argv[i], "--follow") || 
+		   !strcmp(argv[i], "-f")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			follow_flag = FLAG_SET;
@@ -213,14 +234,16 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-l") || !strcmp(argv[i], "--limit")) {
+		if(!strcmp(argv[i], "-l") || 
+		   !strcmp(argv[i], "--limit")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "? You need to supply an argument for the limit.\n");
 				retval = RETVAL_ERROR;
 				goto clean_exit;
 			}
-			analyze_limit = atoi(argv[i+1]); i++;
+			analyze_limit = atoi(argv[i+1]); 
+			i++;
 			if(analyze_limit < 1) {
 				fprintf(stderr, "! Invalid analyze limit %d must be at least 1.\n", analyze_limit);
 				retval = RETVAL_ERROR;
@@ -233,7 +256,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-name") || !strcmp(argv[i], "-d")) {
+		if(!strcmp(argv[i], "--db-name") || 
+		   !strcmp(argv[i], "-d")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "! You must supply a name with argument %s\n", argv[i]);
@@ -257,7 +281,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-table") || !strcmp(argv[i], "-t")) {
+		if(!strcmp(argv[i], "--db-table") || 
+		   !strcmp(argv[i], "-t")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "! You must supply a name with argument %s\n", argv[i]);
@@ -269,7 +294,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-pass-i") || !strcmp(argv[i], "-pi")) {
+		if(!strcmp(argv[i], "--db-pass-i") || 
+		   !strcmp(argv[i], "-pi")) {
 			known_flag = FLAG_SET;
 			printf("? Enter your password: ");
 			if(1 != scanf("%s", password_input)) {
@@ -280,8 +306,9 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-name") || !strcmp(argv[i], "-d")) {
-			known_flag = 1;
+		if(!strcmp(argv[i], "--db-name") || 
+		   !strcmp(argv[i], "-d")) {
+			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "? If you want to use use %s to select database, I need a name.\n", argv[i]);
 				retval = RETVAL_ERROR;
@@ -292,7 +319,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-host") || !strcmp(argv[i], "-h")) {
+		if(!strcmp(argv[i], "--db-host") || 
+		   !strcmp(argv[i], "-h")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "? If you want to use use %s to select database host, I need a name.\n", argv[i]);
@@ -304,7 +332,8 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--db-pass") || !strcmp(argv[i], "-p")) {
+		if(!strcmp(argv[i], "--db-pass") || 
+		   !strcmp(argv[i], "-p")) {
 			fprintf(stderr, 
 				"! Warning; for security reasons option is discouraged and instead\n" \
 				"  --db-pass-i or -pi is recommended.\n");
@@ -315,46 +344,90 @@ int main(int argc, char *argv[])
 				retval = RETVAL_ERROR;
 				goto clean_exit;
 			}
-			strncpy(db_info->pass, argv[i+1], IPTA_DB_INFO_STRLEN); i++;
+			strncpy(db_info->pass, argv[i+1], IPTA_DB_INFO_STRLEN); 
+			i++;
 			continue;
 		}
 		
+
+		if(!strcmp(argv[i], "--dns-ttl")) {
+			if(argc < (i+2)) {
+				fprintf(stderr, "? Missing argument for --dns-ttl\n");
+				retval = RETVAL_ERROR;
+				goto clean_exit;
+			}
+			dns_ttl = atoi(argv[i+1]);
+			if(!dns_ttl) {
+				fprintf(stderr, "! Error, dns_ttl should not be 0.\n");
+				retval = RETVAL_ERROR;
+				goto clean_exit;
+			}
+			i++; /* Increase to swallow argument */
+			continue;
+		}
+
+		if(!strcmp(argv[i], "--dns-create-table")) {
+			known_flag = FLAG_SET;
+			action_flag = FLAG_SET;
+			dns_create_table_flag = FLAG_SET;
+		}
+
+		if(!strcmp(argv[i], "--dns-table")) {
+			if(argc < (i+2)) {
+				fprintf(stderr, "! Error, must have table name following --dns-table switch.\n");
+				retval = RETVAL_ERROR;
+				goto clean_exit;
+			}
+			strncpy(dns_info->table, argv[i+2], IPTA_DB_INFO_STRLEN);
+		}
 		
 		/* Table operations defined here as flags are processed */
-		if(!strcmp(argv[i], "-lt") || !strcmp(argv[i], "--list-tables")) {
+		if(!strcmp(argv[i], "-lt") || 
+		   !strcmp(argv[i], "--list-tables")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			list_tables_flg = FLAG_SET;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-dt") || !strcmp(argv[i], "--delete-table")) {
+		if(!strcmp(argv[i], "-dt") || 
+		   !strcmp(argv[i], "--delete-table")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			delete_table_flag = FLAG_SET;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--create-table") || !strcmp(argv[i], "-ct")) {
+		if(!strcmp(argv[i], "--dns-prune") ||
+		   !strcmp(argv[i], "-dp")) {
+			known_flag = FLAG_SET;
+			prune_dns_flag = FLAG_SET;
+			action_flag = FLAG_SET;
+		}
+
+		if(!strcmp(argv[i], "--create-table") || 
+		   !strcmp(argv[i], "-ct")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			create_table_flag = FLAG_SET;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-c") || !strcmp(argv[i], "--clear")) {
+		if(!strcmp(argv[i], "-c") || 
+		   !strcmp(argv[i], "--clear")) {
 			known_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			clear_db = FLAG_SET;
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-i") || !strcmp(argv[i], "--import")) {
-//			fprintf(stderr, "* Importing from syslog\n");
+		if(!strcmp(argv[i], "-i") || 
+		   !strcmp(argv[i], "--import")) {
 			action_flag = FLAG_SET;
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
-				fprintf(stderr, "? To import syslog you need to specify a filename after '%s'.\n", argv[i]);
+				fprintf(stderr, 
+					"? To import syslog you need to specify a filename after '%s'.\n", argv[i]);
 				retval = RETVAL_WARN;
 				goto clean_exit;
 			}
@@ -363,11 +436,13 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "-a") || !strcmp(argv[i], "--analyze")) {
+		if(!strcmp(argv[i], "--analyze") || 
+		   !strcmp(argv[i], "-a")) {
 			analyze_flag = FLAG_SET;
 			action_flag = FLAG_SET;
 			known_flag = FLAG_SET;
 		}
+
 		
 		/* Sanity check for arguments we don't handle */
 		if(!known_flag) {
@@ -376,6 +451,12 @@ int main(int argc, char *argv[])
 			goto clean_exit;
 		}
 	}
+
+
+	/***********************************************************************
+	 * Process the various flags in the correct order no matter
+	 * how they were inserted on the command line.
+	 ***********************************************************************/
 	
 	/* Process the actual modes to do something here */
 	if(!action_flag) {
@@ -384,25 +465,48 @@ int main(int argc, char *argv[])
 		goto clean_exit;
 	}
 	
-	/* This must be the first action as it may break all the others */
+	/* This must be the first action as it may break all the
+	 * others except for the dns settings */
+
+	if(prune_dns_flag) {
+		retval = dns_cache_prune(dns_info, dns_ttl);
+	}
+
+	if(dns_create_table_flag) {
+		retval = dns_cache_create_table(dns_info);
+		if(retval) {
+			fprintf(stderr, "! Error in creating DNS table.\n");
+			goto clean_exit;
+		}
+	}
+
 	if(follow_flag) {
-		retval = follow(follow_file, flags);
+		retval = follow(follow_file, flags, dns_info);
 		goto clean_exit;
 	}
 	
+	/* Print the usage of ipta */
 	if(print_usage_flag) {
 		print_usage();
 	}
 	
 	/* Setup the default db setting and stor in .ipta */
-	if(save_db_flag) {
-		retval = save_db(db_info);
+	if(create_db_flag) {
+		retval = create_db(db_info);
 		if(!retval) {
-			fprintf(stderr, "! Error, save db failed, exiting.\n");
+			fprintf(stderr, 
+				"! Error, create db failed, exiting. You need to give MySQL root privileges\n"
+				"  for this to work as the database must be created and a grand given to ipta.\n");
 			goto clean_exit;
 		}
 	}
+
+	/* Dump the DNS cache in human readable format */
+	if(dns_dump_flag) {
+		dns_dump_cache(dns_info);
+	}
 	
+	/* Show the different tables used in the database */
 	if(list_tables_flg) {
 		retval = list_tables(db_info);
 		if(retval)
@@ -415,20 +519,22 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "! Delete table is a stub and not yet implemented.\n");
 	}
 	
+	/* Create the prime table needed to import the syslog entries */
 	if(create_table_flag) {
 		retval = create_table(db_info);
 		if(retval)
 			goto clean_exit;
 	}
-	
+
+	/* Clear all database entries */
 	if(clear_db) {
-		/* Do clear the database */
 		retval = clear_database(db_info);
 		if(retval != 0) {
 			fprintf(stderr, "! Error, clearing database, exiting.\n");
 			goto clean_exit;
 		} 
 	}
+	
 	
 	if(import_flag) {
 		/* import from syslog */
@@ -438,10 +544,10 @@ int main(int argc, char *argv[])
 			goto clean_exit;
 		} 
 	}
-	
+
+	/* Run the automatic analyzer module */
 	if(analyze_flag) {
-		/* Analyze imported data that's in MySQL */
-		retval = analyze(db_info, flags, analyze_limits);
+		retval = analyze(db_info, flags, analyze_limit, dns_info);
 		if(retval) {
 			fprintf(stderr, "! Error in analyzer. Sorry.\n");
 			retval = RETVAL_ERROR;
@@ -450,10 +556,13 @@ int main(int argc, char *argv[])
 	}
 
 clean_exit:
+
 	if(config_file)
 		fclose(config_file);
 	free(flags);
 	free(db_info);
+	free(dns_info);
 	cfg_free(st);
+
 	return retval;
 }

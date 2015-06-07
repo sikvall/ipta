@@ -41,6 +41,16 @@
  * This should be added before the Release-V0.3
  */
 
+char *dns_host_trim(char *s, int maxlen) 
+{
+	if(strlen(s) > maxlen) {
+		strcpy(s, s + (strlen(s)-maxlen));
+		s[0] = '*';
+	}
+	return s;
+}
+	
+
 
 /***********************************************************************
  * Get host by address
@@ -55,55 +65,63 @@
  *                             tld is preserved.
  ***********************************************************************/
 
-int get_host_by_addr(char *ip_address, char *hostname, int maxlen) {
+int get_host_by_addr(char *ip_address, char *hostname, int maxlen, 
+		     struct ipta_db_info *db) {
 	struct sockaddr_in ip4addr;
-	int len = 0;
 	char host[NI_MAXHOST];        // Holding hostname
 	char service[NI_MAXSERV];     // Holding service
 	int retval = RETVAL_OK;
 	int dns_reply = 0;
 
 	/* Check if the answer is in the cache */
-
-	/* TODO */
-
-	/* Clear all stuff */
+	retval = dns_cache_get(db, ip_address, hostname, "300"); // Fixme: Should be controlled by user
+	if(!retval) {
+		/* Found the cache, return this answer */
+		dns_host_trim(hostname, maxlen);
+		return RETVAL_OK;
+	}
+	
+	/* Not found in cache, try to look it up */
 	memset(&ip4addr, 0, sizeof(struct sockaddr_in));
-
-	/* Set up family and port */
+	
+	/* Set protocol and type of request */
 	ip4addr.sin_family = AF_INET;
 	ip4addr.sin_port = htons(0);
-
+	
 	/* Convert the address from string to AF_INET proper address and
 	   populate structure with it. */
 	inet_pton(AF_INET, ip_address, &ip4addr.sin_addr);
-
+	
 	/* Call the DNS subsystem */
 	dns_reply = getnameinfo((struct sockaddr *) &ip4addr, sizeof(struct sockaddr_in), 
 				host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
-
-	/* If we got a name then we copy the name to maxlen characters into
-	   the hostname pointer provided by the call. */
+	
+	/* If we got a name then we copy the name to maxlen characters into the
+	   hostname pointer provided by the call. */
 	if (dns_reply == 0) {
-		len = strlen(host);
-		if(len > maxlen) {
-			strcpy(host, host+(len-maxlen));
-			host[0] = '*'; /* If the name is too long for the
-					  display field, insert * to indicate
-					  that */
-		}
+		/* Record found, put it in the cache, or if exists update it */
+		retval = dns_cache_add(db, ip_address, host);
+		if(retval)
+			fprintf(stderr, "! Warning, failed to add new hostname to cache.\n");
+		
+		/* Format properly and return */
+		dns_host_trim(host, maxlen);
 		sprintf(hostname, "%s", host);
-		return retval;
-	}  
-	else {
+		return RETVAL_OK;
+	} else {
       
-		/* If not, then we return the actual IP address. We also
-		   signal that we could not look it up with a "1" as RETVAL
-		   Return the address cut so that it fits the field length */
+		/* If not, then we return the actual IP address. We also signal
+		   that we could not look it up with a "1" as RETVAL Return the
+		   address cut so that it fits the field length */
 		strncpy(hostname, ip_address, maxlen);
 
-		return RETVAL_NONAME; /* Nor regarded as a fatal error, just
-					 a signal in RETVAL that we did not
-					 look up a name */
+		/* But... also put it in the cache with ip address for host name */
+		retval = dns_cache_add(db, ip_address, ip_address);
+		if(retval)
+			fprintf(stderr, "! Warning, failed to add new hostname to cache.\n");
+
+		return RETVAL_NONAME; /* Nor regarded as a fatal error, just a
+					 signal in RETVAL that we did not look
+					 up a name */
 	}
 }
