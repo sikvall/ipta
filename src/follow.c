@@ -32,6 +32,20 @@
  * interprete it and print each logged packet line by line without
  * storing anything in the database. It's just a realtime look at what
  * is logged in a nicely formatted way.
+ *
+ * PARAMETERS
+ *
+ * 	char *filename - path/filename of the file to follow
+ *
+ * 	struct ipta_flags *flags - a struct containing various flags
+ * 		that may affect this mode
+ *
+ * RETURNS
+ *
+ * 	RETVAL_OK - on success
+ *
+ * 	RETVAL_ERROR - on error
+ *
  **********************************************************************/
 
 int follow(char *filename, struct ipta_flags *flags) {
@@ -90,7 +104,8 @@ int follow(char *filename, struct ipta_flags *flags) {
 
 			/* If the user wants rdns we turn it on only after reaching EOF
 			   first. Otherwise it can take forever if we have a large log
-			   file to read through. */
+			   file to read through, the DNS subsystem is not too fast on
+			   many implementations of Linux. */
 
 			if(flags->rdns)
 				flag_rdns = FLAG_SET;
@@ -203,6 +218,7 @@ int follow(char *filename, struct ipta_flags *flags) {
 clean_exit:
 	fcloseall();
 	free(line);
+
 	return retval;
 }
   
