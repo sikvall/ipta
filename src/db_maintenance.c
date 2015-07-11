@@ -30,6 +30,7 @@
 #include "ipta.h"
 
 
+
 /***********************************************************************
  * dns_open_db
  *
@@ -69,7 +70,7 @@ MYSQL *open_db(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 	
-	/* Attempt proper connection to database */
+	// Attempt proper connection to database
 	if(mysql_real_connect(con, db->host, db->user, db->pass, 
 			      NULL, 0, NULL, 0) == NULL) {
 		fprintf(stderr, "! Unable to connect to database.\n");
@@ -78,7 +79,7 @@ MYSQL *open_db(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 	
-	/* Select the indicated database */
+	// Select the indicated database
 	sprintf(query_string, "USE %s;", db->name);
 	if(mysql_query(con, query_string)) {
 		fprintf(stderr, "! Database %s not found, or not possible to connect.\n", db->name);
@@ -86,8 +87,7 @@ MYSQL *open_db(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 
-	/* This is where we would end up if all is ok, we should NOT destroy
-	 * con in this case. */
+	// If all is OK we end up here, NOT destroying the con object
 	return con;
 	
 clean_exit:
@@ -105,12 +105,10 @@ int create_db(struct ipta_db_info *db)
 	int retval = RETVAL_OK;
 
 
-	/* TODO: There is a built-in bug here when using the open_db()
-	 * function since we don't have the database yet but this
-	 * function assumes it! We must replace it with our own
-	 * version in this case. But that is a job for tomorrow. 
-	 */
-
+	// TODO: There is a built-in bug here when using the open_db()
+	// function since we don't have the database yet but this
+	// function assumes it! We must replace it with our own
+	// version in this case. But that is a job for tomorrow. 
 	con = open_db(db);
 	if(!con) {
 		fprintf(stderr, "! Failed to open the database, exiting.\n");
@@ -151,82 +149,6 @@ clean_exit:
 }
 
 
-/* int restore_db(struct ipta_db_info *db_info) */
-/* { */
-/* 	FILE *fp; */
-/* 	char *line; */
-/* 	size_t len = 0; */
-/* 	ssize_t read; */
-	
-/* 	fprintf(stderr, "* Warning, restore_db() is a stub function\n"); */
-	
-/* 	/\* Open the .ipta file *\/ */
-/* 	fp = fopen("~/.ipta", "r"); */
-/* 	if(NULL == fp) { */
-/* 		fprintf(stderr, "! Error, unable to open .ipta file. Check permission and that it exists.\n"); */
-/* 		return RETVAL_ERROR; */
-/* 	} */
-	
-/* 	/\* File is open, read each line and find the keywords, then insert */
-/* 	   into structure *\/ */
-/* 	while((read = getline(&line, &len, fp)) != -1) { */
-/* 		if(!strncmp("host=", line, strlen("host="))) { */
-/* 			/\* Do stuff here *\/ */
-/* 			return RETVAL_OK; */
-/* 		} */
-/* 	} */
-  
-/* 	return RETVAL_OK; */
-/* } */
-
-
-/**********************************************************************
- * save_db
- *
- * This function saves a copy of the current db settings to a file
- * called .ipta that remains in the users home directory. This way we
- * can pick it up next time and restore the settings without having to
- * read them from the command line. 
- **********************************************************************/
-/* int save_db(struct ipta_db_info *db_info) */
-/* { */
-/* 	FILE *fp; */
-/* 	int retval = RETVAL_OK; */
-	
-/* 	/\* Open the file, or attempt to *\/ */
-/* 	fp = fopen("~/.ipta", "w"); */
-/* 	if(NULL == fp) { */
-/* 		fprintf(stderr, "! Error, unable to open .ipta file! Check ownership and attributes.\n"); */
-/* 		return RETVAL_ERROR; */
-/* 	} */
-	
-/* 	/\* Enforce file persmissions and ownership as it contains passwords *\/ */
-/* 	retval = chmod("~/.ipta", 600); */
-/* 	if(retval) { */
-/* 		fprintf(stderr, "! Error, unable to set mode permissions, error code %d\n", retval); */
-/* 		return RETVAL_ERROR; */
-/* 	} */
-	
-/* 	/\* File is open so output the data in a human readable fashion *\/ */
-/* 	fprintf(fp,				\ */
-/* 		"host=%s\n"			\ */
-/* 		"user=%s\n"			\ */
-/* 		"pass=%s\n"			\ */
-/* 		"name=%s\n"			\ */
-/* 		"table=%s", */
-/* 		db_info->host, */
-/* 		db_info->user, */
-/* 		db_info->pass, */
-/* 		db_info->name, */
-/* 		db_info->table); */
-	
-/* 	/\* Close file and return no error *\/ */
-/* 	fclose(fp); */
-/* 	return RETVAL_OK; */
-	
-/* } */
-
-
 
 /***********************************************************************
  * create_table
@@ -248,18 +170,16 @@ int create_table(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 
-	/* Just grab some heap */
+	// Just grab some heap
 	query = malloc(10000);
 	if(query == NULL) {
 		fprintf(stderr, "! ERROR: Unable to allocate memory, exiting!\n");
-		/* Immediate exit */
+		// Immediate exit
 		exit(RETVAL_ERROR);
 	}
 	
-	/* Create the SQL to create the table. No sanity check is performed
-	   that the name is okay, that is something that MySQL will have to
-	   take care for us at the moment. */
-	
+	// Create the SQL to create the table.
+	// There is no sanity check really for this, MySQL will have to do that for us.
 	sprintf(query, 
 		"CREATE TABLE %s ("					\
 		"id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,"	\
@@ -279,7 +199,7 @@ int create_table(struct ipta_db_info *db)
 		fprintf(stderr, "! Query not accepted from database.\n");
 		fprintf(stderr, "! %s\n", mysql_error(con));
 		
-		/* Set error condition and then clean_exit */
+		// Set error condition and then clean_exit
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
@@ -288,7 +208,7 @@ int create_table(struct ipta_db_info *db)
 		db->table, db->name);
 	
 
-	/* Clear things up and exit with return value previously set */
+	// Clear things up and exit with return value previously set
 clean_exit:
 	if(con)
 		mysql_close(con);
@@ -313,7 +233,7 @@ int delete_table(struct ipta_db_info *db)
 	char *query = NULL;
 	int retval = RETVAL_OK;
 	
-	/* Connect to mysql database */
+	// Connect to mysql database
 	con = open_db(db);
 	if(con == NULL) {
 		fprintf(stderr, "! ERROR: Unable to initialize MySQL connection.\n");
@@ -366,7 +286,7 @@ int list_tables(struct ipta_db_info *db_info)
 	int num_fields = 0;
 	int row_counter = 0;
 
-	/* Connect to mysql database */
+	// Connect to mysql database
 	con = open_db(db_info);
 	if(con == NULL) {
 		fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");
@@ -380,7 +300,7 @@ int list_tables(struct ipta_db_info *db_info)
 		exit(RETVAL_ERROR);
 	}
 
-	/* Empty the table before populating it with new data if flag set */
+	// Empty the table before populating it with new data if flag set
 	sprintf(query, "SHOW TABLES");
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "%s\n", mysql_error(con));
@@ -430,7 +350,7 @@ int clear_database(struct ipta_db_info *db_info)
 		goto clean_exit;
 	}
 
-	/* Connect to mysql database */
+	// Connect to mysql database
 	con = open_db(db_info);
 	if(con == NULL) {
 		fprintf(stderr, "ERROR: Unable to initialize MySQL connection.\n");

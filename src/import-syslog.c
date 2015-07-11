@@ -99,7 +99,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 		goto clean_exit;
 	}
 	
-	/* Select the database to use */
+	// Select the database to use
 	sprintf(query_string, "USE %s;", db_info->name);
 	if(mysql_query(con, query_string)) {
 		fprintf(stderr, "! Database %s not found, or not possible to connect. \n", 
@@ -109,7 +109,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 		goto clean_exit;
 	}
 	
-	/* Open log file and prepare for data */
+	// Open log file and prepare for data
 	logfile = fopen(filename, "r");
 	if ( logfile == NULL ) {
 		fprintf(stderr, "! Error, unable to open syslog file %s.\n", filename);
@@ -124,61 +124,61 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 		lines++;
 		if(strstr(line, prefix)) {
 
-			/* This entire part here is in order to future
-			 * be able to add fields for time stamps to
-			 * the database and thereby be able to analyze
-			 * happenings over time or find some times
-			 * more frequent than others and so on. */
+			// This entire part here is in order to future be able to add fields for time stamps to
+			// the database and thereby be able to analyze happenings over time or find some times
+			// more frequent than others and so on.
 
-
-			/* month_string = strtok(line, " "); */
-			/* day_string = strtok(NULL, " "); */
-			/* hour_string = strtok(NULL, ":"); */
-			/* minute_string = strtok(NULL, ":"); */
-			/* second_string = strtok(NULL, " "); */
+			/*
+			month_string = strtok(line, " ");
+			day_string = strtok(NULL, " ");
+			hour_string = strtok(NULL, ":");
+			minute_string = strtok(NULL, ":");
+			second_string = strtok(NULL, " ");
 			
-			/* // Create a ISO date */
-			/* for ( i = 0; i < 12; i++) { */
-			/* 	if (!strcmp(month_string, months[i])) */
-			/* 	  break; */
-			/* } */
+			// Create a ISO date
+			for ( i = 0; i < 12; i++) {
+				if (!strcmp(month_string, months[i]))
+					break;
+			}
 			
-			/* month = i + 1; */
-			/* errno = 0; */
+			month = i + 1;
+			errno = 0;
 			
-			/* day = strtol(day_string, &dummyptr, 10); */
-			/* hour = strtol(hour_string, &dummyptr, 10); */
-			/* minute = strtol(minute_string, &dummyptr, 10); */
-			/* second = strtol(second_string, &dummyptr, 10); */
-			/* if(errno != 0) { */
-			/* 	fprintf(stderr, "! Error parsing day.\n"); */
-			/* 	retval = 20; */
-			/* 	goto clean_exit; */
-			/* } */
+			day = strtol(day_string, &dummyptr, 10);
+			hour = strtol(hour_string, &dummyptr, 10);
+			minute = strtol(minute_string, &dummyptr, 10);
+			second = strtol(second_string, &dummyptr, 10);
+			if(errno != 0) {
+				fprintf(stderr, "! Error parsing day.\n");
+				retval = 20;
+				goto clean_exit;
+			}
 			
-			/*      host = strtok(NULL, " ");
-				module = strtok(NULL, ": [");
-				host_time = strtok(NULL, "] ");
-				log_prefix = strtok(NULL, " "); */
+			host = strtok(NULL, " ");
+			module = strtok(NULL, ": [");
+			host_time = strtok(NULL, "] ");
+			log_prefix = strtok(NULL, " "); 
+			*/
 			
-			/* Wind the "tape" until "IPT:" is found */
+			// Wind the "tape" until "IPT:" is found
 			module = strtok(line, " ");
 			do {
 				module = strtok(NULL, " ");
 			} while (strcmp(module, "IPT:"));
 			
-			/* Next one will be our action here */
+			// Next one will be our action here
 			log_action = strtok(NULL, " ");
 			
-			/* Clear records for next run */
+			// Clear records for next run
 			log_ifin = log_ifout = log_mac = log_src = log_dst = 
 				log_proto = log_src_port = log_dst_port = nullstring;
 			
 			
-			/* In here we process the known prefixes and the data * from
-			   each field in the log string. Fields that are * not known are
-			   just ignored silently. Anything that is changed or added here
-			   needs to reflect the database */
+			// In here we process the known prefixes and
+			// the data * from each field in the log
+                        // string. Fields that are * not known are
+                        // just ignored silently. Anything that is
+                        // changed or added here needs to reflect the database
 			
 			while ((token = strtok(NULL, " "))) {
 				if(!strncmp("ACTION=", token, 7)) {
@@ -285,8 +285,8 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 	
 	fprintf(stderr, "\n* Done processing file. %d records inserted in database.\n", lines);
 	
-	/* Make sure everything is returned nicely after allocation by us or
-	   by some procedure that we are calling */
+	// Make sure everything is returned nicely after allocation by
+        // us or by some procedure that we are calling
 	
 clean_exit:
 	

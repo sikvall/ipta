@@ -57,8 +57,8 @@ char *trimwhitespace(char *str)
 	len = strlen(str);
 	endp = str + len;
 	
-	/* Move the front and back pointers to address the first
-	   non-whitespace characters from each end. */
+	// Move the front and back pointers to address the first
+	// non-whitespace characters from each end.
 	while( isspace(*frontp) ) { ++frontp; }
 	if(endp != frontp) {
 		while( isspace(*(--endp)) && endp != frontp ) {}
@@ -68,25 +68,24 @@ char *trimwhitespace(char *str)
 		*(endp + 1) = '\0';
 	else if( frontp != str &&  endp == frontp )
 		*str = '\0';
-	
-	/* Shift the string so that it starts at str so that if it's
-	   dynamically allocated, we can still free it on the returned
-	   pointer. Note the reuse of endp to mean the front of the
-	   string buffer now. */
+	// Shift the string so that it starts at str so that if it's
+        // dynamically allocated, we can still free it on the returned pointer.
+        // Note the reuse of endp to mean the front of the string
+        // buffer now.
 	endp = str;
 	if(frontp != str) {
 		while( *frontp ) { *endp++ = *frontp++; }
 		*endp = '\0';
 	}
 
-	/* All done, return the pointer */
+	// Return the pointer
 	return str;
 }
 
 
 void cfg_cache_clear(cfg_t *st)
 {
-	/* clearing the cache buffers technically sets them to the first index (0) */
+	// Clearing the cache buffers technically sets them to the first index (0)
 	if (st->cache_size && st->init == CFG_TRUE) {
 		memset((void *)st->cache_keys_hash, 0, st->cache_size * sizeof(cfg_uint32));
 		memset((void *)st->cache_keys_index, 0, st->cache_size * sizeof(cfg_int));
@@ -100,7 +99,7 @@ cfg_error_t cfg_cache_size_set(cfg_t *st, cfg_int size)
 		return CFG_ERROR_INIT;
 	if (size < 0)
 		return CFG_ERROR_CRITICAL;
-	/* check if we are setting the buffers to zero length */
+	// Check if we are setting the buffers to zero length
 	if (size == 0) {
 		if (st->cache_keys_hash)
 			free(st->cache_keys_hash);
@@ -113,7 +112,7 @@ cfg_error_t cfg_cache_size_set(cfg_t *st, cfg_int size)
 		st->cache_keys_index = (cfg_int *)realloc(st->cache_keys_index, size * sizeof(cfg_int));
 		if (!st->cache_keys_index || !st->cache_keys_hash)
 			return CFG_ERROR_ALLOC;
-		/* if the new buffers are larger, lets fill the extra indexes with zeroes */
+		// if the new buffers are larger, lets fill the extra indexes with zeroes
 		if (size > st->cache_size) {
 			diff = size - st->cache_size;
 			memset((void *)&st->cache_keys_hash[st->cache_size], 0, diff * sizeof(cfg_uint32));
@@ -141,33 +140,32 @@ cfg_error_t cfg_init(cfg_t *st, cfg_int cache_size)
 	return CFG_ERROR_OK;
 }
 
-/* fast fnv-32 hash */
+// fast fnv-32 hash
 static cfg_uint32 cfg_hash_get(cfg_char *str)
 {
 	cfg_uint32 hash = 0x811c9dc5;
 	if (str)
 		while(*str) {
-			/* or multiple with addition and bit shifting:
-			 * hash += (hash << 1) + (hash << 4) + (hash
-			 * << 7) + (hash << 8) + (hash << 24); 
-			 */
+			// or multiple with addition and bit shifting:
+			// hash += (hash << 1) + (hash << 4) + (hash
+			// << 7) + (hash << 8) + (hash << 24); 
 			hash *= hash;
 			hash ^= *str++;
 		}
 	return hash;
 }
 
-#define cfg_escape_char_trim(c, p, end) \
-	*p = c; \
-	memmove(p + 1, p + 2, end - (p + 1)); \
+#define cfg_escape_char_trim(c, p, end)		\
+	*p = c;					\
+	memmove(p + 1, p + 2, end - (p + 1));	\
 	*((end)--) = '\0'
 
-#define cfg_multi_line_trim(p, end) \
+#define cfg_multi_line_trim(p, end)	  \
 	memmove(p, p + 2, end - (p + 2)); \
-	end -= 2; \
+	end -= 2;			  \
 	*(end) = '\0'
 
-/* escape all special characters (like \n) in a string */
+// escape all special characters (like \n) in a string
 static cfg_char *cfg_value_escape(cfg_char *str) {
 	cfg_char *p = str, *end = str + strlen(str);
 	cfg_char next;
@@ -176,7 +174,7 @@ static cfg_char *cfg_value_escape(cfg_char *str) {
 		if (*p == '\\') {
 			next = *(p + 1);
 			switch (next) {
-			case '\n': /* multi-line value: remove the \\ and \n characters */
+			case '\n': // multi-line value: remove the \\ and \n characters
 				cfg_multi_line_trim(p, end);
 				break;
 			case 'n':
@@ -266,7 +264,7 @@ cfg_char* cfg_value_get(cfg_t *st, cfg_char *key)
 		return NULL;
 	hash = cfg_hash_get(key);
 
-	/* check for value in cache first */
+	// check for value in cache first
 	if (st->cache_size > 0) {
 		i = 0;
 		while (i < st->cache_size) {
@@ -276,12 +274,12 @@ cfg_char* cfg_value_get(cfg_t *st, cfg_char *key)
 		}
 	}
 
-	/* check for value in main list */
+	// check for value in main list
 	i = 0;
 	while (i < st->nkeys) {
 		if (hash == st->entry[i].key_hash) {
 			if (st->cache_size > 0) {
-				/* lets add to the cache */
+				// lets add to the cache
 				if (st->cache_size > 1) {
 					memmove((void *)(st->cache_keys_hash + 1), (void *)st->cache_keys_hash,
 					        (st->cache_size - 1) * sizeof(cfg_uint32));
@@ -314,7 +312,7 @@ cfg_ulong cfg_value_get_ulong(cfg_t *st, cfg_char *key, cfg_int base)
 	return 0;
 }
 
-/* msvcr does not support strtof so we only use strtod for doubles */
+// msvcr does not support strtof so we only use strtod for doubles
 cfg_double cfg_value_get_double(cfg_t *st, cfg_char *key)
 {
 	cfg_char *str = cfg_value_get(st, key);
@@ -356,7 +354,7 @@ static cfg_error_t cfg_free_memory(cfg_t *st)
 
 	if (!st->entry && st->nkeys)
 		return CFG_ERROR_CRITICAL;
-	if (!st->nkeys) /* nothing to do here */
+	if (!st->nkeys) // nothing to do here
 		return CFG_ERROR_OK;
 
 	while (i < st->nkeys) {
@@ -405,11 +403,11 @@ cfg_error_t cfg_free(cfg_t *st)
 		st->file = NULL;
 	}
 	memset((void *)st, 0, sizeof(st));
-	st->init = CFG_FALSE; /* not needed if CFG_FALSE is zero */
+	st->init = CFG_FALSE; // not needed if CFG_FALSE is zero
 	return CFG_ERROR_OK;
 }
 
-/* a couple of helper macros */
+// a couple of helper macros
 #define cfg_check_endline_multiline(bp, buf) \
 	*bp == '\n' && (bp > buf && *(bp - 1) != '\\')
 
@@ -431,11 +429,11 @@ cfg_error_t cfg_parse_buffer(cfg_t *st, cfg_char *buf, cfg_int sz)
 	if (st->init != CFG_TRUE)
 		return CFG_ERROR_INIT;
 
-	/* set buffer */
+	// set buffer
 	st->buf = buf;
 	st->buf_size = sz;
 
-	/* clear old keys */
+	// clear old keys
 	ret = cfg_free_memory(st);
 	if (ret > 0)
 		return ret;
@@ -446,16 +444,17 @@ cfg_error_t cfg_parse_buffer(cfg_t *st, cfg_char *buf, cfg_int sz)
 	if (ret > 0)
 		return ret;
 
-	/* find the number of keys by going trough the entire buffer
-	 * initially. we use this method instead of a growing list,
-	 * since realloc can end up being slow. even if our estimate
-	 * is off a little realloc will have to copy all pointer
-	 * values for the buffer to grow */
+	// find the number of keys by going trough the entire buffer
+        // initially. we use this method instead of a growing list,
+        // since realloc can end up being slow. even if our estimate
+        // is off a little realloc will have to copy all pointer
+        // values for the buffer to grow
+
 	ls = bp = st->buf;
 	bend = bp + sz;
 	n = nkeys = 0;
 	while (bp < bend) {
-		/* check if this is a multi-line definition */
+		// check if this is a multi-line definition
 		if (cfg_check_endline_multiline(bp, st->buf)) {
 			cfg_check_line_equalsign(bp, ec, ls);
 			nkeys++;
@@ -464,17 +463,17 @@ cfg_error_t cfg_parse_buffer(cfg_t *st, cfg_char *buf, cfg_int sz)
 		bp++;
 	}
 
-	/* allocate memory for the list */
+	// allocate memory for the list
 	st->entry = (cfg_entry_t *)malloc(nkeys * sizeof(cfg_entry_t));
 	if (!st->entry)
 		return CFG_ERROR_ALLOC;
 
-	/* fill keys and values */
+	// fill keys and values
 	ls = bp = st->buf;
 	bend = bp + sz;
 	n = 0;
 	while (bp < bend) {
-		/* check if this is a multi-line definition */
+		// check if this is a multi-line definition
 		if (cfg_check_endline_multiline(bp, st->buf)) {
 			cfg_check_line_equalsign(bp, ec, ls);
 			/* fill key */
@@ -487,9 +486,9 @@ cfg_error_t cfg_parse_buffer(cfg_t *st, cfg_char *buf, cfg_int sz)
 			st->entry[n].key[sz - 1] = '\0';
 			st->entry[n].key_hash = cfg_hash_get(st->entry[n].key);
 
-			/* fill key value */
+			// fill key value
 			sz = bp - ec;
-			if (sz - 1 == 0) { /* empty value */
+			if (sz - 1 == 0) { // empty value
 				st->entry[n].value = NULL;
 				st->entry[n].value_hash = cfg_hash_get(NULL);
 				ls = bp + 1;
@@ -505,7 +504,7 @@ cfg_error_t cfg_parse_buffer(cfg_t *st, cfg_char *buf, cfg_int sz)
 			st->entry[n].value_hash = cfg_hash_get(cfg_value_escape(st->entry[n].value));
 			ls = bp + 1;
 
-			/* Additional trim of whitespace on current key/value pair */
+			// Additional trim of whitespace on current key/value pair
 			st->entry[n].value = trimwhitespace(st->entry[n].value);
 			st->entry[n].key   = trimwhitespace(st->entry[n].key);
 
@@ -526,13 +525,13 @@ cfg_error_t cfg_parse_file(cfg_t *st, cfg_char *filename)
 	if (st->init != CFG_TRUE)
 		return CFG_ERROR_INIT;
 
-	/* read file */
+	// read file
 	f = fopen(filename, "r");
 	if (!f)
 		return CFG_ERROR_FOPEN;
 	st->file = f;
 
-	/* get file size */
+	// get file size
 	while (fgetc(f) != EOF)
 		sz++;
 	rewind(f);

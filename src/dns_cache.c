@@ -62,10 +62,9 @@ int dns_dump_cache(struct ipta_db_info *db)
 	}
 	result = mysql_store_result(con);
 
-	/* Produce output for the results, row by row */
+	// Produce output for the results, row by row
 	while((row = mysql_fetch_row(result))) 
-		/* Filter out those that are just ip numbers and do
-		 * not reverse */
+		// Filter out those that are just ip numbers and do not reverse
 		if(strcmp(row[0], row[1]))
 			printf("%20s    %-50s\n", row[0], row[1]);
 	mysql_free_result(result);
@@ -95,7 +94,6 @@ int dns_cache_create_table(struct ipta_db_info *db)
 	MYSQL *con = NULL;
 	int retval = RETVAL_OK;
 	
-	/* Allocate memory */
 	query_string = calloc(1, 10000);
 	if(NULL == query_string) {
 		fprintf(stderr, "! Error, unable to allocate memory. Quitting!\n");
@@ -109,7 +107,7 @@ int dns_cache_create_table(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 	
-	/* Create the query needed to create the database table */
+	// Create the query needed to create the database table
 	sprintf(query_string, 
 		"CREATE TABLE %s ("		      \
 		"ip INT(10) UNSIGNED PRIMARY KEY NOT NULL,"	\
@@ -117,7 +115,7 @@ int dns_cache_create_table(struct ipta_db_info *db)
 		"ttl TIMESTAMP);",
 		db->table);
 	
-	/* Attempt to create the table */
+	// Attempt to create the table
 	if(mysql_query(con, query_string)) {
 		fprintf(stderr, 
 			"! Unable to create table.\n"	\
@@ -129,10 +127,10 @@ int dns_cache_create_table(struct ipta_db_info *db)
 	fprintf(stderr, "+ Table %s created in database %s.\n",
 		db->table, db->name);
 
-	/* Table is created, clean up and exit nicely */
+	// Table is created, clean up and exit nicely
 	retval = RETVAL_OK;
 	
-	/* Return resources, clean up and return to caller with retval */
+	// Return resources, clean up and return to caller with retval
 clean_exit:
 	free(query_string);
 	if(con) 
@@ -169,7 +167,7 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname)
 		goto clean_exit;
 	}
 	
-	/* Attempt to update the key */
+	// Attempt to update the key
 	sprintf(query_string, 
 		"REPLACE INTO %s (ip, host, ttl) VALUES ("	\
 		"INET_ATON('%s'), '%s', now());",
@@ -219,7 +217,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address,
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row = 0;
 	
-	/* Allocate memory */
+	// Allocate memory
 	query_string = malloc(10000); // Fix later
 	if(!query_string) {
 		fprintf(stderr, "! Allocation failed!\n");
@@ -227,7 +225,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address,
 		goto clean_exit;
 	}
 	
-	/* Initialize databse object */
+	// Initialize databse object
 	con = open_db(db);
 	if(con == NULL) {
 		printf("! Unable to initialize MySQL connection.\n");
@@ -236,7 +234,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address,
 		goto clean_exit;
 	}
 	
-	/* Attempt to query database */
+	// Attempt to query database
 	sprintf(query_string,
 		"SELECT host FROM %s "			\
 		"WHERE ip=INET_ATON('%s') "		\
@@ -342,29 +340,44 @@ clean_exit:
 int dns_cache_delete_table(struct ipta_db_info *db) 
 {
 	MYSQL *con = NULL;
-	char *query = NULL;
 	int retval = RETVAL_OK;
+	char *query = NULL;
 	
-	query = malloc(10000);
-	if(!query) {
-		fprintf(stderr, "! Error, memory allocation failed.\n");
+	con = open_db(db);
+	if(!con) {
+		fprintf(stderr, "! Unable to open database.\n" \
+			"  Error: %s", mysql_error(con));
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
 
-	con = open_db(db);
-	if(!con) {
-		fprintf(stderr, "! Error, unable to initialize Mysql.\n");
+	query = calloc(1, 10000); // Fixme: Should be done nicer.
+	if(!query) {
+		fprintf(stderr, "! Error, unable to allocate memory.\n");
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
+
+	sprintf(query, 
+		"DELETE * FROM %s;",
+		db->table);
+
+	if(mysql_query(con, query)) {
+		fprintf(stderr, "! Error: %s\n", mysql_error(con));
+		retval = RETVAL_ERROR;
+		goto clean_exit;
+	}
+
+	retval = RETVAL_OK;
 	
 clean_exit:
 	free(query);
 	if(con)
 		mysql_close(con);
+
 	return retval;
 }
+
 
 /***********************************************************************
  * clear the entire table which removes all records but lets the table
@@ -373,6 +386,6 @@ clean_exit:
 int dns_cache_clear_table(struct ipta_db_info *db) 
 {
 	fprintf(stderr,"Function is a stub and not implemented.\n");
-	assert(0);
-	return RETVAL_ERROR;
+
+	return RETVAL_OK;
 }

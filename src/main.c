@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 	int dns_create_table_flag = 0;
 	int dns_ttl = 24*14;
         //  int print_license_flag = 0;
-	cfg_t *st; /* Configuration store */
+	cfg_t *st;                        // Configuration store
 	struct passwd *pw = NULL;
 	char home[PATH_MAX];
 	
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 		exit(RETVAL_ERROR);
 	}
 	
-	/* Load default parameters */
+	// Load default parameters
 	strcpy(db_info->host, DEFAULT_DB_HOSTNAME);
 	strcpy(db_info->user, DEFAULT_DB_USERNAME);
 	strcpy(db_info->pass, DEFAULT_DB_PASSWORD);
@@ -98,9 +98,8 @@ int main(int argc, char *argv[])
 	memcpy(dns_info, db_info, sizeof(struct ipta_db_info));
 	strcpy(dns_info->table, "dns");
 
-	/* Initialize config structure with no cache, we do not need it here
-	   because there is not a lot of keywords to look at */
-	
+	// Initialize config structure with no cache, we do not need it here
+	// because there is not a lot of keywords to look at
 	st = calloc(sizeof(cfg_t), 1);
 	retval = cfg_init(st, 0);
 	if(retval) {
@@ -112,13 +111,13 @@ int main(int argc, char *argv[])
 		goto clean_exit;
 	}
 	
-	/* Get user home dir and construct home path string */
+	// Get user home dir and construct home path string
 	pw = getpwuid(getuid());
 	retval = sprintf(home, "%s/.ipta", pw->pw_dir);
 	retval = cfg_parse_file(st, home);
 	if(!retval) {
-		/* Look for the standard parameter names and move the value
-		   to the internal hold as needed */
+		// Look for the standard parameter names and move the value
+		// to the internal hold as needed
 		i = 0;
 		while(i < st->nkeys) {
 			if(strlen(st->entry[i].value) >= IPTA_DB_INFO_STRLEN) {
@@ -128,7 +127,7 @@ int main(int argc, char *argv[])
 				goto clean_exit;
 			}
 			
-			/* Check against the known keys, if match, copy value to hold */
+			// Check against the known keys, if match, copy value to hold
 			if(!strcmp("db_host", st->entry[i].key))
 				strncpy(db_info->host,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
 			if(!strcmp("db_user", st->entry[i].key))
@@ -142,7 +141,7 @@ int main(int argc, char *argv[])
 			if(!strcmp("dns_table", st->entry[i].key))
 				strncpy(dns_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
 			
-			/* Analyzer limit is a little special and requires a range check */
+			// Analyzer limit is a little special and requires a range check
 			if(!strcmp("analyzer limit", st->entry[i].key)) {
 				
 				analyze_limit = strtol(st->entry[i].value, NULL, 10);
@@ -159,11 +158,11 @@ int main(int argc, char *argv[])
 					goto clean_exit;
 				}
 				
-			} /* Is analyzer limit */ 
+			} // Is analyzer limit
 			
 			i++; 
-		} /* while keys left */
-	} /* else */
+		} // while keys left
+	} // else
 	
 	action_flag = FLAG_CLEAR;
 	for(i=1; i < argc; i++) {
@@ -362,7 +361,7 @@ int main(int argc, char *argv[])
 				retval = RETVAL_ERROR;
 				goto clean_exit;
 			}
-			i++; /* Increase to swallow argument */
+			i++; // Increase to swallow argument
 			continue;
 		}
 
@@ -381,7 +380,7 @@ int main(int argc, char *argv[])
 			strncpy(dns_info->table, argv[i+2], IPTA_DB_INFO_STRLEN);
 		}
 		
-		/* Table operations defined here as flags are processed */
+		// Table operations defined here as flags are processed
 		if(!strcmp(argv[i], "-lt") || 
 		   !strcmp(argv[i], "--list-tables")) {
 			known_flag = FLAG_SET;
@@ -442,9 +441,8 @@ int main(int argc, char *argv[])
 			action_flag = FLAG_SET;
 			known_flag = FLAG_SET;
 		}
-
 		
-		/* Sanity check for arguments we don't handle */
+		// Sanity check for arguments we don't handle
 		if(!known_flag) {
 			fprintf(stderr, "Unknown option or argument %s found.\n", argv[i]);
 			retval = RETVAL_WARN; 
@@ -458,15 +456,15 @@ int main(int argc, char *argv[])
 	 * how they were inserted on the command line.
 	 ***********************************************************************/
 	
-	/* Process the actual modes to do something here */
+	// Process the actual modes to do something here
 	if(!action_flag) {
 		fprintf(stderr, "- No action, exiting.\n");
 		retval = RETVAL_WARN;
 		goto clean_exit;
 	}
 	
-	/* This must be the first action as it may break all the
-	 * others except for the dns settings */
+	// This must be the first action as it may break all the
+	// others except for the dns settings 
 
 	if(prune_dns_flag) {
 		retval = dns_cache_prune(dns_info, dns_ttl);
@@ -485,12 +483,12 @@ int main(int argc, char *argv[])
 		goto clean_exit;
 	}
 	
-	/* Print the usage of ipta */
+	// Print the usage of ipta
 	if(print_usage_flag) {
 		print_usage();
 	}
 	
-	/* Setup the default db setting and stor in .ipta */
+	// Setup the default db setting and stor in .ipta
 	if(create_db_flag) {
 		retval = create_db(db_info);
 		if(!retval) {
@@ -501,32 +499,32 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	/* Dump the DNS cache in human readable format */
+	// Dump the DNS cache in human readable format
 	if(dns_dump_flag) {
 		dns_dump_cache(dns_info);
 	}
 	
-	/* Show the different tables used in the database */
+	// Show the different tables used in the database
 	if(list_tables_flg) {
 		retval = list_tables(db_info);
 		if(retval)
 			goto clean_exit;
-		/* If retval is FALSE then there is no problem and we can continue
-		   to process other things. */
+		// If retval is FALSE then there is no problem and we can continue
+		// to process other things. 
 	}
 	
 	if(delete_table_flag) {
 		fprintf(stderr, "! Delete table is a stub and not yet implemented.\n");
 	}
 	
-	/* Create the prime table needed to import the syslog entries */
+	// Create the prime table needed to import the syslog entries
 	if(create_table_flag) {
 		retval = create_table(db_info);
 		if(retval)
 			goto clean_exit;
 	}
 
-	/* Clear all database entries */
+	// Clear all database entries
 	if(clear_db) {
 		retval = clear_database(db_info);
 		if(retval != 0) {
@@ -535,17 +533,16 @@ int main(int argc, char *argv[])
 		} 
 	}
 	
-	
+	// import from syslog
 	if(import_flag) {
-		/* import from syslog */
 		retval = import_syslog(db_info, import_fname);
 		if(retval != 0) {
 			fprintf(stderr, "! Error importing. Sorry.\n");
 			goto clean_exit;
 		} 
 	}
-
-	/* Run the automatic analyzer module */
+	
+	// Run the automatic analyzer module
 	if(analyze_flag) {
 		retval = analyze(db_info, flags, analyze_limit, dns_info);
 		if(retval) {
@@ -554,15 +551,15 @@ int main(int argc, char *argv[])
 			goto clean_exit;
 		}
 	}
-
+	
 clean_exit:
-
+	
 	if(config_file)
 		fclose(config_file);
 	free(flags);
 	free(db_info);
 	free(dns_info);
 	cfg_free(st);
-
+	
 	return retval;
 }

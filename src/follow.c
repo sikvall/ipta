@@ -19,7 +19,7 @@
  * however allowed to add below your own changes and redistribute, as
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
-//#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -83,8 +83,7 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 		goto clean_exit;
 	}
 
-	/* Seek to the end of the file unless we have a flag to show the
-	   history as well */
+	// Seek to the end of the file unless we have a flag to show the history as well
 	retval = fseek(logfile, 0L, SEEK_END);
 	if(0 != retval) {
 		fprintf(stderr, "! Error seeking to end of log file. Exiting.\n");
@@ -93,30 +92,26 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 	}
   
 
-	/* Actually this goes on until CTRL-C is pressed, so we will
-	   actually never return from this function once we started the
-	   following. */
-  
-	while (1) {
+	// Actually this goes on until CTRL-C is pressed, so we will actually never return from this 
+	// function once we started the following.
+  	while (1) {
 		read = getline(&line, &len, logfile);
 
 		if(read == -1) {
 
-			/* If the user wants rdns we turn it on only after reaching EOF
-			   first. Otherwise it can take forever if we have a large log
-			   file to read through, the DNS subsystem is not too fast on
-			   many implementations of Linux. */
-
+			// If the user wants rdns we turn it on only after reaching EOF first. Otherwise it can
+			// take forever if we have a large log file to read through, the DNS subsystem is not too
+			// fast on many implementations of Linux.
 			if(flags->rdns)
 				flag_rdns = FLAG_SET;
 			sleep(1);
 			continue;
 		} else {
-			/* We only want lines that contains the prefix */
+			// We only want lines that contains the prefix
 			if(strstr(line, prefix)) {
 				dummy = strtok(line, " ");
 	
-				/* Wind until marker found */
+				// Wind until marker found
 				do {
 					dummy = strtok(NULL, " ");
 				} while (strcmp(dummy, "IPT:"));
@@ -125,16 +120,13 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 
 				packet_count++;
 	
-				/* Clear records for next run */
+				// Clear records for next run
 				log_ifin = log_ifout = log_mac = log_src = log_dst = 
 					log_proto = log_src_port = log_dst_port = nullstring;
 		
-				/* In here we process the known prefixes and
-				 * the data * from each field in the log
-				 * string. Fields that are * not known are
-				 * just ignored silently. Anything that is
-				 * changed or added here needs to reflect the
-				 * database */
+				// In here we process the known prefixes and the data * from each field in the log
+				// string. Fields that are * not known are just ignored silently. Anything that is
+				// changed or added here needs to reflect the database
 	
 				while ((token = strtok(NULL, " "))) {
 					if(!strncmp("ACTION=", token, 7)) {
@@ -188,7 +180,7 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 				if(!(flags->no_lo && (!strcmp(log_ifin, "lo") || !strcmp(log_ifout, "lo")))) {
 					if(!(flags->no_accept && !strcmp("ACCEPT", log_action))) {
 	
-						/* Time to print the line in a nice formatted way */
+						// Time to print the line in a nice formatted way
 						if(line_count == 0) {
 							printf("\n");
 							printf("Count    IF       Source                          Port Destination                     Port Proto      Action    \n");
