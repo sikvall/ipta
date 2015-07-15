@@ -209,6 +209,11 @@ int main(int argc, char *argv[])
 			print_license();
 			goto clean_exit;
 		}
+
+		if(!strcmp(argv[i], "--no-header")) {
+			flags->no_follow_header = FLAG_SET;
+			known_flag = FLAG_SET;
+		}			
 		
 		if(!strcmp(argv[i], "--usage")) {
 			known_flag = FLAG_SET;

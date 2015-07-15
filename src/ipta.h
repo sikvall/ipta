@@ -62,6 +62,7 @@
 
 struct ipta_flags {
 	int no_lo;
+	int no_follow_header;
 	int no_counter;
 	int rdns;
 	int no_accept;
