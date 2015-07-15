@@ -34,6 +34,7 @@
 #include <linux/limits.h>
 #include "ipta.h"
 #include "cfg2.h"
+#include "trimwhitespace.h"
 
 #define DEBUG 1L
 
@@ -68,6 +69,8 @@ int main(int argc, char *argv[])
 	cfg_t *st;                        // Configuration store
 	struct passwd *pw = NULL;
 	char home[PATH_MAX];
+	char *key = NULL;
+	char *value = NULL;
 	
 	flags = calloc(sizeof(struct ipta_flags), 1);
 	if(NULL == flags) {
@@ -118,28 +121,29 @@ int main(int argc, char *argv[])
 	if(!retval) {
 		// Look for the standard parameter names and move the value
 		// to the internal hold as needed
-		i = 0;
-		while(i < st->nkeys) {
+		for(i=0; i < st->nkeys; i++) {
+			key = trimwhitespace(st->entry[i].key);
+			value = trimwhitespace(st->entry[i].value);
 			if(strlen(st->entry[i].value) >= IPTA_DB_INFO_STRLEN) {
 				fprintf(stderr, "! Error in configuration file, key value too long.\n");
-				fprintf(stderr, "  Key: %s\n", st->entry[i].key);
+				fprintf(stderr, "  Key: %s\n", key);
 				retval = RETVAL_ERROR;
 				goto clean_exit;
 			}
 			
 			// Check against the known keys, if match, copy value to hold
-			if(!strcmp("db_host", st->entry[i].key))
-				strncpy(db_info->host,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("db_user", st->entry[i].key))
-				strncpy(db_info->user,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("db_pass", st->entry[i].key))
-				strncpy(db_info->pass,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("db_name", st->entry[i].key))
-				strncpy(db_info->name,  st->entry[i].value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("db_table", st->entry[i].key))
-				strncpy(db_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("dns_table", st->entry[i].key))
-				strncpy(dns_info->table, st->entry[i].value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("db_host", key))
+				strncpy(db_info->host,   value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("db_user", key))
+				strncpy(db_info->user,   value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("db_pass", key))
+				strncpy(db_info->pass,   value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("db_name", key))
+				strncpy(db_info->name,   value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("db_table", key))
+				strncpy(db_info->table,  value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("dns_table", key))
+				strncpy(dns_info->table, value, IPTA_DB_INFO_STRLEN);
 			
 			// Analyzer limit is a little special and requires a range check
 			if(!strcmp("analyzer limit", st->entry[i].key)) {
@@ -159,11 +163,9 @@ int main(int argc, char *argv[])
 				}
 				
 			} // Is analyzer limit
-			
-			i++; 
 		} // while keys left
 	} // else
-	
+
 	action_flag = FLAG_CLEAR;
 	for(i=1; i < argc; i++) {
 		known_flag = FLAG_CLEAR;
