@@ -184,17 +184,17 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 						if(line_count == 0) {
 							printf("\n");
 							if(flags->no_counter == FLAG_SET) {
-								if(flags->no_follow_header != FLAG_CLEAR) {
+								if(flags->no_follow_header != FLAG_SET) {
 printf("IF       Source                          Port Destination                     Port Proto      Action    \n");
-								}
 printf("-------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
+								}
 
 							}
 							else {
-								if(flags->no_follow_header != FLAG_CLEAR) {
+								if(flags->no_follow_header != FLAG_SET) {
 printf("Count    IF       Source                          Port Destination                     Port Proto      Action    \n");
-								}
 printf("-------- -------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
+								}
 							}
 						}
 	

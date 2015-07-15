@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
 			known_flag = FLAG_SET;
 		}
 
-		if(!strcmp(argv[i], "--no-counter") ||
+		if(!strcmp(argv[i], "--no-count") ||
 		   !strcmp(argv[i], "-C")) {
 			flags->no_counter = FLAG_SET;
 			known_flag = FLAG_SET;
