@@ -183,24 +183,41 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 						// Time to print the line in a nice formatted way
 						if(line_count == 0) {
 							printf("\n");
-							printf("Count    IF       Source                          Port Destination                     Port Proto      Action    \n");
-							printf("-------- -------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
+							if(flags->no_counter == FLAG_SET) {
+printf("IF       Source                          Port Destination                     Port Proto      Action    \n");
+printf("-------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
+
+							}
+							else {
+printf("Count    IF       Source                          Port Destination                     Port Proto      Action    \n");
+printf("-------- -------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
+							}
 						}
 	
 						line_count++;
 	
-						if ( line_count >= 20 ) 
+						if(line_count >= 20)
 							line_count = 0;
-	
-						printf("%8d %-8s %-30s %5d %-30s %5d %-10s %-10s\n",
-						       packet_count,
-						       strcmp("", log_ifin) ? log_ifin : log_ifout,
-						       flag_rdns ? src_hostname : log_src,
-						       atoi(log_src_port),
-						       flag_rdns ? dst_hostname : log_dst,
-						       atoi(log_dst_port),
-						       log_proto,
-						       log_action);
+						if(flags->no_counter == FLAG_SET) {
+							printf("%-8s %-30s %5d %-30s %5d %-10s %-10s\n",
+							       strcmp("", log_ifin) ? log_ifin : log_ifout,
+							       flag_rdns ? src_hostname : log_src,
+							       atoi(log_src_port),
+							       flag_rdns ? dst_hostname : log_dst,
+							       atoi(log_dst_port),
+							       log_proto,
+							       log_action);
+						} else {
+							printf("%8d %-8s %-30s %5d %-30s %5d %-10s %-10s\n",
+							       packet_count,
+							       strcmp("", log_ifin) ? log_ifin : log_ifout,
+							       flag_rdns ? src_hostname : log_src,
+							       atoi(log_src_port),
+							       flag_rdns ? dst_hostname : log_dst,
+							       atoi(log_dst_port),
+							       log_proto,
+							       log_action);
+						}
 					}
 				}
 			}

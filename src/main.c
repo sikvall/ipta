@@ -191,6 +191,12 @@ int main(int argc, char *argv[])
 			flags->no_lo = FLAG_SET;
 			known_flag = FLAG_SET;
 		}
+
+		if(!strcmp(argv[i], "--no-counter") ||
+		   !strcmp(argv[i], "-C")) {
+			flags->no_counter = FLAG_SET;
+			known_flag = FLAG_SET;
+		}
 		
 		if(!strcmp(argv[i], "--no-accept")) {
 			flags->no_accept = FLAG_SET;

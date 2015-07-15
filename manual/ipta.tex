@@ -395,7 +395,11 @@ needed for analysis. This is done by the following command:
 
 \subsection{Initiate the database}
 
-The next step is to set up the database table needed for ipta to work properly. The default table is ``logs'' in the database ``ipta'' but you can use command line switches to override this as fit. There is also a configuration file you may store this in so you don't have to type it in every time.
+The next step is to set up the database table needed for ipta to work
+properly. The default table is ``logs'' in the database ``ipta'' but
+you can use command line switches to override this as fit. There is
+also a configuration file you may store this in so you don't have to
+type it in every time.
 
 \begin{verbatim}
 $ ipta --create-table
@@ -607,12 +611,12 @@ IPTABLES="/sbin/iptables"
 # default policy should be ACCEPT so that you can send them to the log
 # facility, otherwise they will be dropped silently
 
-$IPTABLES -P INPUT   ACCEPT
-$IPTABLES -P OUTPUT  ACCEPT
-$IPTABLES -P FORWARD DENY #Change to ACCEPT ifyou use forwarding
+\$IPTABLES -P INPUT   ACCEPT
+\$IPTABLES -P OUTPUT  ACCEPT
+\$IPTABLES -P FORWARD DENY #Change to ACCEPT ifyou use forwarding
 
 # Flushing existing rules to make sure our iptables are empty 
-$IPTABLES -F
+\$IPTABLES -F
 
 # Create the logging chains for our iptables
 
@@ -621,69 +625,71 @@ $IPTABLES -F
 # as well as a single word telling what happened to the packet (DROP
 # or ACCEPT) and then the packet is either dropped or accepted.
 
-$IPTABLES -N LOGDROP
-$IPTABLES -A LOGDROP -j LOG --log-prefic "IPT: DROP " --log-level 7
-$IPTABLES -A LOGDROP -j DROP
+\$IPTABLES -N LOGDROP
+\$IPTABLES -A LOGDROP -j LOG --log-prefic "IPT: DROP " --log-level 7
+\$IPTABLES -A LOGDROP -j DROP
 
-$IPTABLES -N LOGACCEPT
-$IPTABLES -A LOGACCEPT -j LOG --log-prefix "IPT: ACCEPT " --log-level 7 
-$IPTABLES -A LOGACCEPT -j ACCEPT
+\$IPTABLES -N LOGACCEPT
+\$IPTABLES -A LOGACCEPT -j LOG --log-prefix "IPT: ACCEPT " --log-level 7 
+\$IPTABLES -A LOGACCEPT -j ACCEPT
 
-$IPTABLES -N LOGINVALID
-$IPTABLES -A LOGINVALID -j LOG --log-prefix "IPT: INVALID " --log-level 7 
-$IPTABLES -A LOGINVALID -j DROP
+\$IPTABLES -N LOGINVALID
+\$IPTABLES -A LOGINVALID -j LOG --log-prefix "IPT: INVALID " --log-level 7 
+\$IPTABLES -A LOGINVALID -j DROP
 
 # Drop early all malformed packets
-$IPTABLES -A INPUT -m state --state INVALID -j LOGINVALID
+\$IPTABLES -A INPUT -m state --state INVALID -j LOGINVALID
 
 # Allow all traffic on local interfalce "lo" without logging 
-$IPTABLES -A INPUT  -i lo -j ACCEPT
-$IPTABLES -A OUTPUT -i lo -j ACCEPT
+\$IPTABLES -A INPUT  -i lo -j ACCEPT
+\$IPTABLES -A OUTPUT -i lo -j ACCEPT
 
 # Enable ICMP but log them
-$IPTABLES -A INPUT -p icmp -j LOGACCEPT $IPTABLES -A OUTPUT -p icmp -j LOGACCEPT
+\$IPTABLES -A INPUT -p icmp -j LOGACCEPT 
+\$IPTABLES -A OUTPUT -p icmp -j LOGACCEPT
 
 # Enable DNS server connections from local host, no logging here DNS
 # is specified for both tcp and udp connections but almost always only
 # udp is used so you may disable the tcp parts if you like
 
-$IPTABLES -A INPUT  -p tcp --sport domain -j ACCEPT
-$IPTABLES -A INPUT  -p udp --sport domain -j ACCEPT
-$IPTABLES -A OUTPUT -p tcp --dport domain -j ACCEPT
-$IPTABLES -A OUTPUT -p udp --dport domain -j ACCEPT
+\$IPTABLES -A INPUT  -p tcp --sport domain -j ACCEPT
+\$IPTABLES -A INPUT  -p udp --sport domain -j ACCEPT
+\$IPTABLES -A OUTPUT -p tcp --dport domain -j ACCEPT
+\$IPTABLES -A OUTPUT -p udp --dport domain -j ACCEPT
 
 # If you are using NTP for time synchronization you should have these
 # enables, otherwise comment them out. I like to log them also.
 
-$IPTABLES -A INPUT  -p udp --sport 123 -m state --state ESTABLISHED -j LOGACCEPT 
-$IPTABLES -A OUTPUT -p udp --sport 123 -m state --state NEW,ESTABLISHED -j LOGACCEPT
+\$IPTABLES -A INPUT  -p udp --sport 123 -m state --state ESTABLISHED -j LOGACCEPT 
+\$IPTABLES -A OUTPUT -p udp --sport 123 -m state --state NEW,ESTABLISHED -j LOGACCEPT
 
 # This enables incoming SSH connections to the local host we will log
 # this activity. Logging the ESTABLISHED state usually renders a lot
 # of packets in the log since that would be file transfers and so on,
 # therefore we just log the new packets.
 
-$IPTABLES -A INPUT  -p tcp --dport 22 -m state --state NEW -j LOGACCEPT
-$IPTABLES -A INPUT  -p tcp --dport 22 -m state --state ESTABLISHED -j ACCEPT 
-$IPTABLES -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -J ACCEPT
+\$IPTABLES -A INPUT  -p tcp --dport 22 -m state --state NEW -j LOGACCEPT
+\$IPTABLES -A INPUT  -p tcp --dport 22 -m state --state ESTABLISHED -j ACCEPT 
+\$IPTABLES -A OUTPUT -p tcp --sport 22 -m state --state ESTABLISHED -J ACCEPT
 
 # Enable traffic to your web server on port 80, no logging
 
-$IPTABLES -A INPUT  -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT 
-$IPTABLES -A OUTPUT -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT
+\$IPTABLES -A INPUT  -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT 
+\$IPTABLES -A OUTPUT -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT
 
 # Everything else that falls through here will be considered
 # non-wanted traffic and will therefore be logged also, then dropped.
 
-$IPTABLES -A INPUT  -j LOGDROP
-$IPTABLES -A OUTPUT -j LOGDROP
-\end{verbatim} \normalsize
+\$IPTABLES -A INPUT  -j LOGDROP
+\$IPTABLES -A OUTPUT -j LOGDROP
+\end{verbatim} 
+\normalsize
 
 The above should give you a good starting point that you can modify
-into your own needed rules for the firewall you are deploying. You may
-of course simplify it or make it as complex as needed but this should
-show the geist of how you can use the different log chains to log
-packets that you want to analyze later.
+ into your own needed rules for the firewall you are deploying. You
+ may of course simplify it or make it as complex as needed but this
+ should show the geist of how you can use the different log chains to
+ log packets that you want to analyze later.
 
 Now, this script above creates an iptables firewall, make sure you
 have a way to connect to your computer before you run it in case you
@@ -715,7 +721,9 @@ SSH the ipta may generate it's own traffic that in its turn creates
 even more traffic as it attempts to display the already generated
 traffic. 
 
-To avoid this you should take care to not log packets for an established SSH session if that is how you are running ipta, or DNS queries if you are using the \texttt{--rdns} switch.
+To avoid this you should take care to not log packets for an
+established SSH session if that is how you are running ipta, or DNS
+queries if you are using the \texttt{--rdns} switch.
 
 
 
@@ -901,7 +909,7 @@ attribution.\\ \hline
 This switch removes the headers from the output when the
 \texttt{--follow} mode is being employed.\\\hline
 
-\texttt{--no-counter} & 
+\texttt{--no-counter, -C} & 
 
 Removes the line counter in front of the lines in \texttt{--follow}
 mode.\\\hline
@@ -982,7 +990,7 @@ that working it is time to use the tool.
 We can start by initializing the database:
 
 \begin{verbatim}
-$ ipta --create-table
+\$ ipta --create-table
 \end{verbatim}
 
 This will create the default table in the database and prime it ready
@@ -994,7 +1002,7 @@ This is done by the import mode and triggered by the mode switch
 like this:
 
 \begin{verbatim}
-$ ipta --import /var/log/iptables.log
+\$ ipta --import /var/log/iptables.log
 \end{verbatim}
 
 Once the log has been properly imported, and the progress will be
@@ -1025,7 +1033,8 @@ denied.
 By default the top ten lines are shown, this can be changed with the
 \texttt{--limit} option.
 
-\scriptsize \begin{verbatim}
+\scriptsize 
+\begin{verbatim}
 Showing denied traffic grouped by IP, destination port, action taken and protocol.
  Count Source IP                 SPort Dest IP                   DPort Proto  Action
 ------ ------------------------- ----- ------------------------- ----- ------ ----------
@@ -1049,7 +1058,8 @@ Showing denied traffic grouped by IP, destination port, action taken and protoco
      4 162.244.35.24             41695 188.126.93.160            21320 TCP    DROP      
      3 212.162.17.234             3371 188.126.93.160               23 TCP    DROP      
      3 222.186.190.157           43484 188.126.93.160            20022 TCP    DROP  
-\end{verbatim} \normalsize
+\end{verbatim} 
+\normalsize
 
 \subsection{ICMP module}
 
@@ -1073,7 +1083,8 @@ Showing ICMP traffic statistics
      1 190.7.215.194             188.126.93.160            ACCEPT    
      1 14.8.249.133              188.126.93.160            ACCEPT    
      1 124.65.193.150            188.126.93.160            ACCEPT    
-\end{verbatim} \normalsize
+\end{verbatim} 
+\normalsize
 
 \subsection{Most denied ports module}
 
@@ -1082,7 +1093,8 @@ sorted top-down showing the most denied ports first. This is useful to
 determine if any certain services are being attacked or what is going
 on in connection attempts.
 
-\scriptsize \begin{verbatim}
+\scriptsize 
+\begin{verbatim}
 Most denied ports
  Count   DPort   Proto    Action       
 ------   -----   ------   ----------   
@@ -1096,7 +1108,8 @@ Most denied ports
      9     3389   TCP      DROP      
      7     5060   UDP      DROP      
      7    10142   UDP      DROP      
-\end{verbatim} \normalsize
+\end{verbatim} 
+\normalsize
 
 \subsection{Invalid packets source}
 
@@ -1107,7 +1120,9 @@ ports for the packets.
 It is useful to determine network problems as well as malformed
 packets or source routed spoofed packets.
 
-\scriptsize \begin{verbatim}Most invalid packets comes from
+\scriptsize 
+\begin{verbatim}
+Most invalid packets comes from
  Count   Source IP                   SPort   Dest IP                     DPort   Proto    
 ------   -------------------------   -----   -------------------------   -----   ------   
    138   213.136.38.8                41757   188.126.93.160                 80   TCP      
@@ -1127,7 +1142,8 @@ packets or source routed spoofed packets.
      1   178.63.22.198               19505   188.126.93.160              54699   TCP      
      1   195.198.171.84              49473   188.126.93.160                 80   TCP      
      1   108.167.143.218                80   188.126.93.160              28498   TCP      
-\end{verbatim} \normalsize
+\end{verbatim} 
+\normalsize
 
 \subsection{Interface statistics}
 
