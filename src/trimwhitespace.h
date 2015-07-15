@@ -1,0 +1,1 @@
+char *trimwhitespace(char *str);
