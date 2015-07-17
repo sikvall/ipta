@@ -165,6 +165,7 @@ int main(int argc, char *argv[])
 			key = strlwr(key);
 			value = strlwr(value);
 
+			// Check for rdns setting yes/no
 			if(!strcmp("rdns", key)) {
 				if(!strcmp("yes", value)) {
 					flags->rdns = FLAG_SET;
@@ -176,12 +177,34 @@ int main(int argc, char *argv[])
 			}
 			
 			// Setting the no local inteface flag from config file
-			if(!strcmp("no-local", key)) { 
-				if(!strcmp("yes", value))
+			if(!strcmp("show-lo", key)) { 
+				if(!strcmp("no", value)) {
 					flags->no_lo = FLAG_SET;
+				} else {
+					flags->no_lo = FLAG_CLEAR;
+				}
 				break;
 			}
 
+			// No counter
+			if(!strcmp("counter", key)) {
+				if(!strcmp("no", value)) {
+					flags->no_counter = FLAG_SET;
+				} else {
+					flags->no_counter = FLAG_CLEAR;
+				}
+				break;
+			}
+
+			// No follow header
+			if(!strcmp("header", key)) {
+				if(!strcmp("no", value)) {
+					flags->no_follow_header = FLAG_SET;
+				} else {
+					flags->no_follow_header = FLAG_CLEAR;
+				}
+				break;
+			}
 
 			// Analyzer limit is a little special and requires a range check
 			if(!strcmp("analyzer limit", st->entry[i].key)) {
