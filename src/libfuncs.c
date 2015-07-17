@@ -81,3 +81,15 @@ char *strupr(char *s)
 	}
 	return p;
 }
+
+/* Convert a given string to lower case and then return a pointer to
+ * the same string. Original string will be overwritten and lost. */
+char *strlwr(char *s)
+{
+	char *p = s;
+	while(*s) {
+		*s = tolower(*s);
+		s++;
+	}
+	return p;
+}
