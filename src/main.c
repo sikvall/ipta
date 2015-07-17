@@ -34,7 +34,7 @@
 #include <linux/limits.h>
 #include "ipta.h"
 #include "cfg2.h"
-#include "trimwhitespace.h"
+#include "libfuncs.h"
 
 #define DEBUG 1L
 
@@ -130,6 +130,8 @@ int main(int argc, char *argv[])
 				retval = RETVAL_ERROR;
 				goto clean_exit;
 			}
+
+//			printf("key: '%s'    value: '%s'\n", key, value);
 			
 			// Check against the known keys, if match, copy value to hold
 			if(!strcmp("db_host", key))
@@ -144,6 +146,13 @@ int main(int argc, char *argv[])
 				strncpy(db_info->table,  value, IPTA_DB_INFO_STRLEN);
 			if(!strcmp("dns_table", key))
 				strncpy(dns_info->table, value, IPTA_DB_INFO_STRLEN);
+			if(!strcmp("rdns", key)) {
+				if(!strcmp("YES", strupr(value))) {
+					flags->rdns = FLAG_SET;
+				} else {     // You want to be explicit here so the else does not become ambiguous!
+					flags->rdns = FLAG_CLEAR;
+				}
+			}
 			
 			// Analyzer limit is a little special and requires a range check
 			if(!strcmp("analyzer limit", st->entry[i].key)) {
