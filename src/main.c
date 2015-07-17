@@ -124,6 +124,8 @@ int main(int argc, char *argv[])
 		for(i=0; i < st->nkeys; i++) {
 			key = trimwhitespace(st->entry[i].key);
 			value = trimwhitespace(st->entry[i].value);
+
+
 			if(strlen(st->entry[i].value) >= IPTA_DB_INFO_STRLEN) {
 				fprintf(stderr, "! Error in configuration file, key value too long.\n");
 				fprintf(stderr, "  Key: %s\n", key);
@@ -131,29 +133,56 @@ int main(int argc, char *argv[])
 				goto clean_exit;
 			}
 
-//			printf("key: '%s'    value: '%s'\n", key, value);
+
 			
 			// Check against the known keys, if match, copy value to hold
-			if(!strcmp("db_host", key))
+			if(!strcmp("db_host", key)) {
 				strncpy(db_info->host,   value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("db_user", key))
+				break;
+			}
+			if(!strcmp("db_user", key)) {
 				strncpy(db_info->user,   value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("db_pass", key))
+				break;
+			}
+			if(!strcmp("db_pass", key)) {
 				strncpy(db_info->pass,   value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("db_name", key))
+				break;
+			}
+			if(!strcmp("db_name", key)) {
 				strncpy(db_info->name,   value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("db_table", key))
+				break;
+			}
+			if(!strcmp("db_table", key)) {
 				strncpy(db_info->table,  value, IPTA_DB_INFO_STRLEN);
-			if(!strcmp("dns_table", key))
+				break;
+			}
+			if(!strcmp("dns_table", key)) {
 				strncpy(dns_info->table, value, IPTA_DB_INFO_STRLEN);
+				break;
+			}
+
+			// Below this point key and value are lowercase
+			key = strlwr(key);
+			value = strlwr(value);
+
 			if(!strcmp("rdns", key)) {
-				if(!strcmp("YES", strupr(value))) {
+				if(!strcmp("yes", value)) {
 					flags->rdns = FLAG_SET;
+					break;
 				} else {     // You want to be explicit here so the else does not become ambiguous!
 					flags->rdns = FLAG_CLEAR;
+					break;
 				}
 			}
 			
+			// Setting the no local inteface flag from config file
+			if(!strcmp("no-local", key)) { 
+				if(!strcmp("yes", value))
+					flags->no_lo = FLAG_SET;
+				break;
+			}
+
+
 			// Analyzer limit is a little special and requires a range check
 			if(!strcmp("analyzer limit", st->entry[i].key)) {
 				
