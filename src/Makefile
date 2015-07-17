@@ -27,7 +27,7 @@
 
 objects = main.o import-syslog.o analyze.o gethostbyaddr.o   \
 	  print_licence.o db_maintenance.o follow.o \
-	  cfg2.o dns_cache.o trimwhitespace.o
+	  cfg2.o dns_cache.o libfuncs.o
 
 #dns_cache.o
 target = ipta
@@ -82,8 +82,8 @@ db_maintenance.o: db_maintenance.c ipta.h
 follow.o: follow.c ipta.h
 	gcc ${cflags} -c follow.c -L ${libs} -I ${includes}
 
-trimwhitespace.o: trimwhitespace.c trimwhitespace.h
-	gcc ${cflags} -c trimwhitespace.c -L ${libs} -I ${includes}
+libfuncs.o: libfuncs.c libfuncs.h
+	gcc ${cflags} -c libfuncs.c -L ${libs} -I ${includes}
 
 # Special targets here
 
