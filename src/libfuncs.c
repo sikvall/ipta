@@ -1,34 +1,10 @@
-/* This helper function added by Anders "Ichimusai" Sikvall although I
-   do not claim authorship to this code as it is likely to be very
-   similar to other such code snippets since donkey years ago...
-
-   I wanted to deal with trimming of white space at the beginning and
-   end of strings to be able to cope with configuration files and make
-   the following two lines to behave as equivalent:
-
-   key=value
-   key = value
-
-   Just as well as other varieties, such as indentation and other
-   things in the key/value pair that I think is sanity to get rid of.
-
-   PARAMS
-
-         char *str 
-                 String to trim whitespace at beginning and end from.
-
-   RETURNS
-
-         The start of the string which should always be the same
-         address as the string inserted to trim. This is done in this
-         way because I don't want to screw up any malloc()/free()
-         pairs for the strings.
-*/
-
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
+/* Trim white space from the beginning and the end of a string by
+ * moving pointer and null termination. String may be shorter but the
+ * stard address should remain the same so free() should not barf. */
 char *trimwhitespace(char *str)
 {
 	size_t len = 0;
