@@ -31,7 +31,7 @@ the following conditions:
    only as an addition at the bottom of the file.
 
 4. Distributing the software must be done in a way so that the
-   software archive is intact and no necessary files (except external
+   software archive is intact and all necessary files (except external
    libraries such as MySQL) is always included. The software should be
    compilable after a reasonable set-up of the tool chain and
    compiler.
