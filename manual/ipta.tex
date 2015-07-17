@@ -682,6 +682,7 @@ IPTABLES="/sbin/iptables"
 
 \$IPTABLES -A INPUT  -j LOGDROP
 \$IPTABLES -A OUTPUT -j LOGDROP
+
 \end{verbatim} 
 \normalsize
 
@@ -1250,13 +1251,19 @@ db\_name & Sets the database name to use, default is "ipta".\\\hline
 db\_table & Sets the name of the table to use, default is
 "logs".\\\hline
 
-rdns & Takes 'yes' or 'no' depending on if you wish to use reverse DNS lookups as default or not. Omitted no reverse DNS lookup is performed.\\\hline
+rdns & Takes 'yes' or 'no' depending on if you wish to use reverse DNS
+lookups as default or not. Omitted no reverse DNS lookup is
+performed.\\\hline
 
-counter & Takes 'yes' or 'no' depending on if you wisth to turn on or off the counter in --follow mode. Omitted it shows counters. \\\hline
+counter & Takes 'yes' or 'no' depending on if you wisth to turn on or
+off the counter in --follow mode. Omitted it shows counters. \\\hline
 
-show-lo & Decides if you want to show activities on local interface 'lo' (set to 'yes') or not (set to 'no'). Omitted means yes.\\\hline
+show-lo & Decides if you want to show activities on local interface
+'lo' (set to 'yes') or not (set to 'no'). Omitted means yes.\\\hline
 
-header & Show header every 20 lines in --follow mode (set to 'yes'). If omitted it shows headers, if you don't want headers set to 'no'.\\\hline
+header & Show header every 20 lines in --follow mode (set to 'yes').
+If omitted it shows headers, if you don't want headers set to
+'no'.\\\hline
 
 
 \end{longtable}
