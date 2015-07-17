@@ -128,7 +128,7 @@ the following conditions:
   only as an addition at the bottom of the file.
  
 \item[4.] Distributing the software must be done in a way so that the
-  software archive is intact and no necessary files (except external
+  software archive is intact and all necessary files (except external
   libraries such as MySQL) is always included. The software should be
   compilable after a reasonable set-up of the tool chain and compiler.
  
@@ -1249,6 +1249,16 @@ db\_name & Sets the database name to use, default is "ipta".\\\hline
 
 db\_table & Sets the name of the table to use, default is
 "logs".\\\hline
+
+rdns & Takes 'yes' or 'no' depending on if you wish to use reverse DNS lookups as default or not. Omitted no reverse DNS lookup is performed.\\\hline
+
+counter & Takes 'yes' or 'no' depending on if you wisth to turn on or off the counter in --follow mode. Omitted it shows counters. \\\hline
+
+show-lo & Decides if you want to show activities on local interface 'lo' (set to 'yes') or not (set to 'no'). Omitted means yes.\\\hline
+
+header & Show header every 20 lines in --follow mode (set to 'yes'). If omitted it shows headers, if you don't want headers set to 'no'.\\\hline
+
+
 \end{longtable}
 
 \subsection{Config example}
@@ -1256,34 +1266,23 @@ db\_table & Sets the name of the table to use, default is
 This is an example of a configuration file.
 \scriptsize
 \begin{verbatim}
-######################################################################
 ## ipta configuration file
-#
-# This is an example file for your configuration
-# you can change these at any time. Because this file may potentially
-# contain your username and password to the database that ipta is 
-# using you should make sure you set permissions so others can't read
-# this file.
-#
-# chmod ~/.ipta 600
-#
-#
 
-##########################
-# miscellaneous settings #
-##########################
-
+# Misc settings
 analyzer limit = 15
 
-#####################
-# Database settings #
-#####################
-
+# Database settings
 db_host = localhost
 db_user = ipta
 db_pass = ipta
 db_name = ipta
 db_table = logs
+
+# Flags
+show-lo = no
+header = yes
+counter = yes
+rdwn = yes
 
 # End
 \end{verbatim}
