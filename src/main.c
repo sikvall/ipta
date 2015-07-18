@@ -238,18 +238,6 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		
-		if(!strcmp(argv[i], "--rdns") || 
-		   !strcmp(argv[i], "-r")) {
-			flags->rdns = FLAG_SET;
-			known_flag = FLAG_SET;
-		}
-		
-		if(!strcmp(argv[i], "--dns-dump")) {
-			known_flag = FLAG_SET;
-			action_flag = FLAG_SET;
-			dns_dump_flag = FLAG_SET;
-		}
-		
 		if(!strcmp(argv[i], "--no-lo")) {
 			flags->no_lo = FLAG_SET;
 			known_flag = FLAG_SET;
@@ -263,6 +251,12 @@ int main(int argc, char *argv[])
 		
 		if(!strcmp(argv[i], "--no-accept")) {
 			flags->no_accept = FLAG_SET;
+			known_flag = FLAG_SET;
+		}
+		
+		if(!strcmp(argv[i], "--rdns") || 
+		   !strcmp(argv[i], "-r")) {
+			flags->rdns = FLAG_SET;
 			known_flag = FLAG_SET;
 		}
 		
@@ -423,7 +417,7 @@ int main(int argc, char *argv[])
 		}
 		
 
-		if(!strcmp(argv[i], "--dns-ttl")) {
+		if(!strcmp(argv[i], "--ttl")) {
 			if(argc < (i+2)) {
 				fprintf(stderr, "? Missing argument for --dns-ttl\n");
 				retval = RETVAL_ERROR;
@@ -484,6 +478,12 @@ int main(int argc, char *argv[])
 			action_flag = FLAG_SET;
 			create_table_flag = FLAG_SET;
 			continue;
+		}
+
+		if(!strcmp(argv[i], "--dns-dump")) {
+			known_flag = FLAG_SET;
+			action_flag = FLAG_SET;
+			dns_dump_flag = FLAG_SET;
 		}
 		
 		if(!strcmp(argv[i], "-c") || 
