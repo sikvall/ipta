@@ -856,7 +856,7 @@ names.\\\hline
 Remove any unwanted "table" from the database. The table and all
 information is erased. This can not be undone.\\\hline
 
-\texttt{-da, --delelte-all-tables} & 
+\texttt{-da, --delete-all-tables} & 
 
 Remove all tables from the database. This will unceremoniously delete
 all the data in the ipta database.\\\hline
@@ -934,29 +934,39 @@ invalid packets.\\\hline
 \hline
 \textbf{DNS Cache options} & \textbf{Description}\\ \hline
 	
-\texttt{--dns-ttl <hours>} & This switch sets the number of hours for
+\texttt{--ttl <hours>} & 
+
+This switch sets the number of hours for
 the entries in the DNS cache to be considered valid. The default (no
 switch given) is 14 days. That's a pretty long time but most IP:s
 reverse DNS changes very seldom. Using this switch you can set the
 maximum allowed time before they have to refresh to \texttt{<hours>}
 instead of the default which is 336 hours. \\\hline
 
-\texttt{--dns-prune} & Remove all entries in the system that are older
+\texttt{--dns-prune} & 
+
+Remove all entries in the system that are older
 than the dns ttl which is default 14 days (336 hours). If you want to
 change the ttl you can combine this with the \texttt{--dns-ttl} switch
 in order to use a longer or shorter time to live for the entries.
 \\\hline
 
-\texttt{--dns-create-table} & Create the DNS table in the database.
+\texttt{--dns-create-table} & 
+
+Create the DNS table in the database.
 Default the table is simply called "dns" but you can override this by
 using the switch to change th name of the dns table or set it in the
 configuration file. \\\hline
 
-\texttt{--dns-table [table]} & Change from the default database table
+\texttt{--dns-table [table]} & 
+
+Change from the default database table
 "dns" to a new one for this run. Don't forget it must be created with
 the \texttt{--dns-create-table} also before it can be used. \\\hline
 
-\texttt{--dns-dump} & Dumps the DNS table as it is now with ip address
+\texttt{--dns-dump} &
+
+ Dumps the DNS table as it is now with ip address
 and host name formatted in an easy to read fashion. Can be used for
 further analysis.\\\hline
 
