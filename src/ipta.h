@@ -86,7 +86,6 @@ struct ipta_config {
 	struct ipta_flags *flags;
 };
 
-
 /* Function declarations */
 int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit, 
 	    struct ipta_db_info *dns);
