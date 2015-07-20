@@ -212,7 +212,7 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 
 	// Query: Destination ports with denied traffic and their actions
 	sprintf(query,
-		"SELECT COUNT(*), dst_prt, action FROM %s"\
+		"SELECT COUNT(*), dst_prt, action FROM %s "\
 		"WHERE if_in<>'lo' and if_in<>'' and action<>'ACCEPT' "\
 		"GROUP BY dst_prt, action ORDER BY COUNT(*) DESC LIMIT %d;",
 		db->table, analyze_limit);
@@ -224,7 +224,7 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 	}
 	result = mysql_store_result(con);
 	
-	printf("\nInterface statistics\n");
+	printf("\nInvalid and denied packets per port and action taken\n");
 	printf(" Count   DPort   Action\n");
 	printf("------   -----   ----------\n");
 	while((row = mysql_fetch_row(result))) {
