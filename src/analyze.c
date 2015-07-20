@@ -212,10 +212,10 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 
 	// Query: Destination ports with denied traffic and their actions
 	sprintf(query,
-		"SELECT COUNT(*), dst_prt, action "\
-		"WHERE if_in<>'lo' and action<>'ACCEPT' "\
+		"SELECT COUNT(*), dst_prt, action FROM %s"\
+		"WHERE if_in<>'lo' and if_in<>'' and action<>'ACCEPT' "\
 		"GROUP BY dst_prt, action ORDER BY COUNT(*) DESC LIMIT %d;",
-		analyze_limit);
+		db->table, analyze_limit);
 
 	if(mysql_query(con, query)) {
 		fprintf(stderr, "! Query not accepted from database.\n");
