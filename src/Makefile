@@ -27,7 +27,7 @@
 
 objects = main.o import-syslog.o analyze.o gethostbyaddr.o   \
 	  print_licence.o db_maintenance.o follow.o \
-	  cfg2.o dns_cache.o libfuncs.o
+	  cfg2.o dns_cache.o libfuncs.o ph.o
 
 #dns_cache.o
 target = ipta
@@ -44,13 +44,16 @@ cflags = -O3 -Wall ${width}
 
 # Actual targets here, main first, then all supporting objects please.
 
-all: ipta dns_cache-test
+all: ipta dns_cache-test ph-test
 
 ipta: ${objects}
 	gcc ${cflags} ${objects} -o ${target} -l ${link}
 
 dns_cache-test: ${objects} dns_cache-test.o db_maintenance.o
 	gcc ${cflags} dns_cache.o dns_cache-test.o db_maintenance.o -o dns_cache-test -l ${link}
+
+ph-test: ph.o
+	gcc ${cflags} ph.o ph-test.o -o ph-test
 
 dns_cache-test.o: dns_cache-test.c dns_cache.c ipta.h
 	gcc ${cflags} -c dns_cache-test.c -I ${includes}
@@ -84,6 +87,12 @@ follow.o: follow.c ipta.h
 
 libfuncs.o: libfuncs.c libfuncs.h
 	gcc ${cflags} -c libfuncs.c -L ${libs} -I ${includes}
+
+ph.o: ph.h ph.c
+	gcc ${cflags} -c ph.c -L ${libs} -I ${includes}
+
+ph-test.o: ph.c ph.h ph-test.c
+	gcc ${cflags} -c ph-test.c -L ${libs} -I ${includes}
 
 # Special targets here
 
