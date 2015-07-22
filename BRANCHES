@@ -1,0 +1,4 @@
+master		-	Master branch to all is integrated into
+bug		-	Bugfix branch for master
+dev		-	Main development branch merge with master
+ph		-	Printheader feature development
