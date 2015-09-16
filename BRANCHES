@@ -3,3 +3,4 @@ bug		-	Bugfix branch for master
 dev		-	Main development branch merge with master
 ph		-	Printheader feature development
 db-setup  	- 	Devel branch for the automatic database setup feature
+html-output - output in html from the analyzer module
