@@ -76,7 +76,7 @@ void print_license(void)
 
 void print_usage(void) {
 	printf("ipta - iptables traffic analyzer\n\n"		\
-	       "USAGE ipta [OPTIONS] [ACTIONS] [ARGS]\n\n"	\
+	       "USAGE ipta [OPTIONS] [ACTIONS ([ARGS])] ...\n\n"	\
 	       "OPTIONS\n"					\
 	       "--version, -v\n"					\
 	       "\t Show version information and build info.\n\n"	\
