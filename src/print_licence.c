@@ -82,5 +82,9 @@ void print_usage(void) {
 	       "\t Show version information and build info.\n\n"	\
 	       "--rdns, -r\n"						\
 	       "\t Reverse DNS lookup. Tries to find the name behind every IP number\n"
-	       "\t that you encounter.");
+	       "\t that you encounter."\
+	       "--lines, --limit, -l\n"\
+	       "\t Maximum number of lines for each analysis segment. By default only\n"\
+	       "\t 10 lines are being shown, with this option other numbers are ok\n"\
+	       "\t --lines 20 allows 20 lines to be shown for each type of analysis.\n");
 }
