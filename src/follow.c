@@ -25,6 +25,7 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <time.h>
 #include "ipta.h"
 
 /***********************************************************************
@@ -73,6 +74,9 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 	char dst_hostname[HOSTNAME_MAX_LEN];
 	int hostname_len = 30;
 	int retval = RETVAL_OK;
+	time_t t = 0;
+	struct tm tm;
+	
 
 	line = calloc(256, 1);
 
@@ -179,21 +183,23 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 
 				if(!(flags->no_lo && (!strcmp(log_ifin, "lo") || !strcmp(log_ifout, "lo")))) {
 					if(!(flags->no_accept && !strcmp("ACCEPT", log_action))) {
-	
+						
 						// Time to print the line in a nice formatted way
+						t = time(NULL);
+						tm = *localtime(&t);
 						if(line_count == 0) {
 							printf("\n");
 							if(flags->no_counter == FLAG_SET) {
 								if(flags->no_follow_header != FLAG_SET) {
-printf("IF       Source                          Port Destination                     Port Proto      Action    \n");
-printf("-------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
+printf("Time     IF       Source                          Port Destination                     Port Proto      Action    \n");
+printf("-------- -------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
 								}
 
 							}
 							else {
 								if(flags->no_follow_header != FLAG_SET) {
-printf("Count    IF       Source                          Port Destination                     Port Proto      Action    \n");
-printf("-------- -------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
+printf("Time     Count    IF       Source                          Port Destination                     Port Proto      Action    \n");
+printf("-------- -------- -------- ------------------------------ ----- ------------------------------ ----- ---------- ----------\n");
 								}
 							}
 						}
@@ -203,7 +209,8 @@ printf("-------- -------- ------------------------------ ----- -----------------
 						if(line_count >= 20)
 							line_count = 0;
 						if(flags->no_counter == FLAG_SET) {
-							printf("%-8s %-30s %5d %-30s %5d %-10s %-10s\n",
+							printf("%02d:%02d:%02d %-8s %-30s %5d %-30s %5d %-10s %-10s\n",
+							       tm.tm_hour, tm.tm_min, tm.tm_sec,
 							       strcmp("", log_ifin) ? log_ifin : log_ifout,
 							       flag_rdns ? src_hostname : log_src,
 							       atoi(log_src_port),
@@ -212,7 +219,8 @@ printf("-------- -------- ------------------------------ ----- -----------------
 							       log_proto,
 							       log_action);
 						} else {
-							printf("%8d %-8s %-30s %5d %-30s %5d %-10s %-10s\n",
+							printf("%02d:%02d:%02d %8d %-8s %-30s %5d %-30s %5d %-10s %-10s\n",
+							       tm.tm_hour, tm.tm_min, tm.tm_sec,
 							       packet_count,
 							       strcmp("", log_ifin) ? log_ifin : log_ifout,
 							       flag_rdns ? src_hostname : log_src,
