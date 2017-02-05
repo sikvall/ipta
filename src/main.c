@@ -302,7 +302,8 @@ int main(int argc, char *argv[])
 		}
 		
 		if(!strcmp(argv[i], "-l") || 
-		   !strcmp(argv[i], "--limit")) {
+		   !strcmp(argv[i], "--limit") ||
+		   !strcmp(argv[i], "--lines")) {
 			known_flag = FLAG_SET;
 			if(argc < (i+2)) {
 				fprintf(stderr, "? You need to supply an argument for the limit.\n");
