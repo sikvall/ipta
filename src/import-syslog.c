@@ -22,12 +22,12 @@
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
 
-#include <my_global.h>
-#include <mysql.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <my_global.h>
+#include <mysql.h>
 
 #include "ipta.h"
 
@@ -292,8 +292,8 @@ clean_exit:
 	
 	free(line);
 	free(query_string);
-	fcloseall();
 	mysql_close(con);
-	
+	if(logfile)
+		fclose(logfile);
 	return retval;
 }
