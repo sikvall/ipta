@@ -183,7 +183,7 @@ int create_table(struct ipta_db_info *db)
 	sprintf(query, 
 		"CREATE TABLE %s ("					\
 		"id int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,"	\
-		"timestamp timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'," \
+		"timestamp timestamp NOT NULL DEFAULT '1970-01-01 04:00:00'," \
 		"if_in varchar(10) DEFAULT NULL,"			\
 		"if_out varchar(10) DEFAULT NULL,"			\
 		"src_ip int(10) unsigned DEFAULT NULL,"			\
