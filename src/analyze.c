@@ -36,8 +36,6 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 	MYSQL *con = NULL;
 	MYSQL_RES *result = NULL;
 	MYSQL_ROW row = 0;
-        //  int num_fields = 0;
-	//  int i = 0;
 	char src_ip_hostname[HOSTNAME_MAX_LEN];
 	char dst_ip_hostname[HOSTNAME_MAX_LEN];
 	int rdns_flg[2];
@@ -233,8 +231,17 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 	}
 	mysql_free_result(result);
 	result = NULL;
-	
-		
+
+	printf("\nInvalid and denied packets per port and action taken\n");
+	printf(" Count   DPort   Action\n");
+	printf("------   -----   ----------\n");
+	while((row = mysql_fetch_row(result))) {
+		printf("%6d   %5d   %-10s   \n",
+		       atoi(row[0]), atoi(row[1]), row[2]);
+	}
+	mysql_free_result(result);
+	result = NULL;
+
 	
 clean_exit:
 
