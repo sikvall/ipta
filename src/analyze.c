@@ -30,7 +30,10 @@
 #include <mysql.h>
 #include "ipta.h"
 
-int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit, struct ipta_db_info *dnsdb) 
+int analyze(struct ipta_db_info *db, 
+	    struct ipta_flags *flags, 
+	    int analyze_limit, 
+	    struct ipta_db_info *dnsdb) 
 {
 	char *query = NULL;
 	MYSQL *con = NULL;
@@ -232,17 +235,6 @@ int analyze(struct ipta_db_info *db, struct ipta_flags *flags, int analyze_limit
 	mysql_free_result(result);
 	result = NULL;
 
-	printf("\nInvalid and denied packets per port and action taken\n");
-	printf(" Count   DPort   Action\n");
-	printf("------   -----   ----------\n");
-	while((row = mysql_fetch_row(result))) {
-		printf("%6d   %5d   %-10s   \n",
-		       atoi(row[0]), atoi(row[1]), row[2]);
-	}
-	mysql_free_result(result);
-	result = NULL;
-
-	
 clean_exit:
 
 	free(query);
