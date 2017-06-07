@@ -49,7 +49,9 @@
  *
  **********************************************************************/
 
-int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb) {
+int follow(char *filename, 
+	   struct ipta_flags   *flags, 
+	   struct ipta_db_info *dnsdb) {
 	FILE *logfile;
 	int flag_rdns = FLAG_CLEAR;
 	char *line;
@@ -86,15 +88,22 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 		retval = RETVAL_ERROR;
 		goto clean_exit;
 	}
-
+	
 	// Seek to the end of the file unless we have a flag to show the history as well
-	retval = fseek(logfile, 0L, SEEK_END);
-	if(0 != retval) {
-		fprintf(stderr, "! Error seeking to end of log file. Exiting.\n");
-		retval = RETVAL_ERROR;
-		goto clean_exit;
+	if(flags->scan == 0) {
+		retval = fseek(logfile, 0L, SEEK_END);
+		if(0 != retval) {
+			fprintf(stderr, "! Error seeking to end of log file. Exiting.\n");
+			retval = RETVAL_ERROR;
+			goto clean_exit;
+		}
 	}
-  
+
+	
+	// Set the flag if we want RDNS
+	if(flags->rdns)
+		flag_rdns = FLAG_SET;
+
 
 	// Actually this goes on until CTRL-C is pressed, so we will actually never return from this 
 	// function once we started the following.
@@ -102,12 +111,8 @@ int follow(char *filename, struct ipta_flags *flags, struct ipta_db_info *dnsdb)
 		read = getline(&line, &len, logfile);
 
 		if(read == -1) {
-
-			// If the user wants rdns we turn it on only after reaching EOF first. Otherwise it can
-			// take forever if we have a large log file to read through, the DNS subsystem is not too
-			// fast on many implementations of Linux.
-			if(flags->rdns)
-				flag_rdns = FLAG_SET;
+			if(flags->scan)
+				break;
 			sleep(1);
 			continue;
 		} else {

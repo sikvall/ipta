@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 	int create_table_flag = 0;
 	char *follow_file = NULL;
 	int follow_flag = 0;
+	int scan_flag = 0;
 	int create_db_flag = 0;
 	int delete_table_flag = 0;
 	int import_flag = 0;
@@ -283,7 +284,25 @@ int main(int argc, char *argv[])
 			action_flag = FLAG_SET;
 			create_db_flag = FLAG_SET;
 		}
-		
+
+		if(!strcmp(argv[i], "--scan") || 
+		   !strcmp(argv[i], "-s")) {
+			flags->scan = 1;
+			known_flag = FLAG_SET;
+			action_flag = FLAG_SET;
+			follow_flag = FLAG_SET;
+			
+			if ( argc < (i+2) ) {
+				fprintf(stderr, "! Error: Follow mode needs a file name!\n");
+				retval = RETVAL_ERROR;
+				goto clean_exit;
+			}
+			
+			follow_file = argv[i+1];
+			i++;
+			continue;
+		}
+
 		if(!strcmp(argv[i], "--follow") || 
 		   !strcmp(argv[i], "-f")) {
 			known_flag = FLAG_SET;

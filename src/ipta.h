@@ -66,6 +66,7 @@ struct ipta_flags {
 	int no_counter;
 	int rdns;
 	int no_accept;
+	int scan;
 };
 
 #define IPTA_DB_INFO_STRLEN 256
