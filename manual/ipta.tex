@@ -1227,6 +1227,22 @@ Count    IF       Source                          Port Destination              
     1970 eth0     *6f44.cust.bredbandsbolaget.se 48566 zathras.ichimusai.org           8443 TCP        DROP      
 \end{verbatim} \normalsize
 
+\section{Scan mode}
+
+Scan mode is a lot like the follow mode. It is invoked with the following syntax:
+
+\begin{verbatim}
+$ ipta --scan <logfile>
+\end{verbatim}
+
+Options such as -l and -r are valid. The scan mode is a special form of follow mode that scans the whole log file and outputs every line from it. 
+
+This can be used together with other system tools to produce blocking lists or other records of what has happend over sime time back. 
+
+An example of this is to produce a blocking file for those who are attempting to connect on a port you suspect is for hacking such as port 23 (telnet) which you are not using.
+
+By running \texttt{ipta --scan <logfile> | grep " 23 TCP"} you may find all attempts on port 23 for example.
+
 \section{Configuration file}
 
 The configuration file is a simple text file that contains key = value
