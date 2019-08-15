@@ -1,0 +1,7 @@
+*.aux
+*.log
+*.synctex*
+*.toc
+*.o
+src/ipta
+src/dns_cache-test
