@@ -61,7 +61,7 @@ MYSQL *open_db(struct ipta_db_info *db)
 { 
 	MYSQL *con = NULL; 
 	int retval = RETVAL_OK; 
-	char query_string[256]; // Fixme
+	char query_string[QUERY_STRING_SIZE];
 	
 	con = mysql_init(NULL);
 	if(con == NULL) {

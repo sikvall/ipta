@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 	int create_table_flag = 0;
 	char *follow_file = NULL;
 	int follow_flag = 0;
-	int scan_flag = 0;
+	//int scan_flag = 0;
 	int create_db_flag = 0;
 	int delete_table_flag = 0;
 	int import_flag = 0;
