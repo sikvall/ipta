@@ -67,7 +67,7 @@
 \noindent
 
 \begin{center}
-	Version 0.1\\[5mm] \textcopyright\ Copyright 2015 Anders Sikvall\\
+	Version 0.2\\[5mm] \textcopyright\ Copyright 2015--2019 Anders Sikvall\\
 	http://ichimusai.org/projects/ipta\\
 	ichi@ichimusai.org
 	\newpage
@@ -406,10 +406,18 @@ $ ipta --create-table
 * Table 'logs' created in database which you may now use.
 \end{verbatim}
 
-If you get the mssage that the table was successfully created we are
+If you get the message that the table was successfully created we are
 fine. If you get a message it already exists you are probably fine. If
 you get an error, check your MySQL statements again and see that you
 did create the ipta user and password is correct and so on.
+
+NOTE! If you want to use the reverse DNS option for ipta you need to also initiate this data base table by issuing this command:
+
+\begin{verbatim}
+$ ipta --dns-create-table
+* Table dns created in database ipta.
+\end{verbatim}
+
 
 Now we have everything set up in MySQL and can move on the next part,
 setting up iptables and syslog.
