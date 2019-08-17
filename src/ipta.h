@@ -26,7 +26,7 @@
 #include <mysql.h>
 
 /* Overall generic defines */
-#define IPTA_VERSION "ipta version Release-V0.3.1\n"
+#define IPTA_VERSION "ipta version Release-V0.3.2\n"
 
 /* Specific error defines */
 #define ERROR_FILE_OPEN -1
@@ -34,7 +34,7 @@
 /* Ipta defines */
 #define ACTION_IMPORT 1;
 #define IPTA_LINE_PREFIX "IPT: "
-#define QUERY_STRING_SIZE 2000
+#define QUERY_STRING_SIZE 32768
 #define QUERY_ROW_COUNT 100
 
 /* Database defaults */

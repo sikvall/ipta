@@ -75,7 +75,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 	int retval = 0;
 	
 	starttime = time(NULL);
-	query_string = malloc(32000);
+	query_string = malloc(QUERY_STRING_SIZE);
 	
 	if(!query_string) {
 		fprintf(stderr, "! Failed to allocate memory. Fatal error, exiting.");

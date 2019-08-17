@@ -116,7 +116,7 @@ int create_db(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 
-	query = malloc(10000); // fixme
+	query = malloc(QUERY_STRING_SIZE);
 	if(!query) {
 		fprintf(stderr, "! Allocation failed, must exit.\n");
 		retval = RETVAL_ERROR;
@@ -171,7 +171,7 @@ int create_table(struct ipta_db_info *db)
 	}
 
 	// Just grab some heap
-	query = malloc(10000);
+	query = malloc(QUERY_STRING_SIZE);
 	if(query == NULL) {
 		fprintf(stderr, "! ERROR: Unable to allocate memory, exiting!\n");
 		// Immediate exit
@@ -241,7 +241,7 @@ int delete_table(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 	
-	query = calloc(10000,1);
+	query = calloc(QUERY_STRING_SIZE,1);
 	if(!query) {
 		fprintf(stderr, "! Error: Failed allocation, exit now.\n");
 		exit(RETVAL_ERROR);

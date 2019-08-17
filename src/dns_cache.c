@@ -47,7 +47,7 @@ int dns_dump_cache(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 
-	query = malloc(10000); //fixme
+	query = malloc(QUERY_STRING_SIZE);
 	if(!query) {
 		retval = RETVAL_ERROR;
 		goto clean_exit;
@@ -94,7 +94,7 @@ int dns_cache_create_table(struct ipta_db_info *db)
 	MYSQL *con = NULL;
 	int retval = RETVAL_OK;
 	
-	query_string = calloc(1, 10000);
+	query_string = calloc(1, QUERY_STRING_SIZE);
 	if(NULL == query_string) {
 		fprintf(stderr, "! Error, unable to allocate memory. Quitting!\n");
 		exit(RETVAL_ERROR);
@@ -152,7 +152,7 @@ int dns_cache_add(struct ipta_db_info *db, char *ip_address, char *hostname)
 	MYSQL *con = NULL;
 	int retval = 0;
 	
-	query_string = calloc(1,10000); // Fix this later
+	query_string = calloc(1,QUERY_STRING_SIZE);
 	if(!query_string) {
 		fprintf(stderr, "! Unable to allocate memory!\n");
 		assert(0);
@@ -218,7 +218,7 @@ int dns_cache_get(struct ipta_db_info *db, char *ip_address,
 	MYSQL_ROW row = 0;
 	
 	// Allocate memory
-	query_string = malloc(10000); // Fix later
+	query_string = malloc(QUERY_STRING_SIZE);
 	if(!query_string) {
 		fprintf(stderr, "! Allocation failed!\n");
 		retval = RETVAL_ERROR;
@@ -305,7 +305,7 @@ int dns_cache_prune(struct ipta_db_info *db, int ttl)
 		goto clean_exit;
 	}
 
-	query = calloc(1, 10000); // Fixme: Should be done nicer.
+	query = calloc(1, QUERY_STRING_SIZE);
 	if(!query) {
 		fprintf(stderr, "! Error, unable to allocate memory.\n");
 		retval = RETVAL_ERROR;
@@ -351,7 +351,7 @@ int dns_cache_delete_table(struct ipta_db_info *db)
 		goto clean_exit;
 	}
 
-	query = calloc(1, 10000); // Fixme: Should be done nicer.
+	query = calloc(1, QUERY_STRING_SIZE);
 	if(!query) {
 		fprintf(stderr, "! Error, unable to allocate memory.\n");
 		retval = RETVAL_ERROR;
