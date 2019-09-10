@@ -29,7 +29,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-#include <my_global.h>
 #include <mysql.h>
 #include <linux/limits.h>
 #include "ipta.h"
@@ -135,7 +134,6 @@ int main(int argc, char *argv[])
 			}
 
 
-			
 			// Check against the known keys, if match, copy value to hold
 			if(!strcmp("db_host", key)) {
 				strncpy(db_info->host,   value, IPTA_DB_INFO_STRLEN);

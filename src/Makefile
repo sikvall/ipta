@@ -36,6 +36,7 @@ includes = /usr/include/mysql/
 libs = /usr/local/mysql/lib/
 link = mysqlclient
 #link = /usr/lib64/mysqlclient
+cc=gcc
 
 #width = -m64
 #width = -m32
@@ -47,43 +48,43 @@ cflags = -O3 -Wall ${width}
 all: ipta dns_cache-test 
 
 ipta: ${objects}
-	gcc ${cflags} ${objects} -o ${target} -l ${link}
+	${cc} ${cflags} ${objects} -o ${target} -l ${link}
 
 dns_cache-test: ${objects} dns_cache-test.o db_maintenance.o
-	gcc ${cflags} dns_cache.o dns_cache-test.o db_maintenance.o -o dns_cache-test -l ${link}
+	${cc} ${cflags} dns_cache.o dns_cache-test.o db_maintenance.o -o dns_cache-test -l ${link}
 
 dns_cache-test.o: dns_cache-test.c dns_cache.c ipta.h
-	gcc ${cflags} -c dns_cache-test.c -I ${includes}
+	${cc} ${cflags} -c dns_cache-test.c -I ${includes}
 
 main.o: main.c ipta.h
-	gcc ${cflags} -c main.c -I ${includes}
+	${cc} ${cflags} -c main.c -I ${includes}
 
 dns_cache.o: dns_cache.c ipta.h
-	gcc ${cflags} -c dns_cache.c -I ${includes}
+	${cc} ${cflags} -c dns_cache.c -I ${includes}
 
 cfg2.o: cfg2.c cfg2.h
-	gcc ${cflags} -c cfg2.c -I ${includes}
+	${cc} ${cflags} -c cfg2.c -I ${includes}
 
 import-syslog.o: import-syslog.c ipta.h
-	gcc ${cflags} -c import-syslog.c -L ${libs} -I ${includes}	
+	${cc} ${cflags} -c import-syslog.c -L ${libs} -I ${includes}	
 
 analyze.o: analyze.c ipta.h
-	gcc ${cflags} -c analyze.c -L ${libs} -I ${includes}
+	${cc} ${cflags} -c analyze.c -L ${libs} -I ${includes}
 
 gethostbyaddr.o: ipta.h gethostbyaddr.c
-	gcc ${cflags} -c gethostbyaddr.c -L ${libs} -I ${includes}
+	${cc} ${cflags} -c gethostbyaddr.c -L ${libs} -I ${includes}
 
 print_licence.o: print_licence.c
-	gcc ${cflags} -c print_licence.c  -L ${libs} -I ${includes}
+	${cc} ${cflags} -c print_licence.c  -L ${libs} -I ${includes}
 
 db_maintenance.o: db_maintenance.c ipta.h
-	gcc ${cflags} -c db_maintenance.c -L ${libs} -I ${includes}
+	${cc} ${cflags} -c db_maintenance.c -L ${libs} -I ${includes}
 
 follow.o: follow.c ipta.h
-	gcc ${cflags} -c follow.c -L ${libs} -I ${includes}
+	${cc} ${cflags} -c follow.c -L ${libs} -I ${includes}
 
 libfuncs.o: libfuncs.c libfuncs.h
-	gcc ${cflags} -c libfuncs.c -L ${libs} -I ${includes}
+	${cc} ${cflags} -c libfuncs.c -L ${libs} -I ${includes}
 
 # Special targets here
 

@@ -44,7 +44,7 @@
 char *dns_host_trim(char *s, int maxlen) 
 {
 	if(strlen(s) > maxlen) {
-		strcpy(s, s + (strlen(s)-maxlen));
+		memmove(s, s + (strlen(s)-maxlen),maxlen);
 		s[0] = '*';
 	}
 	return s;

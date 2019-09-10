@@ -24,12 +24,12 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <assert.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <my_global.h>
 #include <mysql.h>
 #include "ipta.h"
 

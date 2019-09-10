@@ -192,7 +192,7 @@ int create_table(struct ipta_db_info *db)
 		"dst_prt int(10) unsigned DEFAULT NULL,"		\
 		"proto varchar(10) DEFAULT NULL,"			\
 		"action varchar(10) DEFAULT NULL,"			\
-		"mac varchar(40) DEFAULT NULL);", 
+        "mac varchar(41) DEFAULT NULL);",
 		db->table);
 	
 	if(mysql_query(con, query)) {

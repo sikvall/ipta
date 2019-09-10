@@ -26,8 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <my_global.h>
 #include <mysql.h>
+#include <time.h>
 
 #include "ipta.h"
 
@@ -194,7 +194,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 					continue;
 				}
 				if(!strncmp("MAC=", token, 4)) {
-					log_mac = token + strlen("MAC=");
+					log_mac = token + strlen("MAC=");                    
 					continue;
 				}
 				if(!strncmp("SRC=", token, 4)) {
@@ -283,7 +283,7 @@ int import_syslog(struct ipta_db_info *db_info, char *filename)
 	fprintf(stderr, "* Processed %d lines in %d seconds\n", 
 		lines, (int)time(NULL)-(int)starttime);
 	
-	fprintf(stderr, "\n* Done processing file. %d records inserted in database.\n", lines);
+	fprintf(stderr, "* Done processing file. %d records inserted in database.\n", lines);
 	
 	// Make sure everything is returned nicely after allocation by
         // us or by some procedure that we are calling

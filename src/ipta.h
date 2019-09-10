@@ -22,11 +22,10 @@
  * long as you do not violate any terms and condition in the LICENCE.
  **********************************************************************/
 
-#include <my_global.h>
 #include <mysql.h>
 
 /* Overall generic defines */
-#define IPTA_VERSION "ipta version Release-V0.3.2\n"
+#define IPTA_VERSION "ipta version Release-V0.3.3\n"
 
 /* Specific error defines */
 #define ERROR_FILE_OPEN -1

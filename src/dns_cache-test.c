@@ -32,7 +32,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <my_global.h>
 #include <mysql.h>
 #include "ipta.h"
 

@@ -26,7 +26,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-#include <my_global.h>
 #include <mysql.h>
 #include "ipta.h"
 
